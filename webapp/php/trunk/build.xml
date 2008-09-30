@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ *  Copyright © 2008 Sun Microsystems, Inc. All rights reserved
+ *
+ *  Use is subject to license terms.
+-->
+<project name="Web20PHP" default="package">
+    <target name="package">
+        <zip destfile="web20php2.zip">
+            <zipfileset dir="." prefix="web20php2">
+                <include name="classes/**"/>
+                <include name="controllers/**"/>
+                <include name="etc/**"/>
+                <include name="includes/**"/>
+                <include name="lib/**"/>
+                <include name="public_html/**"/>
+                <include name="views/**"/>
+            </zipfileset>                   
+        </zip>             
+    </target>
+</project>
