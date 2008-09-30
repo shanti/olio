@@ -6,12 +6,14 @@ Olio is a web 2.0 toolkit to help developers evaluate the suitability,
 functionality and performance of various web technologies by implementing 
 a reasonably complex application in several different technologies.
 
-Initial committers are in the process of sending in ICLAs.
-
 Mailing lists have been requested. 
 http://issues.apache.org/jira/browse/INFRA-1741
 
-The svn repository is at https://svn.apache.org/repos/asf/incubator/olio
+The svn repository was created at 
+https://svn.apache.org/repos/asf/incubator/olio
+
+Initial committers are in the process of sending in ICLAs. Mentors have
+been given access to the svn repo.
 
 The JIRA project has been created.
 https://issues.apache.org/jira/secure/admin/ViewProject.jspa?pid=12310839
