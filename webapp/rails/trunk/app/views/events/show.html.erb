@@ -1,0 +1,78 @@
+<div id="event_header">
+  <div id="event_thumbnail"><%= thumbnail(@image) %></div>
+
+  <div id="main_event_details">
+    <h1 class="inline"><%=h @event.title %></h1> <%= edit_delete_links(@event) %>
+    <hr />
+    <%= output_date(@event.event_timestamp) %><br />
+    <br />
+  	<% unless @document.nil? -%>
+  		<%= link_to 'Event Literature', @document.public_filename %>
+  	<% end -%>
+	
+  	<br />
+    <div id="event_address">
+      <%=h @address.street1 %><br />
+      <% unless @address.street2.nil? or @address.street2.empty? -%>
+        <%=h @address.street2 %><br />
+      <% end -%>
+      <%=h @address.city %>, <%=h @address.state %> <%=h @address.zip %><br />
+      <%=h @address.country %>
+    </div>
+    Contact: <span id="event_contact"><%=h @event.telephone %></span><br />
+  </div>
+  <div class="clr"></div>
+</div>
+
+<div id="event_attendees">
+  <%= render :partial => 'attendees' %>
+</div>
+
+<div id="event_description">
+	<p><strong>Summary</strong></p>
+	<p><%= @event.summary %></p>
+	<p><strong>Description</strong></p>
+  <p><%= @event.description %></p>
+</div>
+
+<div class="clr"></div>
+
+<div id="event_map">
+  <%= render :partial => 'map' %>
+</div>
+
+<div id="event_tags">
+  <h1 class="inline">Tags::</h1>
+  <div id="tag_list">
+    <%= render :partial => 'tag_list' %>
+  </div>
+  <div class="clr"></div>
+</div>
+
+<div id="event_comments">
+  <%= render :partial => 'comments/list' %>
+</div>
+
+<div id="comment_form" style="display: none;">
+	<%= render :partial => "comments/new" %>
+</div>
+
+<div id="comment_add_link">
+	<% if logged_in? -%>
+  	<%= 
+  	  link_to_function "Add a comment",
+  	    :href => new_event_comment_path(@event), 
+        :method => :get, :id => "comment_link" do |page|
+    	    page[:comment_form].visual_effect :blind_down
+    	    page[:comment_add_link].hide
+          page.select(".simple_comment_rating").each {|r| r.replace '' }
+          page.select(".hover_comment_rating").each {|r| r.show }
+  	  end
+  	%>
+  <% else -%>
+    <br />
+    <%= login_link %> to leave a comment.
+  <% end -%>
+</div>
+
+<hr class="clr" />
