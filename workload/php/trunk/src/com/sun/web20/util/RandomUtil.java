@@ -320,7 +320,7 @@ public class RandomUtil {
      * @return The selected event id, as a string
      */
     public static String randomEvent(Random r, StringBuilder eventListPage) {
-        String search1 = "<a href=\"eventDetail.";
+        String search1 = "<a href=\"events.";
         String search2 = "?socialEventID=";
         int idx = 0;
         HashSet<String> eventIdSet = new HashSet<String>();
