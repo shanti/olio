@@ -26,7 +26,8 @@
  */
 class Tags_Controller {
     function getHomePageTagCloud($connection) {
-         $cloudquery = "(SELECT st.tag as tag,st.refcount as count from SOCIALEVENTTAG as st where st.refcount>100 limit 50)  order by tag ASC";
+         //$cloudquery = "(SELECT st.tag as tag,st.refcount as count from SOCIALEVENTTAG as st where st.refcount>100 limit 50)  order by tag ASC";
+         $cloudquery = "(SELECT st.tag as tag,st.refcount as count from SOCIALEVENTTAG as st order by st.refcount desc limit 50) order by tag asc";
          $cloudresult =$connection->query($cloudquery);
          $rowsFound = false;
          while ($row = $cloudresult->getArray()) {
