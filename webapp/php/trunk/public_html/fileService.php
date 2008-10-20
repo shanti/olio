@@ -30,7 +30,7 @@
  * the client.
  */
 require_once("../etc/config.php");
-$cache = CacheSystem::getInstance();
+//$cache = CacheSystem::getInstance();
 
 
 $mimeTypes = array();
@@ -50,7 +50,7 @@ $mimeTypes['odt'] = 'application/vnd.oasis.opendocument.text';
 $fileName = $_GET['file'];
 
 if ($fileName != "") {
-	$cacheFlag = $_GET['cache'];
+	//$cacheFlag = $_GET['cache'];
 	$pathInfo = pathinfo($fileName);
 	$extension = $pathInfo['extension'];
 	$contentType = $mimeTypes[$extension];
@@ -58,7 +58,7 @@ if ($fileName != "") {
 
 	$fs = FileSystem::getInstance();
 	$paths = $fs->getPaths($fileName);
-	$cache->set($fileName, $paths, 0, Web20::$config['cacheExpire']);
+	//$cache->set($fileName, $paths, 0, Web20::$config['cacheExpire']);
 	$path_keys = array_keys($paths);
 	$pathkeycount = count($path_keys);
 	$i=0;
