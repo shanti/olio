@@ -1,0 +1,7 @@
+bench.shortname=Web20Driver
+faban.home=/Users/will/projects/RadLab/new/
+faban.url=http://dewberry.sfbay.sun.com:9980/
+deploy.user=deployer
+deploy.password=adminadmin
+deploy.clearconfig=false
+compiler.target.version=1.5

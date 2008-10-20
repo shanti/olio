@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web20>
+    <jvmConfig xmlns="http://faban.sunsource.net/ns/fabanharness">
+        <javaHome>/usr/jdk/instances/jdk1.6.0</javaHome>
+        <jvmOptions>-Xmx1g -Xms256m -XX:+DisableExplicitGC</jvmOptions>
+    </jvmConfig>
+    
+    <fa:runConfig definition="com.sun.web20.driver.UIDriver" xmlns="http://faban.sunsource.net/ns/fabandriver" xmlns:fa="http://faban.sunsource.net/ns/faban" xmlns:fh="http://faban.sunsource.net/ns/fabanharness">
+        <fh:description>Enter description for this run here</fh:description>
+        
+        <fa:hostConfig>
+            <fa:host>driverHost</fa:host>
+            <fh:enabled>true</fh:enabled>
+            <fh:cpus>0</fh:cpus>
+            <fh:tools>vmstat 10</fh:tools>
+            <fh:userCommands/>
+        </fa:hostConfig>
+        
+        <fa:scale>50</fa:scale>
+        
+        <fa:runControl>
+            <fa:rampUp>10</fa:rampUp>
+            <fa:steadyState>600</fa:steadyState>
+            <fa:rampDown>10</fa:rampDown>
+        </fa:runControl>
+        
+        <outputDir>/tmp</outputDir>
+        
+        <audit>false</audit>
+        <threadStart>            
+            <delay>10</delay>            
+            <simultaneous>false</simultaneous>            
+            <parallel>false</parallel>
+        </threadStart>
+        
+        <stats>
+            <maxRunTime>6</maxRunTime>
+            <interval>30</interval>
+        </stats>
+        
+        <runtimeStats enabled="false">
+            <interval>5</interval>
+        </runtimeStats>
+        
+        <driverConfig name="UIDriver">            
+            <agents>1</agents>            
+            <stats>
+                <interval>30</interval>
+            </stats>            
+            <runtimeStats target="9988"/>
+            <properties>
+                <property name="serverType">php</property>
+                <property name="resourcePath">/apps/faban/benchmarks/web20/resources/</property>
+            </properties>            
+        </driverConfig>
+    </fa:runConfig>
+    
+    <webServer>
+        <fa:hostConfig xmlns="http://faban.sunsource.net/ns/fabanharness" xmlns:fa="http://faban.sunsource.net/ns/faban">
+            <fa:host/>
+            <fa:hostPorts>webserverHost:8080</fa:hostPorts>
+            <enabled>true</enabled>
+            <cpus>0</cpus>
+            <tools>vmstat 10; mpstat 10; netsum -a -i 10</tools>           
+            <userCommands/>            
+        </fa:hostConfig>
+        <type>apache</type>
+        <hostBinPath>/opt/coolstack/apache2/bin</hostBinPath>
+        <hostLogPath>/opt/coolstack/apache2/logs</hostLogPath>
+        <hostConfPath>/opt/coolstack/apache2/conf</hostConfPath>
+        <phpIniPath>/opt/coolstack/php5/lib</phpIniPath>
+    </webServer>
+    <dbServer>
+        <fa:hostConfig xmlns="http://faban.sunsource.net/ns/fabanharness" xmlns:fa="http://faban.sunsource.net/ns/faban">
+            <fa:host>dbHost</fa:host>
+            <enabled>true</enabled>
+            <cpus>0</cpus>
+            <tools>vmstat 10; mpstat 10; netsum -a -i 10</tools>
+            <userCommands/>
+        </fa:hostConfig>
+        <dbDriver>com.mysql.jdbc.Driver</dbDriver>
+        <connectURL>jdbc:mysql://dbHost/web20load?user=web20&amp;password=web20&amp;relaxAutoCommit=true&amp;sessionVariables=FOREIGN_KEY_CHECKS=0</connectURL>
+        <reloadDB>true</reloadDB>
+        <scale>50</scale>
+        <dbHomePath>/opt/coolstack/mysql_32bit</dbHomePath>
+        <dbConfPath>/etc</dbConfPath>
+    </dbServer>
+    <dataStorage>
+        <fa:hostConfig xmlns:fa="http://faban.sunsource.net/ns/faban"
+                       xmlns="http://faban.sunsource.net/ns/fabanharness">
+            <fa:host>storageHost</fa:host>
+            <enabled>true</enabled>
+            <cpus>0</cpus>
+            <tools>NONE</tools>
+            <userCommands></userCommands>
+        </fa:hostConfig>
+        <reloadMedia>false</reloadMedia>        
+    </dataStorage>
+    <cacheServers>
+        <fa:hostConfig xmlns="http://faban.sunsource.net/ns/fabanharness" xmlns:fa="http://faban.sunsource.net/ns/faban">
+            <fa:host></fa:host>
+            <enabled>true</enabled>
+            <cpus>0</cpus>
+            <tools>NONE</tools>
+            <userCommands/>
+        </fa:hostConfig>
+        <cacheBinPath>/opt/coolstack/bin</cacheBinPath>
+        <serverList>cacheHost:11212 cacheHost:11211</serverList>
+    </cacheServers>
+    <!-- Shanti - commenting as not used
+    <otherServers>
+        <fa:hostConfig xmlns="http://faban.sunsource.net/ns/fabanharness" xmlns:fa="http://faban.sunsource.net/ns/faban">
+            <fa:host></fa:host>
+            <enabled>true</enabled>
+            <cpus>0</cpus>
+            <tools>NONE</tools>
+            <userCommands/>
+        </fa:hostConfig>
+        <serverList></serverList>
+    </otherServers>
+    -->
+</web20>
