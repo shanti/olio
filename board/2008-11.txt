@@ -8,5 +8,7 @@ a reasonably complex application in several different technologies.
 
 All infrastructure has been created for the project.
 
-Initial code drops have been committed to the repository.
+The olio web site has been set up via Confluence.
+
+Initial code drops for rails and php have been committed to the repository.
 
