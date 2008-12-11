@@ -22,19 +22,19 @@ module Spec
 
           Dir.chdir(root) do
             args = [
-              'failing_examples/mocking_example.rb',
-                'failing_examples/diffing_spec.rb',
-                'examples/pure/stubbing_example.rb',
-                'examples/pure/pending_example.rb',
+              'examples/failing/mocking_example.rb',
+                'examples/failing/diffing_spec.rb',
+                'examples/passing/stubbing_example.rb',
+                'examples/passing/pending_example.rb',
                 '--format',
                 'textmate',
                 opt
             ]
             err = StringIO.new
             out = StringIO.new
-            options = ::Spec::Runner::OptionParser.parse(args, err, out)
-            Spec::Runner::CommandLine.run(options)
 
+            run_with ::Spec::Runner::OptionParser.parse(args, err, out)
+              
             yield(out.string)
           end          
         end
@@ -44,7 +44,7 @@ module Spec
         # describe TextMateFormatter, "functional spec file generator" do
         #   it "generates a new comparison file" do
         #     Dir.chdir(root) do
-        #       args = ['failing_examples/mocking_example.rb', 'failing_examples/diffing_spec.rb', 'examples/pure/stubbing_example.rb',  'examples/pure/pending_example.rb', '--format', 'textmate', '--diff']
+        #       args = ['examples/failing/mocking_example.rb', 'examples/failing/diffing_spec.rb', 'examples/passing/stubbing_example.rb',  'examples/passing/pending_example.rb', '--format', 'textmate', '--diff']
         #       err = StringIO.new
         #       out = StringIO.new
         #       Spec::Runner::CommandLine.run(

@@ -1,30 +1,24 @@
-# +------------+--------------+------+-----+---------+----------------+
-# | Field      | Type         | Null | Key | Default | Extra          |
-# +------------+--------------+------+-----+---------+----------------+
-# | id         | int(11)      | NO   | PRI | NULL    | auto_increment | 
-# | zip        | int(11)      | YES  | MUL | NULL    |                | 
-# | state_code | varchar(255) | YES  |     | NULL    |                | 
-# | state      | varchar(255) | YES  |     | NULL    |                | 
-# | city       | varchar(255) | YES  |     | NULL    |                | 
-# | longitude  | float        | YES  |     | NULL    |                | 
-# | latitude   | float        | YES  |     | NULL    |                | 
-# | created_at | datetime     | YES  |     | NULL    |                | 
-# | updated_at | datetime     | YES  |     | NULL    |                | 
-class Geolocation < ActiveRecord::Base
+require 'net/http'
+require 'cgi'
 
-  # For now, everything assumed is to be in the United States
-  # Will more countries be added later?
-  validates_presence_of :zip, :city
-  validates_uniqueness_of :zip
+class Geolocation
+  attr_reader :address, :city, :state, :zip, :country, :latitude, :longitude
   
-  # As of now, zip code ranges from 1001 to 99950 in current database
+  @@url = 'http://localhost:8080/Web20Emulator/geocode?appid=gsd5f'
   
-  validates_numericality_of :latitude, :longitude
-  validates_inclusion_of :latitude,
-                         :in => -90..90,
-                         :message => "must be between -90 and 90 degrees"
-  validates_inclusion_of :longitude,
-                         :in => -180..180,
-                         :message => "must be between -180 and 180 degrees"
-
+  def self.url=(url)
+    @@url = url
+  end
+  
+  def initialize(street, city, state, zip)
+    args = %w{street city state zip}.zip([street, city, state, zip]).map do |n, v|
+      "#{n}=#{CGI::escape(v)}"
+    end.join('&')
+    response = Net::HTTP.get(URI.parse("#{@@url}&#{args}"))
+    if response
+      eval(response.scan(%r{<([A-Za-z]+)>\s*([^<]+)\s*</\1>}m).map do |k, v|
+        "@#{k.downcase} = '#{v.chomp}'"
+      end.join(';'))
+    end
+  end
 end

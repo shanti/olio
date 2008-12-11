@@ -17,7 +17,6 @@ class EventsController < ApplicationController
     unless params[:month].nil? and params[:day].nil? and params[:year].nil?
       date = Date.parse("#{params[:month]}/#{params[:day]}/#{params[:year]}")
     end
-
     @zipcode = params[:zipcode] ? params[:zipcode] : session[:zipcode] # Update zipcode filter if changed by the user
     session[:zipcode] = @zipcode # Store the new zipcode filter in the user's session
     
@@ -31,11 +30,10 @@ class EventsController < ApplicationController
     @events = Event.paginate :page => params[:page], :conditions => conditions, :order => session[:order], :per_page => 10, :include => :address
     if @zipcode and !@zipcode.empty?
       @events.delete_if { |e| e.address.zip != @zipcode }
-      @geolocation = Geolocation.find_by_zip @zipcode
     end
       
     @tags = Event.top_n_tags(50)
-    
+
     respond_to do |format|
       format.html # index.html.erb
       format.js # index.js.rjs
@@ -79,6 +77,9 @@ class EventsController < ApplicationController
     @event.user_id = session[:user_id]
     @event.set_date
     @address = Address.new(params[:address])
+    @geolocation = Geolocation.new(@address.street1, @address.city, @address.state, @address.zip)
+    @address.longitude = @geolocation.longitude
+    @address.latitude = @geolocation.latitude
     begin
       Event.transaction do
         @address.save!
@@ -134,6 +135,9 @@ class EventsController < ApplicationController
         @event.attributes = params[:event]
         @event.set_date
         @address.attributes = params[:address]
+        @geolocation = Geolocation.new(@address.street1, @address.city, @address.state, @address.zip)
+        @address.longitude = @geolocation.longitude
+        @address.latitude = @geolocation.latitude
         @address.save!
         
         @event.image = Image.make_from_upload(params[:event_image], @event.id) if new_image?

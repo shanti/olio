@@ -37,10 +37,6 @@ describe "User model: User" do
     @user.should have(1).errors_on(:email)
   end
   
-  it "should require an address (id)" do
-    @user.should have(1).errors_on(:address_id)
-  end
-
   it "should require a properly formatted phone number" do
     @user.should have(1).errors_on(:telephone)
     @user.telephone = "555"

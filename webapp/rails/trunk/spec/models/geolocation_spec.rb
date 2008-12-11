@@ -2,91 +2,40 @@ require File.dirname(__FILE__) + '/../spec_helper'
 
 describe Geolocation do
   before(:each) do
-    @geolocation = Geolocation.new
-  end
-
-  it "should be valid" do
-    #location = new_geolocation
-    #location.should be_valid
-  end
-
-  it "should not be valid" do
-    @geolocation.should_not be_valid
-  end
-  
-  # Basic requirements
-  it "should require a zip code" do
-    @geolocation.should have(1).errors_on(:zip)
-  end
-  
-  it "should require a city" do
-    @geolocation.should have(1).errors_on(:city)
-  end
-
-  it "should have a numerical latitude" do
-    location = Geolocation.new
-    
-    location.latitude = "ABC"
-    location.should have(1).errors_on(:latitude)
-    location.errors_on(:latitude).should == ["is not a number"]
-    location.latitude.should_not be_instance_of(Numeric)
-    
-    location.latitude = "`@="
-    location.should have(1).errors_on(:latitude)
-    location.errors_on(:latitude).should == ["is not a number"]
-    location.latitude.should_not be_instance_of(Numeric)
-    
-    location.latitude = -11.11111111111
-    location.should have(0).errors_on(:latitude)
-    location.latitude.should be_instance_of(Float)
+    Geolocation.url = 'http://localhost:8080/Web20Emulator/geocode?appid=gsd5f'
+    uri = "http://localhost:8080/Web20Emulator/geocode?appid=gsd5f&street=100+Main+St&city=Berkeley&state=CA&zip=94611"
+    Net::HTTP.stub!(:get).with(URI.parse(uri)).and_return <<EOF
+<?xml version="1.0" ?>
+<ResultSet xmlns="urn:yahoo:maps" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:yahoo:maps http://api.local.yahoo.com/MapsService/V1/GeocodeResponse.xsd">
+<Result precision="address">
+<Latitude>
+33.0000
+</Latitude><Longitude>
+-177.0000
+</Longitude><Address>
+100 Main St
+</Address><City>
+Berkeley
+</City><State>
+CA
+</State><zip>
+94611
+</zip><Country>
+USA
+</Country>
+</Result>
+</ResultSet>
+EOF
   end
   
-  it "should have a numerical longitude" do
-    location = Geolocation.new
-    
-    location.longitude = "Zsa123"
-    location.should have(1).errors_on(:longitude)
-    location.errors_on(:longitude).should == ["is not a number"]
-    location.longitude.should_not be_instance_of(Numeric)
-    
-    location.longitude = "114[]0"
-    location.should have(1).errors_on(:longitude)
-    location.errors_on(:longitude).should == ["is not a number"]
-    location.longitude.should_not be_instance_of(Numeric)
-    
-    location.longitude = -110.0
-    location.should have(0).errors_on(:longitude)
-    location.longitude.should be_instance_of(Float)
+  it "should find geolocation using web service" do
+    geo = Geolocation.new('100 Main St', 'Berkeley', 'CA', '94611')
+    geo.latitude.should == '33.0000'
+    geo.longitude.should == '-177.0000'
+    geo.address.should == '100 Main St'
+    geo.city.should == 'Berkeley'
+    geo.state.should == 'CA'
+    geo.country.should == 'USA'
+    geo.zip.should == '94611'
   end
-  
-  it "should have a valid latitude value" do
-    location = Geolocation.new
-    
-    location.latitude = -90.1
-    location.should have(1).errors_on(:latitude)
-    location.errors_on(:latitude).should == ["must be between -90 and 90 degrees"]
-    
-    location.latitude = 90.1
-    location.should have(1).errors_on(:latitude)
-    location.errors_on(:latitude).should == ["must be between -90 and 90 degrees"]
-    
-    location.latitude = 12
-    location.should have(0).errors_on(:latitude)
-  end
-  
-  it "should have a valid longitude value" do
-    location = Geolocation.new
-    
-    location.longitude = 180.1
-    location.should have(1).errors_on(:longitude)
-    location.errors_on(:longitude).should == ["must be between -180 and 180 degrees"]
-    
-    location.longitude = -180.1
-    location.should have(1).errors_on(:longitude)
-    location.errors_on(:longitude).should == ["must be between -180 and 180 degrees"]
-    
-    location.longitude = -89.0
-    location.should have(0).errors_on(:longitude)
-  end
-  
 end

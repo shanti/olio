@@ -5,11 +5,14 @@
 ENV['RAILS_ENV'] ||= 'production'
 
 # Specifies gem version of Rails to use when vendor/rails is not present
-RAILS_GEM_VERSION = '2.1.0' unless defined? RAILS_GEM_VERSION
+# RAILS_GEM_VERSION = '2.1.2' unless defined? RAILS_GEM_VERSION
 
 # Bootstrap the Rails environment, frameworks, and default configuration
 require File.join(File.dirname(__FILE__), 'boot')
 require 'hodel_3000_compliant_logger'
+
+IMAGE_STORE_PATH = 'public/images/uploaded'
+DOCUMENT_STORE_PATH = 'public/uploaded_files'
 
 Rails::Initializer.run do |config|
   # Settings in config/environments/* take precedence over those specified here
@@ -69,5 +72,3 @@ require 'uploadable'
 require 'will_paginate'
 require RAILS_ROOT + '/test/selenium_helper' if defined? SeleniumOnRails::FixtureLoader
 
-IMAGE_STORE_PATH = 'public/images/uploaded'
-DOCUMENT_STORE_PATH = 'public/uploaded_files'

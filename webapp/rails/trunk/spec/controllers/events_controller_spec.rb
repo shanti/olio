@@ -42,7 +42,6 @@ describe EventsController do
 
       it "should be successful for a zipcode" do
         session[:zipcode] = @zip
-        Geolocation.should_receive(:find_by_zip).with(@zip)
         do_get
       end
 
@@ -301,8 +300,19 @@ describe EventsController do
       @event.stub!(:set_date)
       
       @address = mock_model(Address)
+      @address.stub!(:street1).and_return('100 Main St')
+      @address.stub!(:city).and_return('Berkeley')
+      @address.stub!(:state).and_return('CA')
+      @address.stub!(:zip).and_return('94611')
+      @address.stub!(:latitude=)
+      @address.stub!(:longitude=)
       Address.stub!(:new).and_return(@address)
       
+      @geolocation = mock(Geolocation)
+      @geolocation.stub!(:latitude).and_return('33.0000')
+      @geolocation.stub!(:longitude).and_return('-177.0000')
+      Geolocation.stub!(:new).and_return(@geolocation)
+            
       @image = mock_model(Image)
       Image.stub!(:new).and_return(@image)
       @document = mock_model(Document)
@@ -412,11 +422,22 @@ describe EventsController do
     before(:each) do
       login
       @address = mock_model(Address)
+      @address.stub!(:street1).and_return('100 Main St')
+      @address.stub!(:city).and_return('Berkeley')
+      @address.stub!(:state).and_return('CA')
+      @address.stub!(:zip).and_return('94611')
+      @address.stub!(:latitude=)
+      @address.stub!(:longitude=)
       @controller.stub!(:'verified_request?').and_return(:true)
       @event = mock_model(Event, :to_param => "1", :address => @address)
       Event.stub!(:find).and_return(@event)
       Event.stub!(:find_by_id).with("1").and_return(@event)
       @event.stub!(:set_date)
+
+      @geolocation = mock(Geolocation)
+      @geolocation.stub!(:latitude).and_return('33.0000')
+      @geolocation.stub!(:longitude).and_return('-177.0000')
+      Geolocation.stub!(:new).and_return(@geolocation)
           
       @image = mock_model(Image)
       Image.stub!(:new).and_return(@image)

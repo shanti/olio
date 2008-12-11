@@ -1,31 +1,34 @@
-require 'spec/version'
 require 'spec/matchers'
 require 'spec/expectations'
 require 'spec/example'
-require 'spec/extensions'
 require 'spec/runner'
 require 'spec/adapters'
-
-if Object.const_defined?(:Test)
-  require 'spec/interop/test'
-end
+require 'spec/version'
+require 'spec/dsl'
 
 module Spec
-  class << self
-    def run?
-      @run || rspec_options.examples_run?
-    end
-
-    def run
-      return true if run?
-      result = rspec_options.run_examples
-      @run = true
-      result
-    end
-    attr_writer :run
-    
-    def exit?
-      !Object.const_defined?(:Test) || Test::Unit.run?
-    end
+  def self.test_unit_defined?
+    Object.const_defined?(:Test) && Test.const_defined?(:Unit) && Test::Unit.respond_to?(:run?)
   end
+
+  def self.run?
+    Runner.options.examples_run?
+  end
+
+  def self.run
+    return true if run?
+    Runner.options.run_examples
+  end
+  
+  def self.exit?
+    !test_unit_defined? || Test::Unit.run?
+  end
+
+  def self.spec_command?
+    $0.split('/').last == 'spec'
+  end
+end
+
+if Spec::test_unit_defined?
+  require 'spec/interop/test'
 end
