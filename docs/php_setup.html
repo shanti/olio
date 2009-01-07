@@ -53,11 +53,9 @@ separate physical or virtual machines. Keep in mind though that the
 bulk of the CPU is consumed in the web application tier (apache/php).</P>
 <P STYLE="margin-bottom: 0in">In the following sections, we will go
 over the steps needed to configure each component :</P>
-<P STYLE="margin-bottom: 0in"><BR>
+<P STYLE="margin-bottom: 0in">
 </P>
 <P STYLE="margin-bottom: 0in">Downloading the source</P>
-<P STYLE="margin-bottom: 0in"><BR>
-</P>
 <P><A HREF="#setupDriver"><U>Setting up the driver</U></A></P>
 <P><A HREF="#installWebApp">Installing the Web Application</A></P>
 <P><A HREF="#setupDB">Setting up the database</A></P>
@@ -287,9 +285,9 @@ describe how to install it :</P>
 	on the driver machine. The install directory doesn't matter – we
 	will refer to it as $TOMCAT_HOME. 
 	</P>
-	<LI><P>Build the Web20Emulator.war file (NOTE: source code is
-	currently missing in repository)</P>
-	<LI><P>Copy the Web20Emulator.war file from the Web20Kit in
+	<LI><P>Build the <i>geocoder.war</i> file by going to the 'geocoder' directory
+	and following the instructions in the README file.</P>
+	<LI><P>Copy the geocoder.war file from the geocoder/dist directory to
 	$TOMCAT_HOME/webapps.</P>
 	<LI><P>Start Tomcat using $TOMCAT_HOME/bin/startup.sh.</P>
 </OL>

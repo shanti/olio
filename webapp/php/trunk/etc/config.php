@@ -38,7 +38,7 @@ $web20config['localfsRoot'] = '/filestore';
 
 $web20config['memcachedHosts'] = array('MEMCACHED_HOST:port', 'MEMCACHED_HOST:port'); // memcached host ip
 
-$web20config['geocoderURL'] = 'http://GEOCODER_HOST:8080/Web20Emulator/geocode'; //Geocoder URL
+$web20config['geocoderURL'] = 'http://GEOCODER_HOST:8080/geocoder/geocode'; //Geocoder URL
 
 class Web20 {
     public static $config;
