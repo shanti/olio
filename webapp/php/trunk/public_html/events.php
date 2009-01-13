@@ -28,7 +28,12 @@ $se= $_REQUEST['socialEventID'];
 $comments = $_POST['comments'];
 $cid = $_POST['editingcid'];
 $editcomments = $_POST['editcomments'];
-$connection = DBConnection::getInstance();
+if (isset($_POST['commentsratingsubmit']) || 
+    (isset($_POST['editcommentsratingsubmit']) && isset($_POST['editingcid']))) {
+    $connection = DBConnection::getWriteInstance();
+} else {
+    $connection = DBConnection::getInstance();
+}
 $tagslist = Tags_Controller::getInstance();
 $events = Events_Controller::getInstance();
 $username = $HTTP_SESSION_VARS["uname"];
@@ -80,11 +85,10 @@ while($listqueryresult->next()) {
 }
 unset($listqueryresult);
 
-$editCRforCid = $_POST['editcommentsratingsubmit'].$cid;
 if (isset($_POST['commentsratingsubmit'])) {
 	 $insertSql = "insert into COMMENTS_RATING (username,socialeventid,comments,ratings) values ('$username','$se','$comments','$rating')";
         $connection->exec($insertSql);
-}else if (isset($editCRforCid)) {
+} else if (isset($_POST['editcommentsratingsubmit']) && isset($_POST['editingcid'])) {
 	 $updateSql = "update COMMENTS_RATING set comments='$editcomments', ratings='$rating' where username='$username' and socialeventid='$se' and commentid='$cid'";
          $connection->exec($updateSql);
 }

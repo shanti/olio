@@ -19,7 +19,7 @@
     
 session_start();    
 require_once("../etc/config.php");
-$connection = DBConnection::getInstance();
+$connection = DBConnection::getWriteInstance();
 
 // 1. Get data from submission page.
 	$description=$_POST['description'];

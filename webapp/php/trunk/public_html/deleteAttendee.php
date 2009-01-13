@@ -25,12 +25,16 @@
     
 session_start();
 require_once("../etc/config.php");
-$connection = DBConnection::getInstance();
 $se = $_REQUEST['id'];
 $username = $HTTP_SESSION_VARS["uname"];
 if(!is_null($username)){
+    $connection = DBConnection::getWriteInstance();
     $deleteuser = "delete from PERSON_SOCIALEVENT where username='$username' and socialeventid='$se'";
     $connection->exec($deleteuser);
+}
+
+if (!isset($connection)) {
+    $connection = DBConnection::getInstance();
 }
 $listquery = "select username from PERSON_SOCIALEVENT where socialeventid = '$se'";
 $listqueryresult = $connection->query($listquery);

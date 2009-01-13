@@ -17,11 +17,37 @@
  * limitations under the License.
  */ 
     
-abstract class DBConnection
-{
+abstract class DBConnection {
+
+    var $writeInstance;
+    var $dbTarget;
+
+
     static function getInstance() {
         $classname = Web20::$config['dbDriver'] . 'Connection';
-        return new $classname;
+        $instance = new $classname;
+        $instance->writeInstance = false;
+        return $instance;
+    }
+
+    static function getWriteInstance() {
+        $classname = Web20::$config['dbDriver'] . 'Connection';
+        $instance = new $classname;
+        $instance->writeInstance = true;
+        return $instance;
+    }
+
+    function selectInstance() {
+        $this->dbTarget = Web20::$config['dbTarget'];
+        if (is_array($this->dbTarget)) {
+            if ($this->writeInstance || count($this->dbTarget) == 1) {
+                $this->dbTarget = $this->dbTarget[0];
+            } else {
+                $idx = (getmypid() % (count($this->dbTarget) - 1)) + 1;
+                // $idx = rand(1, count($this->dbTarget) - 1);
+                $this->dbTarget = $this->dbTarget[$idx];
+            }
+        }
     }
     
     abstract function query();

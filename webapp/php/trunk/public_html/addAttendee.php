@@ -23,18 +23,22 @@
  */
 session_start();
 require_once("../etc/config.php");
-$connection = DBConnection::getInstance();
 $se = $_REQUEST['id'];
 $username = $HTTP_SESSION_VARS["uname"];
-if(!is_null($username)){
+if (!is_null($username)) {
+    $connection = DBConnection::getWriteInstance();
     $checkuserIfAttending = "select count(username) as count from PERSON_SOCIALEVENT where socialeventid = '$se' and username = '$username'";
     $result = $connection->query($checkuserIfAttending);
     $row = $result->getArray();
     $userExists = $row['count'];
-    if($userExists <= 0){
+    if ($userExists <= 0) {
         $insertuser = "insert into PERSON_SOCIALEVENT values('$username','$se')";
         $connection->exec($insertuser);
     }
+}
+
+if (!isset($connection)) { // If connection not there, we're read-only.
+    $connection = DBConnection::getInstance();
 }
 $listquery = "select username from PERSON_SOCIALEVENT where socialeventid = '$se'";
 $listqueryresult = $connection->query($listquery);

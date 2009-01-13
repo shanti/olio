@@ -18,7 +18,7 @@
  */ 
         
 require_once("../etc/config.php");
-$connection = DBConnection::getInstance();
+$connection = DBConnection::getWriteInstance();
 
 if(isset($_POST['addpersonsubmit'])) {
 	//insert into person table using the data from addPerson page

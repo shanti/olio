@@ -25,7 +25,7 @@
 
 session_start();
 require_once("../etc/config.php");
-$connection = DBConnection::getInstance();
+$connection = DBConnection::getWriteInstance();
 $events = Events_Controller::getInstance();
 $dateFormat = "l,  F j,  Y,  h:i A";
 $commentid = $_REQUEST['commentid'];

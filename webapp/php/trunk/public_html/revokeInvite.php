@@ -24,7 +24,7 @@
  */ 
 session_start();
 require_once("../etc/config.php");
-$connection = DBConnection::getInstance();
+$connection = DBConnection::getWriteInstance();
 $friends = Users_Controller::getInstance();
 $person = $_REQUEST['person'];
 $friend = $_REQUEST['friend'];

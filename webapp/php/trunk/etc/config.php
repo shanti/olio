@@ -23,6 +23,10 @@ $web20config['dbDriver'] = 'PDO';  // Which DB driver to use.
 
 // $web20config['dbTarget'] = 'myodbc3'; // ODBC target in odbc.ini.
 $web20config['dbTarget'] = 'mysql:host=localhost;dbname=web20load'; // PDO target.
+// For master/slave clusters, specify dbTarget as an array, listing the master first.
+// $web20config['dbTarget'] = array('mysql:host=master;dbname=web20load',
+//                                  'mysql:host=slave1;dbname=web20load',
+//                                  'mysql:host=slave2;dbname=web20load');
 
 $web20config['dbUser'] = 'web20'; // DB user name.
 

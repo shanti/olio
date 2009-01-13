@@ -24,22 +24,23 @@
  */
 
 session_start();
-require_once("../etc/config.php");
-$connection = DBConnection::getInstance();
-$eventlist = Events_Controller::getInstance();
-$tagcloud = Tags_Controller::getInstance();
-$url = RequestUrl::getInstance();
+require("../etc/config.php");
+
 $signedinuser = $HTTP_SESSION_VARS["uname"];
 $page= $_REQUEST['page'];
 $flag = $_REQUEST['flag'];
 
-$href = $url->getGetRequest();
-if(!is_null($page)){
-$href = substr($href, 0, strrpos($href,"&"));
-}
+$url = RequestUrl::getInstance();
 
-if($href==""){
-$href = "?";
+$href = $url->getGetRequest();
+if(!is_null($page)) {
+    $href = substr($href, 0, strrpos($href,"&"));
+} // else {
+  //  error_log('$page is null.',0);
+  //}
+
+if($href=="") {
+    $href = "?";
 }
 
 if(!is_null($page)){
@@ -53,47 +54,185 @@ if(!is_null($page)){
     $next_page = $HTTP_SESSION_VARS["currentpage"] + 1;
     $offset = ($page * 10) - 10;
     if($offset < 0) {
-    $offset = 0;
+        $offset = 0;
     }
     if($prev_page < 0) {
-    $prev_page = 1;
+        $prev_page = 1;
     }
     if($next_page >  $numPages) {
-    $next_page = $numPages;
+        $next_page = $numPages;
     }
-}else{
+    $cacheType = 0;
+} else {
+    // error_log('$page is still null.',0);
     $zipcode = $_REQUEST['zipcode'];
     $order = $_REQUEST['order'];
     $m= $_REQUEST['month'];
     $d= $_REQUEST['day'];
     $y= $_REQUEST['year'];
 
-    if(!is_null($_REQUEST['month']) && !is_null($_REQUEST['day'])  && !is_null($_REQUEST['year']) ){
-    $eventdate= $y."-".$m."-".$d;
-    }
-    $HTTP_SESSION_VARS["eventdate"]= $eventdate;
-    $HTTP_SESSION_VARS["zipcode"] = $zipcode;
-    $HTTP_SESSION_VARS["order"] = $order;
-    $numPages  = $eventlist->getNumPages($zipcode,$eventdate,$connection);
-    $HTTP_SESSION_VARS["numPages"] = $numPages;
+    if(!is_null($_REQUEST['month']) && !is_null($_REQUEST['day'])  &&
+            !is_null($_REQUEST['year'])) {
+        $eventdate= $y."-".$m."-".$d;
+    }    
+    if (is_null($zipcode) && is_null($order) &&
+            !isset($eventdate)) {
+        //if (is_null($signedinuser)) { // Get whole page if not logged in...
+        if($HTTP_SESSION_VARS["uname"] == ''){
+            $cacheType = 2;
+        } else { // And just the page content if logged in.
+            $cacheType = 1;
+        }
+    } else {
+        $HTTP_SESSION_VARS["eventdate"]= $eventdate;
+        $HTTP_SESSION_VARS["zipcode"] = $zipcode;
+        $HTTP_SESSION_VARS["order"] = $order;
 
+        $connection = DBConnection::getInstance();
+        $eventlist = Events_Controller::getInstance();
+        $numPages  = $eventlist->getNumPages($zipcode,$eventdate,$connection);
+        $tagcloud = Tags_Controller::getInstance();
+        $HTTP_SESSION_VARS["numPages"] = $numPages;
+        // error_log("numPages = $numPages",0);
+        $cacheType = 0;
+    }
     $prev_page = 1;
     $next_page = 2;
     $curr_page = 1;
     $offset = 0;
     session_unregister ("currentpage");
 }
-$indexEvents = $eventlist->getIndexEvents($zipcode,$order,$eventdate,$offset,null,$signedinuser,$connection);
 
-ob_start();
-require("../views/paginate.php");
-$paginateView = ob_get_clean();
-
-ob_start();
-require("../views/index.php");
-$fillContent = ob_get_clean();
-if($flag == "authenticated"){
-$fillMessage ="<font color=green>Successfully logged in!</font>";
+switch ($cacheType) {
+    case 0: noCachePage(); break;
+    case 1: contentCachePage(); break;
+    case 2: fullCachePage();
 }
-require_once("../views/site.php");
+
+
+function fullCachePage() {
+    // error_log('fullCachePage Called',0);
+    global $signedinuser, $page, $flag, $url, $href, $eventdate, $zipcode;
+    global $order, $numPages, $curr_page, $prev_page, $next_page, $offset;
+    global $HTTP_SESSION_VARS;
+
+    // error_log('Accesssing Cache subsystem to collect the page if possible.',0);
+    $cache = CacheSystem::getInstance();
+    $pageContent = $cache->get('Home');
+    // error_log("Checking the Cache status for logged in and normal Home pages",0);
+    if ($pageContent != '') {
+        echo $pageContent;
+        // error_log("Cache hit for Home page...",0);
+    }
+
+    $needsRefresh = false;
+    for (;;) {
+        // error_log('refresh logic accessed.');
+        if ($cache->needsRefresh('Home')) {
+            $needsRefresh = true;
+            // error_log('Home needs refresh.');
+            break;
+        } else if ($pageContent == '') {
+            error_log('index.php waiting for cache.');
+            usleep(200000);
+            $pageContent = $cache->get('Home');
+            if ($pageContent != '') {
+                echo $pageContent;
+                break;
+            } 
+        } else {
+            // error_log('.');
+            break;
+        }
+    }
+
+    if ($needsRefresh) {
+        // error_log("Regenerating page................");
+        $connection = DBConnection::getInstance();
+        $eventlist = Events_Controller::getInstance();
+        $numPages  = $eventlist->getNumPages($zipcode,$eventdate,$connection);
+        $indexEvents = $eventlist->getIndexEvents($zipcode,$order,$eventdate,
+                $offset,null,$signedinuser,$connection);
+        $tagcloud = Tags_Controller::getInstance();
+
+        ob_start();
+        require("../views/paginate.php");
+        $paginateView = ob_get_clean();
+
+        ob_start();
+        require("../views/index.php");
+        $fillContent = ob_get_clean();
+
+        ob_start();
+
+        require("../views/site.php");
+
+        // error_log('refreshing cache contents',0);
+        $newPageContent = ob_get_contents();
+        $cache->set('Home', $newPageContent, 0, 0);
+        $cache->set('HomeContent', $fillContent, 0, 0);
+        $cache->doneRefresh('Home', 300);
+
+        if ($pageContent == '') { // Not displayed yet, just display now.
+            // error_log("Display newly generated page");
+            ob_end_flush();
+        } else {
+            // error_log("Display of cache generated page has occured");
+            ob_end_clean(); // Otherwise just don't display the new one.
+        }
+    }
+}
+
+function contentCachePage() {
+    // error_log('ContentCachePage Called',0);
+    global $signedinuser, $page, $flag, $url, $href, $eventdate, $zipcode;
+    global $order, $numPages, $curr_page, $prev_page, $next_page, $offset;
+    global $HTTP_SESSION_VARS;
+
+    $cache = CacheSystem::getInstance();
+    for (;;) {
+        $fillContent = $cache->get('HomeContent');
+        if ($fillContent != '') {
+            break;
+        }
+        usleep(20000);
+        error_log('Retry loading fillContent from cache.');
+    }
+
+    if ($flag == "authenticated") {
+        $fillMessage ="<font color=green>Successfully logged in!</font>";
+    }
+    require("../views/site.php");
+}
+
+function noCachePage() {
+    // error_log('noCachePage Called',0);
+    global $signedinuser, $page, $flag, $url, $href, $eventdate, $zipcode;
+    global $order, $numPages, $curr_page, $prev_page, $next_page, $offset;
+    global $HTTP_SESSION_VARS;
+
+    $connection = DBConnection::getInstance();
+    $eventlist = Events_Controller::getInstance();
+    $tagcloud = Tags_Controller::getInstance();
+
+    if (!is_null($page)) {
+        $numPages  = $eventlist->getNumPages($zipcode,$eventdate,$connection);
+    }
+    $indexEvents = $eventlist->getIndexEvents($zipcode,$order,$eventdate,
+                                        $offset,null,$signedinuser,$connection);
+
+    ob_start();
+    require("../views/paginate.php");
+    $paginateView = ob_get_clean();
+
+    ob_start();
+    require("../views/index.php");
+    $fillContent = ob_get_clean();
+
+    if($flag == "authenticated") {
+        $fillMessage ="<font color=green>Successfully logged in!</font>";
+    }
+
+    require("../views/site.php");
+}
 ?>

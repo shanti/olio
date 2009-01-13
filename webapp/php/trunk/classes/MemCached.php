@@ -68,18 +68,15 @@ class MemCached extends CacheSystem {
 	    $updateSema = $key . 'UpdateSema';
 	    if (!$this->memcache->get($updateSema)) {
 	        $updateLock = $key . 'UpdateLock';
-	        if (!$this->memcache->get($updateLock)) {
-	            $hostPid = php_uname('n') . ':' . getmypid();
-	            // The updateLock times out in 5 secs.
-	            $this->memcache->set($updateLock, $hostPid, 0, 5);
-	            if ($this->memcache->get($updateLock) == $hostPid) {
-                        error_log('Verified updateLock');
-	                return true;
-                    }
-	        }
+	        $hostPid = php_uname('n') . ':' . getmypid();
+            if ($this->memcache->add($updateLock, $hostPid, 0, 5)) {
+                error_log($hostPid." obtained ".$updateLock);
+                return true;
+            }
 	    }
 	    return false;
-	}
+    }
+
 	
 	function doneRefresh($key, $timeToNextRefresh) {
 	    $updateSema = $key . 'UpdateSema';
@@ -90,6 +87,7 @@ class MemCached extends CacheSystem {
 	    	                    ' not locked by this process!');
 	    $this->memcache->set($updateSema, 1, 0, $timeToNextRefresh);
 	    $this->memcache->delete($updateLock);
+        error_log($hostPid." released ".$updateLock);
 	}
 }
 ?>

@@ -21,6 +21,18 @@ class ODBCConnection extends DBConnection {
 
     var $connection;
 
+    private function ensureConnection() {
+        if (!isset($this->dbTarget)) {
+            $this->selectInstance();
+        }
+    	if (!isset($this->connection)) {
+            $this->connection = odbc_connect($this->dbTarget,
+                Web20::$config['dbUser'], Web20::$config['dbPass']);
+            if (is_resource($this->connection))
+                throw new Exception("Unable to connect ".$this->dbTarget."!");
+        }
+    }
+
     function query() {
     	if (func_num_args() > 1) {
     	    $args = func_get_args();
@@ -30,13 +42,7 @@ class ODBCConnection extends DBConnection {
     	} else {
     		$sql = func_get_arg(0);
     	}
-    	if (!isset($this->connection)) {
-            $this->connection = odbc_connect(Web20::$config['dbTarget'],
-                Web20::$config['dbUser'], Web20::$config['dbPass']);
-            if (is_resource($this->connection))
-                throw new Exception("Unable to connect " .
-                                     Web20::$config['dbTarget']."!");
-        }
+        $this->ensureConnection();
         if (isset($args)) {
         	error_log("You are using prepared statements. This is extremely slow!");
         	$result = odbc_prepare($this->connection, $sql);
@@ -65,13 +71,7 @@ class ODBCConnection extends DBConnection {
     	} else {
     		$sql = func_get_arg(0);
     	}
-    	if (!isset($this->connection)) {
-            $this->connection = odbc_connect(Web20::$config['dbTarget'],
-                Web20::$config['dbUser'], Web20::$config['dbPass']);
-            if (!$this->connection)
-                throw new Exception("Unable to connect " .
-                                     Web20::$config['dbTarget'] . "!");
-        }
+        $this->ensureConnection();
         if (isset($args)) {
         	$result = odbc_prepare($this->connection, $sql);
         	if (!odbc_execute($result, $args))

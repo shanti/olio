@@ -22,16 +22,18 @@ class PDOConnection extends DBConnection {
     var $connection;
     
     private function ensureConnection() {
+        if (!isset($this->dbTarget)) {
+            $this->selectInstance();
+        }
     	if (!isset($this->connection)) {
-            $this->connection = new PDO(Web20::$config['dbTarget'],
+            $this->connection = new PDO($this->dbTarget,
                 Web20::$config['dbUser'], Web20::$config['dbPass'], 
                 array(PDO::ATTR_PERSISTENT => true));
             $this->connection->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
             $this->connection->setAttribute( // throw exception on error.
                 PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);                
             if (!$this->connection)
-                throw new Exception("Unable to connect " .
-                                     Web20::$config['dbTarget']."!");
+                throw new Exception("Unable to connect " . $this->dbTarget."!");
         }    	
     }
     
