@@ -40,9 +40,9 @@ class Events_Controller {
     function getHomePageEvents($zipcode,$order,$offset){
             if(is_null($zipcode) || is_null($order) ) {
               $query = "select socialeventid,title,summary,imagethumburl,createdtimestamp,eventdate,submitterusername From SOCIALEVENT where  eventtimestamp>=CURRENT_TIMESTAMP ORDER BY eventdate ASC limit $offset,10";
-            }else if(!is_null($zipcode)  && !is_null($order) && $order = "created_at"){
+            }else if(!is_null($zipcode)  && !is_null($order) && $order == "created_at"){
               $query = "select socialeventid,title,summary,imagethumburl,createdtimestamp,eventdate,submitterusername From SOCIALEVENT as se,ADDRESS as a where se.eventtimestamp>=CURRENT_TIMESTAMP and se.ADDRESS_addressid=a.addressid and a.zip='$zipcode' ORDER BY se.createdtimestamp DESC limit $offset,10";
-            }else if(!is_null($zipcode)  && !is_null($order) && $order = "event_date"){
+            }else if(!is_null($zipcode)  && !is_null($order) && $order == "event_date"){
               $query = "select socialeventid,title,summary,imagethumburl,createdtimestamp,eventdate,submitterusername From SOCIALEVENT as se,ADDRESS as a where se.eventtimestamp>=CURRENT_TIMESTAMP and se.ADDRESS_addressid=a.addressid and a.zip='$zipcode' ORDER BY se.eventdate ASC limit $offset,10";
             }      
             return $query;            
