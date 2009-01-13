@@ -37,11 +37,11 @@ if(!is_null($page)){
 
 //Start Pagination
 if(!is_null($page)){
-    $numPages  =$HTTP_SESSION_VARS["numPages"];
-    $HTTP_SESSION_VARS["currentpage"]=$page;
-    $curr_page = $HTTP_SESSION_VARS["currentpage"];
-    $prev_page = $HTTP_SESSION_VARS["currentpage"] - 1;
-    $next_page = $HTTP_SESSION_VARS["currentpage"] + 1;
+    $numPages  =$_SESSION["numPages"];
+    $_SESSION["currentpage"]=$page;
+    $curr_page = $_SESSION["currentpage"];
+    $prev_page = $_SESSION["currentpage"] - 1;
+    $next_page = $_SESSION["currentpage"] + 1;
     $offset = ($page * 10) - 10;
     if($offset < 0) {
     $offset = 0;
@@ -59,7 +59,7 @@ if(!is_null($page)){
     $count = $row['count'];
     unset($result);
     $numPages  = ceil($count / 10);;
-    $HTTP_SESSION_VARS["numPages"] = $numPages;
+    $_SESSION["numPages"] = $numPages;
     $prev_page = 1;
     $next_page = 2;
     $curr_page = 1;

@@ -65,8 +65,8 @@ $connection = DBConnection::getWriteInstance();
 	unset($idres);
 
 // 4. Insert event and get the event id.
-        $usrnm = $HTTP_SESSION_VARS["uname"];
-        $evid =  $HTTP_SESSION_VARS["addEventSE"];
+        $usrnm = $_SESSION["uname"];
+        $evid =  $_SESSION["addEventSE"];
 
         if (isset($_POST['addeventsubmit'])) {
 	$insertse = "insert into SOCIALEVENT (title, description,summary, submitterUserName, ADDRESS_addressid,telephone, timezone, eventtimestamp, eventdate) values ('$title', '$description','$summary', '$usrnm', '$addrid', '$telephone', '$timezone', '$eventtime', '$eventdate')";

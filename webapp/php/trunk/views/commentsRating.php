@@ -26,7 +26,7 @@
  */
 ?>
     <li class="event_comment" id="<? echo $tmp_commentid;?>">
-    <? if ($tmp_uname == $HTTP_SESSION_VARS["uname"]) { ?>
+    <? if ($tmp_uname == $_SESSION["uname"]) { ?>
     You
     <? }else{ 
        echo $tmp_uname;
@@ -77,7 +77,7 @@
     <p id="comment_text<?php echo $tmp_commentid;?>"><?=$tmp_uname_comments ?></p>
   
   <div id="comment_links<?php echo $tmp_commentid;?>">
-  <? if ($tmp_uname == $HTTP_SESSION_VARS["uname"]) { ?>
+  <? if ($tmp_uname == $_SESSION["uname"]) { ?>
             <a href="#edit" id="edit<?php echo $tmp_commentid;?>" class='edit_comment' style='color:#999;' onclick="return ShowHideLayer('<?php echo "editing".$tmp_commentid;?>');">Edit</a>
             or
             <a href="#delete" id="delete<?php echo $tmp_commentid;?>" onclick="deleteCR(<?php echo $tmp_commentid;?>,<?php echo $se;?>);" class='edit_comment' style='color:#999;' >Delete</a>

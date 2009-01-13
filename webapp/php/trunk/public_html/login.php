@@ -39,13 +39,13 @@ if ($_POST['submit'] == "Login") {
           session_register("uname");
           $uname=$un;
           $sid=session_id();
-          $HTTP_SESSION_VARS["uname"]=$uname;
-          $HTTP_SESSION_VARS["sid"]=$sid;
+          $_SESSION["uname"]=$uname;
+          $_SESSION["sid"]=$sid;
           $success="authenticated";
     }
     unset($result);
     $numFriendshipReq = $register->numFriendshipRequests($un,$connection);
-    $HTTP_SESSION_VARS["friendshipreqs"] = $numFriendshipReq;
+    $_SESSION["friendshipreqs"] = $numFriendshipReq;
 
 }
 if(!is_null($success)){

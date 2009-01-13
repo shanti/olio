@@ -67,7 +67,7 @@
 
   <div id="main_event_details">
     <h1 class="inline"><?=$title ?></h1>
-<? if ($submitter == $HTTP_SESSION_VARS["uname"]) { ?>
+<? if ($submitter == $_SESSION["uname"]) { ?>
             <form method="post" action="addEvent.php?socialEventID=<?echo $se;?>" class="button-to">
             <div>
             <input type="submit" value="Edit" />
@@ -102,7 +102,7 @@
 <? if ($unattend) { ?>
 <input name="unattend" type="button" value="Unattend" onclick="deleteAttendee();"/>
 <? } ?>
-<? if (!$unattend && !is_null($HTTP_SESSION_VARS["uname"])) { ?>
+<? if (!$unattend && !is_null($_SESSION["uname"])) { ?>
 <input name="attend" type="button" value="Attend" onclick="addAttendee();"/>
 <? } ?>
 <br/>
@@ -158,7 +158,7 @@ map.addOverlay(marker);
 </ol>
 </div>
 <div id="comment_add_link">
-        <? if(!is_null($HTTP_SESSION_VARS["uname"])){ ?>
+        <? if(!is_null($_SESSION["uname"])){ ?>
         <a href="#comment" id="commentsRatingToggle" onclick="return ShowHideLayer('commentsRatingBox');">Add a comment</a>
         <?} else {?>
     <br />

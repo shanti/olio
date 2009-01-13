@@ -52,7 +52,7 @@ $country = $row['country'];
 unset($result);
 }
 
-if(!is_null($uname) && ( is_null($HTTP_SESSION_VARS["uname"]) || !($HTTP_SESSION_VARS["uname"]==$uname) ) ){
+if(!is_null($uname) && ( is_null($_SESSION["uname"]) || !($_SESSION["uname"]==$uname) ) ){
 $fillMessage = "<font color=red>Failed to edit user.</font>";
 }else{
 ob_start();

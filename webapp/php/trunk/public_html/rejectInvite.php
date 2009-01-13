@@ -30,9 +30,9 @@ $person = $_REQUEST['person'];
 $friend = $_REQUEST['friend'];
 $rejectSql = "delete from PERSON_PERSON where person_username='$person' and friends_username='$friend'";
 $connection->exec($rejectSql);
-$HTTP_SESSION_VARS["friendshipreqs"]=$friends->numFriendshipRequests($person,$connection);
+$_SESSION["friendshipreqs"]=$friends->numFriendshipRequests($person,$connection);
 $incomingRequests = $friends->incomingRequests($person,$connection);
 echo "<font color=green>You rejected ". $friend."'s friendship request.</font>\n";
-echo "friendship requests (".$HTTP_SESSION_VARS["friendshipreqs"].")\n";
+echo "friendship requests (".$_SESSION["friendshipreqs"].")\n";
 echo $incomingRequests ;
 ?>

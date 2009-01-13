@@ -29,9 +29,9 @@ $person = $_REQUEST['person'];
 $friend = $_REQUEST['friend'];
 $approveSql = "update PERSON_PERSON set is_accepted=1 where person_username='$person' and friends_username='$friend'";
 $connection->exec($approveSql);
-$HTTP_SESSION_VARS["friendshipreqs"]=$friends->numFriendshipRequests($person,$connection);
+$_SESSION["friendshipreqs"]=$friends->numFriendshipRequests($person,$connection);
 $incomingRequests = $friends->incomingRequests($person,$connection);
 $friendCloud = $friends->getFriendCloud($person,$connection);
-echo "friendship requests (".$HTTP_SESSION_VARS["friendshipreqs"].")\n";
+echo "friendship requests (".$_SESSION["friendshipreqs"].")\n";
 echo $friendCloud."\n".$incomingRequests;
 ?>

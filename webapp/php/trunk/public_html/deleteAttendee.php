@@ -26,7 +26,7 @@
 session_start();
 require_once("../etc/config.php");
 $se = $_REQUEST['id'];
-$username = $HTTP_SESSION_VARS["uname"];
+$username = $_SESSION["uname"];
 if(!is_null($username)){
     $connection = DBConnection::getWriteInstance();
     $deleteuser = "delete from PERSON_SOCIALEVENT where username='$username' and socialeventid='$se'";
@@ -38,13 +38,13 @@ if (!isset($connection)) {
 }
 $listquery = "select username from PERSON_SOCIALEVENT where socialeventid = '$se'";
 $listqueryresult = $connection->query($listquery);
-$username = $HTTP_SESSION_VARS["uname"];
+$username = $_SESSION["uname"];
 while($listqueryresult->next()) {
         $tmp_uname = $listqueryresult->get(1);
         $attendeeList = $attendeeList." ".'<a href="users.php?username='.$tmp_uname.'">'.$tmp_uname.'</a><br />';
 }
-$numofattendees = $HTTP_SESSION_VARS["numofattendees"] - 1;
-$HTTP_SESSION_VARS["numofattendees"] = $numofattendees;
+$numofattendees = $_SESSION["numofattendees"] - 1;
+$_SESSION["numofattendees"] = $numofattendees;
 echo '<h2 class="smaller_heading">'.$numofattendees.' Attendees:</h2><br/><input name="attend" type="button" value="Attend" onclick="addAttendee();"/><br/><div id="attendees">'.$attendeeList.'</div>';
 unset($listqueryresult);
 ?>

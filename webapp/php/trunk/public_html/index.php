@@ -26,7 +26,7 @@
 session_start();
 require("../etc/config.php");
 
-$signedinuser = $HTTP_SESSION_VARS["uname"];
+$signedinuser = $_SESSION["uname"];
 $page= $_REQUEST['page'];
 $flag = $_REQUEST['flag'];
 
@@ -44,14 +44,14 @@ if($href=="") {
 }
 
 if(!is_null($page)){
-    $eventdate=$HTTP_SESSION_VARS["eventdate"];
-    $zipcode=$HTTP_SESSION_VARS["zipcode"];
-    $order=$HTTP_SESSION_VARS["order"];
-    $numPages  =$HTTP_SESSION_VARS["numPages"];
-    $HTTP_SESSION_VARS["currentpage"]=$page;
-    $curr_page = $HTTP_SESSION_VARS["currentpage"];
-    $prev_page = $HTTP_SESSION_VARS["currentpage"] - 1;
-    $next_page = $HTTP_SESSION_VARS["currentpage"] + 1;
+    $eventdate=$_SESSION["eventdate"];
+    $zipcode=$_SESSION["zipcode"];
+    $order=$_SESSION["order"];
+    $numPages  =$_SESSION["numPages"];
+    $_SESSION["currentpage"]=$page;
+    $curr_page = $_SESSION["currentpage"];
+    $prev_page = $_SESSION["currentpage"] - 1;
+    $next_page = $_SESSION["currentpage"] + 1;
     $offset = ($page * 10) - 10;
     if($offset < 0) {
         $offset = 0;
@@ -78,21 +78,21 @@ if(!is_null($page)){
     if (is_null($zipcode) && is_null($order) &&
             !isset($eventdate)) {
         //if (is_null($signedinuser)) { // Get whole page if not logged in...
-        if($HTTP_SESSION_VARS["uname"] == ''){
+        if($_SESSION["uname"] == ''){
             $cacheType = 2;
         } else { // And just the page content if logged in.
             $cacheType = 1;
         }
     } else {
-        $HTTP_SESSION_VARS["eventdate"]= $eventdate;
-        $HTTP_SESSION_VARS["zipcode"] = $zipcode;
-        $HTTP_SESSION_VARS["order"] = $order;
+        $_SESSION["eventdate"]= $eventdate;
+        $_SESSION["zipcode"] = $zipcode;
+        $_SESSION["order"] = $order;
 
         $connection = DBConnection::getInstance();
         $eventlist = Events_Controller::getInstance();
         $numPages  = $eventlist->getNumPages($zipcode,$eventdate,$connection);
         $tagcloud = Tags_Controller::getInstance();
-        $HTTP_SESSION_VARS["numPages"] = $numPages;
+        $_SESSION["numPages"] = $numPages;
         // error_log("numPages = $numPages",0);
         $cacheType = 0;
     }
@@ -114,7 +114,6 @@ function fullCachePage() {
     // error_log('fullCachePage Called',0);
     global $signedinuser, $page, $flag, $url, $href, $eventdate, $zipcode;
     global $order, $numPages, $curr_page, $prev_page, $next_page, $offset;
-    global $HTTP_SESSION_VARS;
 
     // error_log('Accesssing Cache subsystem to collect the page if possible.',0);
     $cache = CacheSystem::getInstance();
@@ -187,7 +186,6 @@ function contentCachePage() {
     // error_log('ContentCachePage Called',0);
     global $signedinuser, $page, $flag, $url, $href, $eventdate, $zipcode;
     global $order, $numPages, $curr_page, $prev_page, $next_page, $offset;
-    global $HTTP_SESSION_VARS;
 
     $cache = CacheSystem::getInstance();
     for (;;) {
@@ -209,7 +207,6 @@ function noCachePage() {
     // error_log('noCachePage Called',0);
     global $signedinuser, $page, $flag, $url, $href, $eventdate, $zipcode;
     global $order, $numPages, $curr_page, $prev_page, $next_page, $offset;
-    global $HTTP_SESSION_VARS;
 
     $connection = DBConnection::getInstance();
     $eventlist = Events_Controller::getInstance();

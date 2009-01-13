@@ -25,7 +25,7 @@
 session_start();
 require_once("../etc/config.php");
 $se = $_REQUEST['socialEventID'];
-$HTTP_SESSION_VARS["addEventSE"]=$se;
+$_SESSION["addEventSE"]=$se;
 $connection = DBConnection::getInstance();
 if(!is_null($se)){
     $q = "select title,description,summary,imageurl,literatureurl,telephone,timezone,eventtimestamp,submitterusername,street1,street2,city,state,zip,country from SOCIALEVENT as s,ADDRESS as a where s.socialeventid='$se' and s.ADDRESS_addressid=a.addressid";
@@ -60,7 +60,7 @@ if(!is_null($se)){
     }
     unset($result1);
 }
-if(!is_null($se) && (is_null($HTTP_SESSION_VARS["uname"]) || !($HTTP_SESSION_VARS["uname"]==$submitter) )){
+if(!is_null($se) && (is_null($_SESSION["uname"]) || !($_SESSION["uname"]==$submitter) )){
     $fillMessage = "<font color=red>You can only edit events you created.</font> ";
 }else{
     ob_start();

@@ -29,7 +29,7 @@ $isFriend = Users_Controller::getInstance();
 $user = $_REQUEST['query'];
 $reqUser = $_REQUEST['reqUser'];
 $flag = $_REQUEST['flag'];
-$loggedinuser = $HTTP_SESSION_VARS["uname"];
+$loggedinuser = $_SESSION["uname"];
 if(!is_null($user) && !empty($user)){
 $users=$isFriend->findUser($user,$loggedinuser,$connection);
 }

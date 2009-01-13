@@ -24,7 +24,7 @@
 session_start();
 require_once("../etc/config.php");
 $connection = DBConnection::getInstance();
-$un = $HTTP_SESSION_VARS["uname"];
+$un = $_SESSION["uname"];
 $events = Events_Controller::getInstance();
 $flag = false;
 $yourUpcomingEvents = $events->getUpcomingEventsForUser($un,$connection,$flag,null);

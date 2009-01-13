@@ -36,12 +36,12 @@ if (isset($_POST['commentsratingsubmit']) ||
 }
 $tagslist = Tags_Controller::getInstance();
 $events = Events_Controller::getInstance();
-$username = $HTTP_SESSION_VARS["uname"];
+$username = $_SESSION["uname"];
 $dateFormat = "l,  F j,  Y,  h:i A";
 $eventTaglist = $tagslist->getEventsPageTagCloud($connection,$se);
 $numAttendees = $events->getNumAttendees($se,$connection);
-$HTTP_SESSION_VARS["numofattendees"] = $numAttendees;
-$rating = $HTTP_SESSION_VARS["rating"];
+$_SESSION["numofattendees"] = $numAttendees;
+$rating = $_SESSION["rating"];
 $query = "select title,description,submitterUserName,imagethumburl," .
                  "literatureurl,telephone,timezone,eventtimestamp,street1," .
                  "street2,city,state,zip,country,latitude,longitude,summary " .
@@ -77,7 +77,7 @@ $listquery = "select username from PERSON_SOCIALEVENT where socialeventid = '$se
 $listqueryresult = $connection->query($listquery);
 while($listqueryresult->next()) {
         $tmp_uname = $listqueryresult->get(1);
-        if (!is_null($HTTP_SESSION_VARS["uname"]) && $tmp_uname == $username) {
+        if (!is_null($_SESSION["uname"]) && $tmp_uname == $username) {
                 $unattend = true; // show unattend button if user is already registered.
         }
         $attendeeList = $attendeeList." ".'<a href="users.php?username='.$tmp_uname.'">'.$tmp_uname.'</a><br />';

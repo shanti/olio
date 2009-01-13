@@ -93,7 +93,7 @@
     <div id="main_user_details">
         <h1 class="inline"><?=$username;?></h1>
             <? 
-	      if ($username == $HTTP_SESSION_VARS["uname"]) {
+	      if ($username == $_SESSION["uname"]) {
               echo '(<a href="addPerson.php?username='.$username.'">Edit</a>)'; }
             ?>     
             <br />
@@ -129,7 +129,7 @@
   <p class="clr" />
 </div>
 <? echo '<a href="friends.php?username='.$username.'">more...</a>'; ?>
-<?if ($username == $HTTP_SESSION_VARS["uname"]) {?>
+<?if ($username == $_SESSION["uname"]) {?>
 <a name="incoming_requests"></a>
 <div id="incoming">
 <fieldset id="incoming_requests">
