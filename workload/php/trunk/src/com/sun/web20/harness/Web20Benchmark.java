@@ -70,14 +70,14 @@ public class Web20Benchmark extends DefaultFabanBenchmark {
             for (String webhost : webhosts) {
                 RunContext.getFile(webhost, webServerConfPath +
                         File.separator + "httpd.conf", RunContext.getOutDir() +
-                        "httpd.conf." + getHostName(webhost));
+                        "httpd_conf.log." + getHostName(webhost));
             }
         } else if ("lighttpd".equals(webserverType)) {
             webServerService = LighttpdService.getHandle();
             for (String webhost : webhosts) {
                 RunContext.getFile(webhost, webServerConfPath +
                         File.separator + "lighttpd.conf",
-                        RunContext.getOutDir() + "lighttpd.conf." +
+                        RunContext.getOutDir() + "lighttpd_conf.log." +
                         getHostName(webhost));
             }
         } else if ("glassfish".equals(webserverType)) {
@@ -85,19 +85,19 @@ public class Web20Benchmark extends DefaultFabanBenchmark {
             for (String webhost : webhosts) {
                 RunContext.getFile(webhost, webServerConfPath +
                         File.separator + "domain.xml",
-                        RunContext.getOutDir() + "domain.xml." +
+                        RunContext.getOutDir() + "domain_xml.log." +
                         getHostName(webhost));
             }
         }
         if (phpIniPath != null && phpIniPath.length() > 0)
             for (String webhost : webhosts) {
                 RunContext.getFile(webhost, phpIniPath + "/php.ini",
-                        RunContext.getOutDir() + "php.ini." +
+                        RunContext.getOutDir() + "php_ini.log." +
                         getHostName(webhost));
             }
 
         RunContext.getFile(dbhost, dbConfPath + "/my.cnf",
-                RunContext.getOutDir() + "my.cnf." + getHostName(dbhost));
+                RunContext.getOutDir() + "my_cnf.log." + getHostName(dbhost));
 
         // Reloading database and media as necessary.
         boolean reloadDB = Boolean.parseBoolean(
@@ -151,8 +151,7 @@ public class Web20Benchmark extends DefaultFabanBenchmark {
         
         if (mediaHandle != null)
             mediaHandle.waitFor();
-
-        /*
+        
         //start the memcache servers
         memcacheServers =
                  params.getHostPorts("cacheServers/fa:hostConfig/fa:hostPorts");
@@ -174,7 +173,6 @@ public class Web20Benchmark extends DefaultFabanBenchmark {
                 cacheBinPath);
         if ( !memcachedService.restartServers())
             throw (new Exception("Memcached server(s) restart failed"));
-        */
         
         // Now start the web servers
         if (webServerService != null) {
