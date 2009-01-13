@@ -864,7 +864,7 @@ public class UIDriver {
         public Element[] getResults() {
             Result r = Result.getInstance();
             int total = r.getOpsCountSteady("EventDetail");
-            Element[] el = new Element[9];
+            Element[] el = new Element[10];
             el[0] = new Element();
             el[0].description = "% EventDetail views where attendee added";
             el[0].target = "&gt;= 6";
@@ -933,11 +933,11 @@ public class UIDriver {
             cnt = r.getOpsCountSteady("TagSearch");
             el[5] = new Element();
             el[5].description = "Average images on Tag Search Results";
-            el[5].target = "&gt;= 7";
+            el[5].target = "&gt;= 3.6";
             if (cnt > 0) {
                 double avgImgs = tagSearchImages / (double) cnt;
                 el[5].result = String.format("%.2f", avgImgs);
-                if (avgImgs >= 7d)
+                if (avgImgs >= 3.6d)
                     el[5].passed = Boolean.TRUE;
                 else
                     el[5].passed = Boolean.FALSE;
@@ -965,6 +965,15 @@ public class UIDriver {
             el[8] = new Element();
             el[8].description = "Total successful AddPerson calls";
             el[8].result = String.valueOf(addPersonTotal);
+            el[9] = new Element();
+            el[9].description = "Concurrent user to ops/sec ratio";
+            el[9].target = "&lt;= 5.25";
+            double ratio = r.getScale() / r.getMetric();
+            el[9].result = String.format("%.2f", ratio);
+            if (ratio <= 5.25d)
+                el[9].passed = true;
+            else
+                el[9].passed = false;
             return el;
         }
 
