@@ -31,6 +31,7 @@ $dateFormat = "l,  F j,  Y,  h:i A";
 $commentid = $_REQUEST['commentid'];
 $se= $_REQUEST['socialEventID'];
 $deleteCommentsRating = "delete from COMMENTS_RATING where commentid='$commentid'";
+$connection->beginTransaction();
 $connection->exec($deleteCommentsRating);
 
 $commentsratingSql = "select commentid,username,comments,ratings,created_at,updated_at from COMMENTS_RATING where socialeventid ='$se'";
@@ -46,6 +47,7 @@ $tmp_uname_updated_at = trim($events->formatdatetime($dateFormat,$row1['updated_
 require("../views/commentsRating.php");
 }
 unset($commentsratingResult);
+$connection->commit();
 $eventCommentsRating = ob_get_contents();
 ob_end_clean();    
 

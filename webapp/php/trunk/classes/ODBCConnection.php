@@ -81,6 +81,21 @@ class ODBCConnection extends DBConnection {
             return odbc_exec($this->connection, $sql);
         }
     }
+
+    function beginTransaction() {
+        $this->ensureConnection();
+        odbc_autocommit($this->connection, false);
+    }
+
+    function commit() {
+        odbc_commit($this->conneection);
+        odbc_autocommit($this->connection, true);
+    }
+
+    function rollback() {
+        odbc_rollback($this->connection);
+        odbc_autocommit($this->connection, true);
+    }
     
     function __destruct() {
         if (is_resource($this->connection)) {

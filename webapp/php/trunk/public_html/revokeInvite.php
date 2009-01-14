@@ -29,8 +29,10 @@ $friends = Users_Controller::getInstance();
 $person = $_REQUEST['person'];
 $friend = $_REQUEST['friend'];
 $revokeSql = "delete from PERSON_PERSON where person_username='$friend' and friends_username='$person'";
+$connection->beginTransaction();
 $connection->exec($revokeSql);
 $outgoingRequests = $friends->outgoingRequests($person,$connection);
+$connection->commit();
 echo "<font color=green>You have revoked your friendship request to ". $friend."</font>\n";
 echo $outgoingRequests ;
 ?>

@@ -30,6 +30,7 @@ $username = $_SESSION["uname"];
 if(!is_null($username)){
     $connection = DBConnection::getWriteInstance();
     $deleteuser = "delete from PERSON_SOCIALEVENT where username='$username' and socialeventid='$se'";
+    $connection->beginTransaction();
     $connection->exec($deleteuser);
 }
 
@@ -43,8 +44,14 @@ while($listqueryresult->next()) {
         $tmp_uname = $listqueryresult->get(1);
         $attendeeList = $attendeeList." ".'<a href="users.php?username='.$tmp_uname.'">'.$tmp_uname.'</a><br />';
 }
+
+unset($listqueryresult);
+
+if (!is_null($username)) {
+    $connection->commit();
+}
+
 $numofattendees = $_SESSION["numofattendees"] - 1;
 $_SESSION["numofattendees"] = $numofattendees;
 echo '<h2 class="smaller_heading">'.$numofattendees.' Attendees:</h2><br/><input name="attend" type="button" value="Attend" onclick="addAttendee();"/><br/><div id="attendees">'.$attendeeList.'</div>';
-unset($listqueryresult);
 ?>

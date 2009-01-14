@@ -28,10 +28,12 @@ $friends = Users_Controller::getInstance();
 $person = $_REQUEST['person'];
 $friend = $_REQUEST['friend'];
 $approveSql = "update PERSON_PERSON set is_accepted=1 where person_username='$person' and friends_username='$friend'";
+$connection->beginTransaction();
 $connection->exec($approveSql);
 $_SESSION["friendshipreqs"]=$friends->numFriendshipRequests($person,$connection);
 $incomingRequests = $friends->incomingRequests($person,$connection);
 $friendCloud = $friends->getFriendCloud($person,$connection);
+$connection->commit();
 echo "friendship requests (".$_SESSION["friendshipreqs"].")\n";
 echo $friendCloud."\n".$incomingRequests;
 ?>

@@ -56,6 +56,7 @@ $connection = DBConnection::getWriteInstance();
 	$insertaddr = "insert into ADDRESS (street1, street2, city, state, zip, country, latitude, longitude) ".
                       "values ('$strt1', '$street2', '$cty', '$state', '$zip', '$country', ".
                       "'$geocode->latitude', '$geocode->longitude')";
+    $connection->beginTransaction();
 	$connection->exec($insertaddr);
 	$cq = "select last_insert_id()";
 	$idres = $connection->query($cq);
@@ -241,6 +242,7 @@ $connection = DBConnection::getWriteInstance();
         	$insertPS = "insert into PERSON_SOCIALEVENT values('$usrnm','$eventid')";
                 $connection->exec($insertPS);
         }
+$connection->commit();
         
 if (isset($_POST['addeventsubmit'])) {
         header("Location:events.php?socialEventID=".$eventid);

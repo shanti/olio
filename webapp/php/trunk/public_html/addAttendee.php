@@ -25,8 +25,11 @@ session_start();
 require_once("../etc/config.php");
 $se = $_REQUEST['id'];
 $username = $_SESSION["uname"];
+$txBegun = false;
 if (!is_null($username)) {
     $connection = DBConnection::getWriteInstance();
+    $connection->beginTransaction();
+    $txBegun = true;
     $checkuserIfAttending = "select count(username) as count from PERSON_SOCIALEVENT where socialeventid = '$se' and username = '$username'";
     $result = $connection->query($checkuserIfAttending);
     $row = $result->getArray();
@@ -47,8 +50,13 @@ while($listqueryresult->next()) {
         $tmp_uname = $listqueryresult->get(1);
         $attendeeList = $attendeeList." ".'<a href="users.php?username='.$tmp_uname.'">'.$tmp_uname.'</a><br />';
 }
+
+unset($listqueryresult);
+if ($txBegun) {
+    $connection->commit();
+}
+
 $numofattendees = $_SESSION["numofattendees"] + 1;
 $_SESSION["numofattendees"] = $numofattendees;
 echo '<h2 class="smaller_heading">'.$numofattendees.' Attendees:</h2><br/><input name="unattend" type="button" value="Unattend" onclick="deleteAttendee();"/><br/><div id="attendees">'.$attendeeList.'</div>';
-unset($listqueryresult);
 ?>

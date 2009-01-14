@@ -19,6 +19,7 @@
         
 require_once("../etc/config.php");
 $connection = DBConnection::getWriteInstance();
+$connection->beginTransaction();
 
 if(isset($_POST['addpersonsubmit'])) {
 	//insert into person table using the data from addPerson page
@@ -157,5 +158,7 @@ if (isset($_POST['addpersonsubmitupdate'])) {
 	$connection->exec($updatesql);
 
 }
+
+$connection->commit();
 header("Location:users.php?username=".$username);
 ?>

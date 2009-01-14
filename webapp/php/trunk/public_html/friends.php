@@ -57,7 +57,8 @@ if(!is_null($page)){
     $next_page = $numPages;
     }
 }else{
-    $query = "select count(*) as count from PERSON as p, PERSON_PERSON as pp where pp.person_username='$user' and p.username=pp.friends_username and pp.is_accepted=1";
+    $query = "select count(*) as count from PERSON_PERSON ".
+             "where person_username='$user' and is_accepted=1";
     $result = $connection->query($query);
     $row = $result->getArray();
     $count = $row['count'];

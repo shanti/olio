@@ -28,16 +28,19 @@ $se= $_REQUEST['socialEventID'];
 $comments = $_POST['comments'];
 $cid = $_POST['editingcid'];
 $editcomments = $_POST['editcomments'];
-if (isset($_POST['commentsratingsubmit']) || 
-    (isset($_POST['editcommentsratingsubmit']) && isset($_POST['editingcid']))) {
-    $connection = DBConnection::getWriteInstance();
-} else {
-    $connection = DBConnection::getInstance();
-}
 $tagslist = Tags_Controller::getInstance();
 $events = Events_Controller::getInstance();
 $username = $_SESSION["uname"];
 $dateFormat = "l,  F j,  Y,  h:i A";
+$txBegun = false;
+if (isset($_POST['commentsratingsubmit']) ||
+    (isset($_POST['editcommentsratingsubmit']) && isset($_POST['editingcid']))) {
+    $connection = DBConnection::getWriteInstance();
+    $connection->beginTransaction();
+    $txBegun = true;
+} else {
+    $connection = DBConnection::getInstance();
+}
 $eventTaglist = $tagslist->getEventsPageTagCloud($connection,$se);
 $numAttendees = $events->getNumAttendees($se,$connection);
 $_SESSION["numofattendees"] = $numAttendees;
@@ -105,6 +108,11 @@ $tmp_uname_updated_at = trim($events->formatdatetime($dateFormat,$row1['updated_
 require("../views/commentsRating.php");
 }
 unset($commentsratingResult);
+
+if ($txBegun) {
+    $connection->commit();
+}
+
 $eventCommentsRating = ob_get_contents();
 ob_end_clean();
 ob_start();

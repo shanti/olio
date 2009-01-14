@@ -53,5 +53,11 @@ abstract class DBConnection {
     abstract function query();
     
     abstract function exec();
+
+    abstract function beginTransaction();
+
+    abstract function commit();
+
+    abstract function rollback();
 }
 ?>

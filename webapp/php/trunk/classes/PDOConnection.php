@@ -77,6 +77,23 @@ class PDOConnection extends DBConnection {
             return $this->connection->exec($sql);
         }
     }
+
+    function beginTransaction() {
+        $this->ensureConnection();
+        $this->connection->setAttribute(PDO::ATTR_AUTOCOMMIT, false);
+        $this->connection->beginTransaction();
+    }
+
+    function commit() {
+        $this->connection->commit();
+        $this->connection->setAttribute(PDO::ATTR_AUTOCOMMIT, true);
+    }
+
+    function rollback() {
+        $this->connection->rollBack();
+        $this->connection->setAttribute(PDO::ATTR_AUTOCOMMIT, true);
+    }
+
     
     function __destruct() {
         if (isset($this->connection)) {
