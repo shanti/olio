@@ -66,9 +66,14 @@ class Tags_Controller {
     }
     
     function getEventsPageTagCloud($connection,$se) {
-                $cloudquery = "select tag, refcount as count from SOCIALEVENTTAG " .
-                    "where socialeventtagid in (select socialeventtagid " .
-                     "from SOCIALEVENTTAG_SOCIALEVENT where socialeventid = '$se') and refcount>0 order by tag ASC"; 
+                $cloudquery = "select  tag, refcount as count ".
+                              "from SOCIALEVENTTAG a, ".
+                              "SOCIALEVENTTAG_SOCIALEVENT b ".
+                              "where a.socialeventtagid = b.socialeventtagid ".
+                              "and b.socialeventid = '$se' ".
+                              "and a.refcount > 0 ".
+                              "order by tag ASC";
+
                 $cloudresult = $connection->query($cloudquery);
                 while ($row = $cloudresult->getArray())	{
                         $tags[$row['tag']] = $row['count'];
