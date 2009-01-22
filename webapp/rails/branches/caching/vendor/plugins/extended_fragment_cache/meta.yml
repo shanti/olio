@@ -1,0 +1,6 @@
+author: Tyler Kovacs
+summary: Add content interpolation and in-process memory cache to fragment caching
+homepage: http://blog.zvents.com/2006/11/3/rails-plugin-extended-fragment-cache
+license: MIT
+version: 0.0.1
+rails_version: 1.1.6+ (hint at what version of rails to use this on)

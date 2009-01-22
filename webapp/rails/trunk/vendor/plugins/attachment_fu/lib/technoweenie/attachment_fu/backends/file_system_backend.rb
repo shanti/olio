@@ -1,4 +1,7 @@
-require 'ftools'
+
+if RUBY_VERSION < "1.9"
+  require 'ftools'
+end
 module Technoweenie # :nodoc:
   module AttachmentFu # :nodoc:
     module Backends

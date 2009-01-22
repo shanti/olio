@@ -1,0 +1,9 @@
+#_login.rsel
+
+delete_cookie ' _perf_session_id', '/'
+open '/'
+assert_title 'Rails Performance: index'
+type 'users_username', 'bob'
+type 'users_password', 'kitty'
+click_and_wait 'commit'
+verify_text_present 'Successfully logged in!'
