@@ -568,6 +568,7 @@ public class UIDriver {
         }
         
         ctx.recordTime();
+        ++driverMetrics.addEventTotal;
     }
 
     @BenchmarkOperation (
@@ -614,6 +615,7 @@ public class UIDriver {
         addAddress(post);
         doMultiPartPost(post);
         ctx.recordTime();
+        ++driverMetrics.addPersonTotal;
     }
 
     @BenchmarkOperation (
@@ -880,6 +882,8 @@ public class UIDriver {
         int eventDetailImages = 0;
         int homePageImagesLoaded = 0;
         long homePageImageBytes = 0;
+        int addEventTotal = 0;
+        int addPersonTotal = 0;
 
         public void add(CustomMetrics other) {
             UIDriverMetrics o = (UIDriverMetrics) other;
@@ -890,19 +894,21 @@ public class UIDriver {
             eventDetailImages += o.eventDetailImages;
             homePageImageBytes += o.homePageImageBytes;
             homePageImagesLoaded += o.homePageImagesLoaded;
+            addEventTotal += o.addEventTotal;
+            addPersonTotal += o.addPersonTotal;
         }
 
         public Element[] getResults() {
             Result r = Result.getInstance();
             int total = r.getOpsCountSteady("EventDetail");
-            Element[] el = new Element[7];
+            Element[] el = new Element[10];
             el[0] = new Element();
             el[0].description = "% EventDetail views where attendee added";
-            el[0].target = "&gt;= 8";
+            el[0].target = "&gt;= 6";
             if (total > 0) {
                 double pctAdd = 100d * addAttendeeCount / (double) total;
                 el[0].result = String.format("%.2f", pctAdd);
-                if (pctAdd >= 8d)
+                if (pctAdd >= 6d)
                     el[0].passed = Boolean.TRUE;
                 else
                     el[0].passed = Boolean.FALSE;
@@ -934,11 +940,11 @@ public class UIDriver {
 
             el[3] = new Element();
             el[3].description = "Average images loaded per Home Page";
-            el[3].target = "&gt;= 4";
+            el[3].target = "&gt;= 3";
             if (cnt > 0) {
                 double avgImgs = homePageImagesLoaded / (double) cnt;
                 el[3].result = String.format("%.2f", avgImgs);
-                if (avgImgs >= 4d)
+                if (avgImgs >= 3d)
                     el[3].passed = Boolean.TRUE;
                 else
                     el[3].passed = Boolean.FALSE;
@@ -949,11 +955,11 @@ public class UIDriver {
 
             el[4] = new Element();
             el[4].description = "Average image bytes received per Home Page";
-            el[4].target = "&gt;= 25000";
+            el[4].target = "&gt;= 15000";
             if (cnt > 0) {
                 double avgBytes = homePageImageBytes / (double) cnt;
                 el[4].result = String.format("%.2f", avgBytes);
-                if (avgBytes >= 20000)
+                if (avgBytes >= 15000)
                     el[4].passed = Boolean.TRUE;
                 else
                     el[4].passed = Boolean.FALSE;
@@ -964,11 +970,11 @@ public class UIDriver {
             cnt = r.getOpsCountSteady("TagSearch");
             el[5] = new Element();
             el[5].description = "Average images on Tag Search Results";
-            el[5].target = "&gt;= 3";
+            el[5].target = "&gt;= 3.6";
             if (cnt > 0) {
                 double avgImgs = tagSearchImages / (double) cnt;
                 el[5].result = String.format("%.2f", avgImgs);
-                if (avgImgs >= 3d)
+                if (avgImgs >= 3.6d)
                     el[5].passed = Boolean.TRUE;
                 else
                     el[5].passed = Boolean.FALSE;
@@ -978,7 +984,7 @@ public class UIDriver {
             }
             el[6] = new Element();
             el[6].description = "Average images on Event Detail";
-            el[6].target = "&gt;= 9";
+            el[6].target = "&gt;= 1";
             if (total > 0) {
                 double avgImgs = eventDetailImages / (double) total;
                 el[6].result = String.format("%.2f", avgImgs);
@@ -990,6 +996,21 @@ public class UIDriver {
                 el[6].result = "";
                 el[6].passed = Boolean.FALSE;
             }
+            el[7] = new Element();
+            el[7].description = "Total successful AddEvent calls";
+            el[7].result = String.valueOf(addEventTotal);
+            el[8] = new Element();
+            el[8].description = "Total successful AddPerson calls";
+            el[8].result = String.valueOf(addPersonTotal);
+            el[9] = new Element();
+            el[9].description = "Concurrent user to ops/sec ratio";
+            el[9].target = "&lt;= 5.25";
+            double ratio = r.getScale() / r.getMetric();
+            el[9].result = String.format("%.2f", ratio);
+            if (ratio <= 5.25d)
+                el[9].passed = true;
+            else
+                el[9].passed = false;
             return el;
         }
 
@@ -1002,6 +1023,8 @@ public class UIDriver {
             clone.eventDetailImages = eventDetailImages;
             clone.homePageImageBytes = homePageImageBytes;
             clone.homePageImagesLoaded = homePageImagesLoaded;
+            clone.addEventTotal = addEventTotal;
+            clone.addPersonTotal = addPersonTotal;
             return clone;
         }
     }
