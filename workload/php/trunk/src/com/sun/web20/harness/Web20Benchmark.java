@@ -61,7 +61,8 @@ public class Web20Benchmark extends DefaultFabanBenchmark {
         phpIniPath = params.getParameter("webServer/phpIniPath");
         cacheBinPath = params.getParameter("cacheServers/cacheBinPath");
         dbConfPath = params.getParameter("dbServer/dbConfPath");
-        String dbhost = params.getParameter("dbServer/fa:hostConfig/fa:host");
+        String[] dbhosts = params.getParameter(
+                            "dbServer/fa:hostConfig/fa:host").split(" ");
         String[] webhosts = params.getParameter(
                             "webServer/fa:hostConfig/fa:host").split(" ");
 
@@ -96,8 +97,10 @@ public class Web20Benchmark extends DefaultFabanBenchmark {
                         getHostName(webhost));
             }
 
-        RunContext.getFile(dbhost, dbConfPath + "/my.cnf",
-                RunContext.getOutDir() + "my_cnf.log." + getHostName(dbhost));
+        for (String dbhost : dbhosts) {
+            RunContext.getFile(dbhost, dbConfPath + "/my.cnf",
+            RunContext.getOutDir() + "my_cnf.log." + getHostName(dbhost));
+        }
 
         // Reloading database and media as necessary.
         boolean reloadDB = Boolean.parseBoolean(
@@ -113,8 +116,7 @@ public class Web20Benchmark extends DefaultFabanBenchmark {
         CommandHandle mediaHandle = null;
         if (reloadDB) {
             logger.info("Reloading the database for " + scale + " users!");
-            String dbHost =
-                    params.getParameter("dbServer/fa:hostConfig/fa:host");
+            String dbhost = dbhosts[0];
             String driver = params.getParameter("dbServer/dbDriver");
             String connectURL = params.getParameter("dbServer/connectURL");
             // Un-escape the URL.
@@ -131,7 +133,7 @@ public class Web20Benchmark extends DefaultFabanBenchmark {
             cmdList.add(String.valueOf(scale));
             Command c = new Command(cmdList);
             c.setSynchronous(false);
-            dbHandle = java(dbHost, c);
+            dbHandle = java(dbhost, c);
         }
 
         if (reloadMedia) {
