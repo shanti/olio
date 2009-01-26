@@ -306,7 +306,11 @@ public class UIDriver {
                             ctx.getClientsInDriver(), hostPortList.size());
         NameValuePair<Integer> hostPort = hostPortList.get(bucket);
 
-        baseURL = "http://" + hostPort.name + ':' + hostPort.value;
+        if (hostPort.value == null)
+            baseURL = "http://" + hostPort.name;
+        else
+            baseURL = "http://" + hostPort.name + ':' + hostPort.value;
+
         personDetailURL = baseURL + "/users." + type + "?username=";
         tagSearchURL = baseURL + "/taggedEvents." + type;
         tagCloudURL = baseURL + "/taggedEvents." + type;
@@ -329,7 +333,11 @@ public class UIDriver {
         addPersonStatics = populateList(ADDPERSON_STATICS);
         addEventStatics = populateList(ADDEVENT_STATICS);
 
-        loginHeaders.put("Host", hostPort.name + ':' + hostPort.value);
+        if (hostPort.value == null)
+            loginHeaders.put("Host", hostPort.name);
+        else
+            loginHeaders.put("Host", hostPort.name + ':' + hostPort.value);
+
         loginHeaders.put("User-Agent", "Mozilla/5.0");
         loginHeaders.put("Accept", "text/xml.application/xml,application/" +
                 "xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;" +
@@ -572,7 +580,7 @@ public class UIDriver {
     public void doEventDetail() throws IOException {
         //select random event
         logger.finer("doEventDetail");
-        http.fetchURL(eventDetailURL + selectedEvent);
+            http.fetchURL(eventDetailURL + selectedEvent);
         StringBuilder responseBuffer = http.getResponseBuffer();
         if (responseBuffer.length() == 0)
             throw new IOException("Received empty response");
