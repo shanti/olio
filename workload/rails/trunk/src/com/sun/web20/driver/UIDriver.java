@@ -68,7 +68,7 @@ import java.util.logging.Logger;
           }
 )
 @NegativeExponential (
-    cycleType = CycleType.THINKTIME,
+    cycleType = CycleType.CYCLETIME,
     cycleMean = 5000,
     cycleDeviation = 2
 )
