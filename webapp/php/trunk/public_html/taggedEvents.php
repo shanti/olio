@@ -57,10 +57,10 @@ if(!is_null($page)){
     if(!is_null($_REQUEST['count'])){
         $count=$_REQUEST['count'];
     }else{
-        $query = "select count(socialeventid) as count from SOCIALEVENTTAG_SOCIALEVENT where socialeventtagid=(select socialeventtagid from SOCIALEVENTTAG where tag='$tag')";
+        $query = "select refcount from SOCIALEVENTTAG where tag = '$tag'";
         $result = $connection->query($query);
         $row = $result->getArray();
-        $count = $row['count'];
+        $count = $row['refcount'];
         unset($result);
     }    
     $numPages  = ceil($count / 10);;
@@ -73,7 +73,13 @@ if(!is_null($page)){
 }
 
 ob_start();
-$query = "select socialeventid from SOCIALEVENTTAG_SOCIALEVENT where socialeventtagid=(select socialeventtagid from SOCIALEVENTTAG where tag='$tag') limit $offset,10";
+// $query = "select socialeventid from SOCIALEVENTTAG_SOCIALEVENT where socialeventtagid=(select socialeventtagid from SOCIALEVENTTAG where tag='$tag') limit $offset,10";
+// Try out this query instead.
+$query = "select ss.socialeventid ".
+         "from SOCIALEVENTTAG s join SOCIALEVENTTAG_SOCIALEVENT ss ".
+         "on s.socialeventtagid = ss.socialeventtagid ".
+         "where s.tag = '$tag' limit $offset, 10";
+
 $result = $connection->query($query);
 $found = false;
 while ($result->next()) {
