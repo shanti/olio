@@ -84,6 +84,8 @@ create table SOCIALEVENTTAG(
    unique(tag)
 )ENGINE=InnoDB;
 
+CREATE INDEX SOCIALEVENTTAG_TAG on SOCIALEVENTTAG (tag);
+
 create table SOCIALEVENTTAG_SOCIALEVENT(
    socialeventtagid INTEGER NOT NULL,
    socialeventid INTEGER NOT NULL,
