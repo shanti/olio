@@ -19,7 +19,6 @@
         
 require_once("../etc/config.php");
 $connection = DBConnection::getWriteInstance();
-$connection->beginTransaction();
 
 if(isset($_POST['addpersonsubmit'])) {
 	//insert into person table using the data from addPerson page
@@ -49,18 +48,22 @@ if(isset($_POST['addpersonsubmit'])) {
 		$img_ext = substr($image_name,$pos,strlen($image_name));
 		$modified_image_name = "P".$username.$img_ext;
 		$resourcedir = '/tmp/';
+        $imagethumb = "P".$username."T".$img_ext;
 		$user_image_location = $resourcedir . $modified_image_name;
 		if (!move_uploaded_file($_FILES['user_image']['tmp_name'], $user_image_location)) {
 			throw new Exception("Error moving uploaded file to $user_image_location");
 		}
-                $imagethumb = "P".$username."T".$img_ext;
-                $thumb_location = $resourcedir . $imagethumb;
-                ImageUtil::createThumb($user_image_location, $thumb_location, 133, 99);
+        $thumb_location = $resourcedir . $imagethumb;
+        ImageUtil::createThumb($user_image_location, $thumb_location, 133, 99);
 		$fs = FileSystem::getInstance();
-		$fs->create($user_image_location, "NO_OP", "NO_OP");
-                $fs->create($thumb_location, "NO_OP", "NO_OP");
-		unlink($user_image_location);
-                unlink($thumb_location);
+        if (!$fs->create($user_image_location, "NO_OP", "NO_OP")) {
+            error_log("Error copying image " . $user_image_location);
+        }
+        if (!$fs->create($thumb_location, "NO_OP", "NO_OP")) {
+            error_log("Error copying thumb " . $thumb_location);
+        }
+        unlink($user_image_location);
+        unlink($thumb_location);
 	} else {
 		$modified_image_name = Web20::$config['includes'] . "userphotomissing.gif";
 		$imagethumb = Web20::$config['includes'] . "userphotomissing.gif";
@@ -71,6 +74,8 @@ if(isset($_POST['addpersonsubmit'])) {
 	$insertaddr = "insert into ADDRESS (street1, street2, city, state, zip, country, latitude, longitude) ".
                       "values ('$strt1', '$street2', '$cty', '$state', '$zip', '$country', ".
                       "'$geocode->latitude', '$geocode->longitude')";
+
+    $connection->beginTransaction();
 	$connection->exec($insertaddr);
 	$cq = "select last_insert_id()";
 	$idres = $connection->query($cq);
@@ -85,9 +90,8 @@ if(isset($_POST['addpersonsubmit'])) {
 		$insertsql ="insert into PERSON (username,password,firstname,lastname,email,telephone,imageurl,summary,timezone,ADDRESS_addressid)  values('$username','$pwd', '$fname','$lname','$email','$telephone','$modified_image_name','$summary','$timezone','$addrid')";
 	}
 	$insertresult = $connection->exec($insertsql);
-}
 
-if (isset($_POST['addpersonsubmitupdate'])) {
+} else if (isset($_POST['addpersonsubmitupdate'])) {
 	//update person table using the data from addPerson page
 	$username=$_POST['add_user_name'];
 	$pwd    =$_POST['psword'];
@@ -107,6 +111,9 @@ if (isset($_POST['addpersonsubmitupdate'])) {
 	$timezone=$_POST['timezone'];
 
 	$image_name= basename($_FILES['user_image']['name']);
+
+    $geocode = new Geocoder($street1, $city, $state, $zip);
+
 	if ($image_name != "") {
 		$pos=strpos($image_name,'.');
 		$img_ext = substr($image_name,$pos,strlen($image_name));
@@ -120,12 +127,17 @@ if (isset($_POST['addpersonsubmitupdate'])) {
                 $thumb_location = $resourcedir . $imagethumb;
                 ImageUtil::createThumb($user_image_location, $thumb_location, 133, 99);
 		$fs = FileSystem::getInstance();
-		$fs->create($user_image_location, "NO_OP", "NO_OP");
-                $fs->create($thumb_location, "NO_OP", "NO_OP");
-		unlink($user_image_location);
-                unlink($thumb_location);
+        if (!$fs->create($user_image_location, "NO_OP", "NO_OP")) {
+            error_log("Error copying image " . $user_image_location);
+        }
+        if (!$fs->create($thumb_location, "NO_OP", "NO_OP")) {
+            error_log("Error copying thumb " . $thumb_location);
+        }
+        unlink($user_image_location);
+        unlink($thumb_location);
 	} else {
 		$imgquery = "select imageurl from PERSON where username='$username' ";
+        $connection->beginTransaction();
 		$imgresult=$connection->query($imgquery);
 		while ($imgresult->next()) {
 			$modified_image_name = $imgresult->get(1);
@@ -140,8 +152,6 @@ if (isset($_POST['addpersonsubmitupdate'])) {
 		}
 		unset($sumresult);
 	}
-
-	$geocode = new Geocoder($street1, $city, $state, $zip);
 
 	$insertaddr = "insert into ADDRESS (street1, street2, city, state, zip, country, latitude, longitude) ".
                       "values ('$strt1', '$street2', '$cty', '$state', '$zip', '$country', ".
