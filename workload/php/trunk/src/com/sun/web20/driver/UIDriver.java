@@ -686,7 +686,13 @@ public class UIDriver {
                 // Loads image only if not cached, means we can add to cache.
                 if (cachedURLs.add(image)) {
                     logger.finer("Loading image " + image);
-                    imgBytes += http.readURL(image);
+                    int imgSize = http.readURL(image);
+                    if (imgSize < 1024) {
+                        logger.warning("Image at " + image + " size of " +
+                                        imgSize + " bytes is too small. " +
+                                        "Image may not exist");
+                    }
+                    imgBytes += imgSize;
                     ++imagesLoaded;
                 } else {
                     logger.finer("Image already cached: Not loading " + image);
