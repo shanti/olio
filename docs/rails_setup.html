@@ -1,0 +1,646 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Mac OS X (vers 31 October 2006 - Apple Inc. build 13), see www.w3.org">
+  <meta http-equiv="CONTENT-TYPE" content=
+  "text/html; charset=us-ascii">
+
+  <title>Olio/Rails Install and Setup Guide</title>
+  <meta name="GENERATOR" content="NeoOffice 2.2 (Unix)">
+  <meta name="AUTHOR" content="Akara Sucharitakul">
+  <meta name="CREATED" content="20070926;10111500">
+  <meta name="CHANGED" content="20081014;13423500">
+  <style type="text/css">
+    <!--
+    h1 { text-align: center; }
+    ol li { padding-bottom: 1em; }
+    ul li { padding-bottom: 1em; }
+    ol ul li { padding-bottom: 0em; }
+    pre { margin-bottom: 0; }
+    -->
+  </style>
+</head>
+
+<body lang="en-US" text="#000000" dir="ltr">
+  <h1>Olio/Rails<br>
+  Install and Setup Guide from Source Tree</h1>
+
+  <p>Note: The application currently does not use memcached. Please
+  ignore the memcached related setup instructions.</p>
+
+  <h2>Overview</h2>
+
+  <p>Olio is a macro-level toolkit consisting of the following
+  components:</p>
+
+  <ol>
+    <li>The web application</li>
+
+    <li>The main database</li>
+
+    <li>Distributed storage servers (MogileFS or NFS)</li>
+
+    <li>Storage metadata database (for MogileFS)</li>
+
+    <li>Geocoder emulator</li>
+
+    <li>Workload driver</li>
+  </ol>
+
+  <p>If your primary interest is in setting up the application
+  alone, you need items 1-5 above and they can all be setup on a
+  single system. If on the other hand, you would like to drive load
+  against the application, you will need at least 2 systems. At
+  higher loads, you may need multiple systems. At a minimum, we
+  need to separate the SUT (System Under Test) components and the
+  non-SUT components to get valid results. The non-SUT components
+  are the Geocoder emulator and the workload driver. It is best to
+  connect the driver machine to the SUT machine on a local private
+  network. This ensures that latencies measured do not include
+  arbitrary delays.</p>
+
+  <p>For a horizontally scaled workload, or to measure the
+  performance of the individual components, you can deploy the SUT
+  components on separate physical or virtual machines. Keep in mind
+  though that the bulk of the CPU is consumed in the web
+  application tier (nginx/rails).</p>
+
+  <p>In the following sections, we will
+  go over the steps needed to configure each component :</p>
+  
+  <ul>
+    <li><a href="#downloading">Downloading the source</a></li>
+    
+    <li><a href="#setupDriver">Setting up the driver</a></li>
+    
+    <li><a href="#installWebApp">Installing the Web
+	Application</a></li>
+    
+    <li><a href="#setupDB">Setting up the database</a></li>
+    
+    <li><a href="#loadDB">Loading the database</a></li>
+    
+    <li><a href="#setupFileStore">Setting up the filestore</a></li>
+    
+    <li><a href="#setupEmulator">Setting up the Geocoder
+	Emulator</a></li>
+    
+    <li><a href="#testWebApp">Testing the web application</a></li>
+    
+    <li><a href="#startRun">Starting a performance test</a></li>
+  </ul>
+
+  <h2 id="downloading">Downloading The Source</h2>
+
+  <p>The Olio source is available via SVN at <a href=
+  "https://svn.apache.org/repos/asf/incubator/olio/">https://svn.apache.org/repos/asf/incubator/olio/</a>.
+  Please see the <a href=
+  "http://www.apache.org/dev/version-control.html#anon-svn">instructions</a>
+  for downloading the source. We will use $OLIO_HOME to designate
+  the directory where the source is downloaded. The source is
+  organized as follows :</p>
+
+  <ul>
+    <li>
+      The <i>webapp</i> directory contains the web application.
+      The rails/trunk sub-directory contains the web application for
+      the Rails implementation. We will refer to webapp/rails/trunk as
+      $WEBAPP in this document.
+    </li>
+
+    <li>
+      The <i>workload</i> directory contains the code for the
+      load generator/driver (which we typically refer to simply as
+      <i>driver</i>). The driver is implemented using <a href=
+      "http://faban.sunsource.net/"><i>Faban</i></a> ? an open
+      source benchmarking toolkit. The php/trunk sub-directory has
+      the faban driver code to drive the php application. In
+      future, we'd like to integrate the driver source for all
+      implementations of the application. The
+      workload/workload/rails/trunk is referred to as $WORKLOAD in
+      this document.
+    </li>
+  </ul>
+
+  <h2 id="setupDriver">Setting up the driver</h2>
+
+  <p>Even if you don't plan to drive load against the application,
+  this setup is required as the database and file loaders are part
+  of the workload driver ? feel free to install the driver on the
+  same system as the web application.</p>
+
+  <ol>
+    <li>
+      See <a href="http://faban.sunsource.net/docs/guide/harness/install.html">
+	  http://faban.sunsource.net/docs/guide/harness/install.html</a>
+      for Faban installation instructions. Note that faban needs to
+      be installed on all the machines used for the test. Please
+      also read the <i>Getting Started Guide</i> to get a
+      high-level understanding of Faban terminology and how it
+      works. From now on, we will refer to the faban install
+      directory as <code>$FABAN_HOME</code>.
+    </li>
+
+    <li>To build the driver, do the following:
+      <ul>
+	<li><code>cd $WORKLOAD; cp build.properties.template build.properties</code></li>
+	
+	<li>Edit build.properties and set faban.home to
+          <code>$FABAN_HOME</code>, faban.url to http://<i>driver_host</i>:9980
+          where <i>driver_host</i> is the name of the machine where
+          the Faban master will run. This is usually the driver
+          system.
+	</li>
+	
+	<li> Set the environment variable <code>JAVA_HOME</code> to
+          point to your JDK1.6 installation.
+	</li>
+	
+	<li> Build the driver using the command: <i>ant
+            deploy.jar.</i> If successful, you should see the file
+          <i>Web20Driver.jar</i> in the<i>build</i>sub-directory.
+	</li>
+      </ul>
+    </li>
+    <li>Copy <code>$WORKLOAD/build/Web20Driver.jar</code> to the
+      <code>$FABAN_HOME/benchmarks</code> directory.
+    </li>
+
+    <li>
+      For the driver to work, you will need JDK
+      1.6. Set <code>JAVA_HOME</code> to the path of the JDK in the faban user's
+      environment.
+    </li>
+
+    <li> Start the faban master on the master driver
+      machine :<br/>
+      <code>$FABAN_HOME/master/bin/startup.sh</code>
+    </li>
+
+    <li>
+      Test that you can connect to the master by
+      pointing your browser at <code>http://<i>&lt;driver_machine&gt;</i>:9980</code>
+    </li>
+  </ol>
+
+  <h2 id="installWebApp">Installing the Web Application</h2>
+
+  <p>The web application is a Rails application. It requires the
+  following components:</p>
+
+  <ol>
+    <li>
+      A web server such as Nginx or Apache
+    </li>
+
+    <li>
+      Ruby 1.8.6 or higher with the following gems:
+      <ul>
+	<li>rails</li>
+	<li>thin (mongrel can be used if desired)</li>
+	<li>mysql</li>
+      </ul>
+    </li>
+
+    <li>
+      MySQL 5
+    </li>
+  </ol>
+
+  <p>For Linux (debian or ubunu), Install the following packages:</p>
+  <pre>     aptitude install build-essential subversion ruby1.8 ruby1.8-dev nginx libmysqlclient-dev rubygems libgems-ruby1.8</pre>
+  </p>
+
+  <p>Coolstack is one pre-integrated suite of open source
+  applications optimized for Solaris. If you're running on any
+  other operating system, please install the above
+  applications.</p>
+
+<p>Once you have the application stack installed, follow the steps
+    below to set up the application.</p>
+
+  <ol>
+    <li>
+      Decide where you want to install the web application. For this example 
+      we will use /var/app:
+<pre>
+$ mkdir /var/app
+$ cd /var/app
+</pre>
+    </li>
+    
+    <li>
+      Checkout the Olio rails branch.
+      <pre>
+$ svn co https://svn.apache.org/repos/asf/incubator/olio/webapp/rails/trunk olio
+      </pre>
+
+      We will use <code>$APP_DIR</code> to refer to the location: <code>/var/app/olio</code>
+    </li>
+
+    <li>
+      After installing all the above packages, go to
+      and edit the nginx.conf. There is an example in the $APP_DIR/etc 
+      directory. If you're using a single machine and you're using root 
+      as the user, you can copy the file to <code>/usr/local/nginx/conf</code>.
+      
+      <p>To change to user to another user, modify the first line and change 
+         <code>user root;</code> to your perferred user. If you have more than 
+         one machine hosting your thins, modify the upstream thin and add the 
+         addresses of your application servers.</p>
+      
+      <p>To change the location of the application static content, change the 
+	 line <code>root /var/app/olio/public;</code> to <code>root $APP_DIR;</code>
+      </p>
+
+      Wait until the next step before starting nginx.
+    </li>
+
+    <li>
+      Create a symbolic link from the filestore location to the following location:
+      <code>$APP_DIR/public/uploaded_files</code>. Olio will look for and add all 
+      files in this location. These locations can also be changed in the environment.rb
+      by modifying the values of <code>IMAGE_STORE_PATH</code> and 
+      <code>DOCUMENT_STORE_PATH</code>.
+    </li>
+
+    <li>
+      Go to <code>$APP_DIR/config</code>. Edit the file <code>config/environment.rb</code>
+      and set the <code>Geolocation.url = '...'</code> to the location of
+      the Geocoder.
+      <p>
+      </p>
+    </li>
+
+    <li>
+      Start thin:
+      <pre>
+$ cd $APP_DIR
+$ thin -d -p 3000 -e production -s 4</pre>
+      <p>
+	This will start four thin servers on ports 3000, 3001, 3002, and 3004. 
+	You can change the port and number of servers if you want, the 
+	<code>nginx.conf</code> file will need to be modified as well. You can 
+	also change to unix domain sockets by using the --socket option and 
+	<code>server   unix:/tmp/projects.0.sock;</code> for each of the sockets.
+      </p>
+    </li>
+
+    <li>
+      Start nginx. Check that you can connect to it from your
+      browser (http://<i>host</i>:80), but don't try to access
+      any of the application pages yet !
+    </li>
+  </ol>
+
+  <h2 id="setupDB">Setting up the database</h2>
+
+  <ol>
+    <li>
+      If you plan to run MySQL on a separate machine, install
+      MySQL on that system. We will refer to the MySQL installation
+      directory as MYSQL_HOME.
+    </li>
+
+    <li>
+      Setup the mysql user/group and permissions for it's
+      directories:
+      <pre>
+# groupadd mysql
+# useradd -d $MYSQL_HOME -g mysql -s
+/usr/bin/bash mysql
+# chown -R mysql:mysql $MYSQL_HOME</pre>
+    </li>
+
+    <li>
+      Create the database :
+      <pre>
+# su - mysql
+$ cd bin
+$ ./mysql_install_db</pre>
+    </li>
+
+    <li>
+      Start the mysql server. Substitute your own password for
+      <i>pwd</i> (we typically use <i>adminadmin</i>)
+      <pre>
+$ ./mysqld_safe &amp;
+$ ./mysqladmin -u root password <i>pwd</i></pre>
+    </li>
+
+    <li>
+      Create the web20 user and grant privileges:
+      <pre>
+ $ ./mysql -u root -p <i>pwd</i>
+ mysql&gt; create user 'web20'@'%' identified by 'web20';
+ mysql&gt; grant all privileges on *.* to 'web20'@'%' identified by 'web20' with grant option;
+</pre>
+      In some cases the wildcard '%' does not work reliably as a
+      substitution for all hosts. You need to grant the privileges
+      to 'web20'@'&lt;hostname&gt;' individually, where hostname
+      are the names of the driver and nginx systems.
+    </li>
+
+    <li>
+      Create database:
+      <pre>
+mysql&gt; create database web20load;
+mysql&gt; use web20load;</pre>
+    </li>
+
+    <li>
+      Create database schema by logging in as mysql root user
+      Now, if you login as the user web20, you should be able to
+      see the database created by the root user.
+      <pre>
+rake db:migrate</pre>
+    </li>
+  </ol>
+
+  <h2 id="loadDB">Loading the database</h2>
+
+  <p>It is best to load the database manually the
+  first time so that we can test the web application. However,
+  while doing performance tests, the load driver can be configured
+  to automatically re-load the database before the run.</p>
+
+  <ol>
+    <li>
+      Login to the machine running the Faban
+      master driver. Only this machine has the loader at this
+      time.
+    </li>
+
+    <li>
+     Go to the directory containing the loader script:
+     <pre>
+# cd <i>$FABAN_HOME</i>/benchmarks/Web20Driver/bin</pre>
+    </li>
+
+    <li> Ensure the script has execute
+      permissions. Faban takes care of this for the runs, but since
+      we have not yet started the first run, we will need to change
+      that ourselves:
+      <pre>
+# chmod +x dbloader.sh</pre>
+    </li>
+
+    <li>
+      Run the loader script:
+	<pre>
+# ./dbloader.sh <i>&lt;dbserver&gt; &lt;load_scale&gt;</i>
+
+</pre>
+      You can start small with a SCALE of 50 for initial testing.
+    </li>
+  </ol>
+
+  <h2 id="setupFileStore">Setting up the filestore</h2>
+
+  <p>Olio can be configured to use either a local
+  filesystem or MogileFS for the object data. Our initial testing
+  with MogileFS found some severe performance issues, so for now we
+  advice using a local filesystem or network file systems such as
+  NFS. You will need about 50GB of space for the data, as the data
+  does grow over runs. Using a single spindle does work but may
+  create performance bottlenecks. We recommend striping the
+  filesystem across at least 3 spindles to avoid such bottlenecks.
+  A local file system needs to be setup on the same machine as the
+  web application. A network file system can reside on a separate
+  server but needs to be exported and mounted on the web
+  application.</p>
+
+  <ol>
+    <li>
+      Create a directory (or mount a filesystem)
+      designated for storing the image and binary files. This
+      directory is referred to as $FILESTORE. Any valid name for
+      the OS should be fine. Ensure that everyone has read and
+      write access to it:
+      <pre>
+# mkdir -p $FILESTORE
+# chmod a+rwx $FILESTORE</pre>
+    </li>
+
+    <li>
+      Now load the filestore:
+      <pre>
+# cd $FILESTORE 
+# JAVA_HOME=<java_install_dir>; export $JAVA_HOME
+# $FABAN_HOME/benchmarks/web20/bin/fileloader.sh <load_scale>
+
+</pre>
+      This loads files for use for up to
+      <code><i>load_scale</i></code> number of
+      concurrent users.
+    </li>
+
+    <li>
+      Ensure the <code>$APP_DIR/etc/config.php</code>
+      parameter localfsRoot is pointing to
+      <code>&lt;filestore&gt;.</code>
+    </li>
+  </ol>
+
+  <h2 id="setupEmulator">Setting up the Geocoder Emulator</h2>
+
+  <p>The Geocoder Emulator is a simple J2EE application deployed on
+  Tomcat. It is typically run on a driver machine. The following
+  steps describe how to install it :</p>
+
+  <ol>
+    <li>
+      Donwload and install Tomcat (either from Cool Stack
+      CSKtomcat package for Solaris or directly from <a href=
+      "http://tomcat.nginx.org/">http://tomcat.nginx.org</a>) on
+      the driver machine. The install directory doesn't matter ? we
+      will refer to it as <code>$TOMCAT_HOME</code>.
+    </li>
+
+    <li>
+      Build the <i>geocoder.war</i> file by going to the
+      'geocoder' directory and following the instructions in the
+      README file.
+    </li>
+
+    <li>
+      Copy the geocoder.war file from the geocoder/dist
+      directory to $TOMCAT_HOME/webapps.
+    </li>
+
+    <li>
+      Start Tomcat using $TOMCAT_HOME/bin/startup.sh.
+    </li>
+  </ol>
+
+  <h2 id="testWebApp">Testing the web application</h2>
+
+  <ol>
+    <li>
+      Check the home page (HomePage)
+      http://&lt;web_server&gt;:8080/index.php . If there are no
+      error messages and all images get loaded, that's a great
+      start!
+    </li>
+
+    <li>
+      Click on an event (EventDetail). Make sure
+      the whole page looks OK.
+    </li>
+
+    <li>
+      Click on an attendee (PersonDetail) to see
+      a person's profile.
+    </li>
+
+    <li>
+      Go back to the home page and click on a tag
+      in the tag cloud. Choose a big tag and check that we have
+      good results and images get loaded OK.
+    </li>
+
+    <li>
+      Click on the sign up tab. Fill in the form
+      and create a user. Make sure you find some jpeg images to
+      upload. If not, take them from
+      $FABAN_HOME/benchmarks/web20/resources.<br/>
+      Submit the form. Make sure the form goes through. This
+      completes the AddPerson transaction.
+    </li>
+
+    <li>
+      Login using your new login name you just
+      created. The top right of the screen should show that you're
+      logged on.
+    </li>
+
+    <li>
+      Select an event, go back to the EventDetail
+      page but this time as a logged on user.<br/>
+      Add yourself as an attendee. This is the EventDetail
+      transaction with attendee added (about 8-9% of all
+      EventDetail views).
+    </li>
+
+    <li>
+      Click on the add event tab and add an
+      event. Make sure to include an image and some literature. You
+      can also use the files from<br/>
+      <code>$FABAN_HOME/benchmarks/web20/resources</code>. Fill in the form and
+      submit. This is the AddEvent transaction.
+    </li>
+  </ol>
+
+  <h2 id="startRun">Starting a performance test</h2>
+
+  <p>Now that we know that the web
+  application is running and the faban harness is up, it is time to
+  kick off a test.</p>
+
+  <ol>
+    <li>
+      Kill memcached. Memcached is
+      always started by the driver before the run to ensure a clean
+      cache and will cause port conflicts if it is already
+      running.
+    </li>
+
+    <li>
+      Point your browser at
+      http://<i>&lt;driver_machine&gt;</i>:9980
+    </li>
+
+    <li>
+      Click on the <b>Schedule Run</b> link.
+    </li>
+
+    <li>
+      Under the JAVA tab, set the JAVA_HOME. You can accept the
+      default value for JVM options. <b>DO NOT</b> click on the OK
+      button yet!<br/><br/>
+      <ul>
+	<li>Select the Driver tab.</li>
+
+	<li>Enter a Description for the run
+	  (say 'First test run' for this case). In general, the
+	  Description field is very useful to get a quick idea of what
+	  a particular run is testing.</li>
+	
+	<li>Enter the name of your
+	  driver(s) machine for Host (when using more than one machine,
+	  simply separate them by a space).</li>
+
+      <li>Enter 10 for 'Concurrent Users'
+	(we want to start small).</li>
+
+      <li>Enter 'vmstat 10' for Tools.
+	This indicates the measurement tools that will be run on the
+	driver machine. It's a good idea to keep an eye on the driver
+	cpu utilization.</li>
+
+	<li>Now enter 30, 30, 30 for the
+	  Ramp up, Steady State and Ramp down times. This is a very
+	  short test run. For normal runs, you may need a ramp up of
+	  200 seconds and a steady state of at least 600 seconds during
+	  which measurements are made.</li>
+
+	<li>For current systems, the time
+	  between client startup of 200 milliseconds is good enough.
+	  Some web servers or slower systems may not be able to accept
+	  connections very frequently. In that case we may want to
+	  increase this value to 1000 milliseconds.</li>
+	</ul>
+    </li>
+    <li>
+      Select the Web Server tab.
+      
+      <p>The number of Agents is best the
+	same or multiple the number of driver machines ? we start with 1.
+	The Host:Port Pairs field takes the host port pairs where the web
+	applications are running. The host and port is separated by a
+	colon. Each pair is separated by space. For the Webserver type
+	field, enter either "nginx" or "lighttpd" dependent on which web
+	server you're using, or leave the field blank if you're using
+	servers other than these two. Only these two servers are
+	supported at this time. Then provide the webserver's bin, log,
+	and config directories, and the directory containing the php.ini
+	file in the respective fields. Next, choose the server type to be
+	PHP, if it is not already that way. Then, in the tools box, type
+	the tools you want to run. Here are the tools we typically run :
+	vmstat 10; mpstat 10; iostat -x 10</p>
+    </li>
+    <li>Select the Data Servers tab.
+
+      <p>For the database server, enter
+      the Host name. Edit the hostname part along of the JDBC
+      Connection URL. This is used by the loader program to reload
+      the database before a run. Set the 'Load for Concurrent
+      Users' to 25 (this is the minimum number of users we can load
+      for and is good for up to 25 concurrent users). You can set
+      the loader to run a larger number so that you don't have to
+      edit this field every time. It is not absolutely necessary to
+      reload the database and files every time, but you should do
+      so for all performance runs. In that case, set the reload
+      fields to true every time.</p>
+
+      <p>Set the Data Storage server.
+      For local storage this is the same host as the web
+      server.&nbsp;</p>
+
+      <p>Set the memcached server
+      instances to the servers you've configured in config.php of
+      the web application. The driver harness will start the
+      memcached server instances accordingly. Note that the
+      memcached server instances are given as host:port pairs,
+      separated by space. If a port is not given, the default
+      memcached port of 11211 is assumed.</p>
+    </li>
+    <li>
+      That's it. Click OK and the run should be scheduled. You
+      can click on the View Results link on the left to monitor the
+      run.
+    </li>
+  </ol>
+</body>
+</html>
