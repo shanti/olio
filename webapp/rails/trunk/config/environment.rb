@@ -11,7 +11,7 @@ ENV['RAILS_ENV'] ||= 'production'
 require File.join(File.dirname(__FILE__), 'boot')
 require 'hodel_3000_compliant_logger'
 
-IMAGE_STORE_PATH = 'public/images/uploaded'
+IMAGE_STORE_PATH = 'public/uploaded_files'
 DOCUMENT_STORE_PATH = 'public/uploaded_files'
 
 Rails::Initializer.run do |config|
@@ -71,4 +71,7 @@ end
 require 'uploadable'
 require 'will_paginate'
 require RAILS_ROOT + '/test/selenium_helper' if defined? SeleniumOnRails::FixtureLoader
+
+require 'geolocation'
+Geolocation.url = 'http://localhost:8080/Web20Emulator/geocode?appid=gsd5f'
 
