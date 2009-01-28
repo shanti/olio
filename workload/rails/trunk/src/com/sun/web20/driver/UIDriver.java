@@ -40,6 +40,10 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Logger;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.multipart.FilePart;
+import org.apache.commons.httpclient.methods.multipart.Part;
 
 @BenchmarkDefinition (
     name    = "Web20Bench",
@@ -59,11 +63,11 @@ import java.util.logging.Logger;
     operations = { "HomePage", "Login", "TagSearch", "EventDetail", "PersonDetail", "AddPerson", "AddEvent" },
 
     mix = { @Row({  0, 10, 50, 35,  0, 5,  0 }), // Home Page
-            @Row({  0,  0, 60, 20,  0, 0, 20 }), // Login
+            @Row({  0,  0, 30, 20, 20, 0, 30 }), // Login
             @Row({ 20,  5, 40, 30,  0, 5,  0 }), // Tag Search
             @Row({ 70, 20,  0,  0,  0, 5,  0 }), // Event Detail
             @Row({  0,  0,  0, 30, 10, 0, 30 }), // Person Detail
-            @Row({ 30, 65,  0,  0, 15, 0,  0 }), // Add Person
+            @Row({ 30, 65,  0,  0,  0, 0,  0 }), // Add Person
             @Row({  0,  0, 25, 75, 15, 0,  0 })  // Add Event
           }
 )
@@ -302,6 +306,15 @@ public class UIDriver {
         "/images/main_nav_hover_bg.gif"
     };
 
+    /* Custom metric targets */
+    public static final double EVENT_VIEWS_WHERE_ATTENDEE_ATTENDED_TARGET = 8d;
+    public static final double AVG_IMAGE_REFS_PER_HOMEPAGE_TARGET = 10d;
+    public static final double AVG_IMAGES_LOADED_PER_HOMEPAGE_TARGET = 3d;
+    public static final double AVG_IMAGE_BYTES_PER_HOMEPAGE_TARGET = 20000d;
+    public static final double AVG_IMAGE_PER_TAG_SEARCH_TARGET = 10;
+    public static final double AVG_IMGS_PER_EVENT_DETAIL_TARGET = 0d;
+
+
     // We just need today's date. java.sql.date does not have any time anyway.
     public static final java.sql.Date BASE_DATE =
                                 new java.sql.Date(System.currentTimeMillis());
@@ -337,6 +350,8 @@ public class UIDriver {
     private long imgBytes = 0;
     private int imagesLoaded = 0;
     private String tagCloudURL;
+
+    private HttpClient httpClient;
 
     public UIDriver() throws XPathExpressionException {
         ctx = DriverContext.getContext();
@@ -420,6 +435,8 @@ public class UIDriver {
 
         isLoggedOn = false;
         isCached = cached();
+        httpClient = new HttpClient();
+        httpClient.setConnectionTimeout(5000);
     }
 
     @BenchmarkOperation (
@@ -458,39 +475,50 @@ public class UIDriver {
     @BenchmarkOperation (
         name    = "Login",
         max90th = 1,
-        timing  = Timing.AUTO
+        timing  = Timing.MANUAL
     )
     public void doLogin() throws IOException, Exception {
+
+        httpClient = new HttpClient();
         logger.finer("In doLogin");
         int randomId = 0; //use as password
         username = null;
 
-        if (!isLoggedOn) {
+        if (isLoggedOn) {
+            //already logged in --> logout,then log in again
+            doLogout();
+        }
+
+        // http.fetchURL(loginURL);
+        // HttpClient _httpClient = new HttpClient();
+        // _httpClient.setConnectionTimeout(5000);
+
+        // httpClient = _httpClient;
+
             randomId = selectUserID();
             username = UserName.getUserName(randomId);
             logger.fine("Logging in as " + username + ", " + randomId);
-            http.readURL(loginURL, constructLoginPost(randomId), loginHeaders);
-            // This redirects to home.
-            http.fetchURL(homepageURL);
-            int loginIdx = http.getResponseBuffer().indexOf("Login:");
+        PostMethod loginPost = constructLoginPost(randomId);
+
+        ctx.recordTime();
+
+        httpClient.executeMethod(loginPost);
+
+        // Should redirect automatically but doesn't seem to
+        GetMethod loginGet = new GetMethod(homepageURL);
+        httpClient.executeMethod(loginGet);
+
+        ctx.recordTime();
+
+        int loginIdx = loginGet.getResponseBodyAsString().indexOf("Login:");
             if (loginIdx != -1)
                 throw new Exception(" Found login prompt at index " + loginIdx); 
             
-            /*if (http.getResponseBuffer().indexOf("Login:") != 1216) {
-                logger.finest(http.getResponseBuffer().toString());
-                //throw new RuntimeException("Index of LOGIN = " +http.getResponseBuffer().indexOf("Login:") );
-                //logger.info(http.getResponseBuffer().toString());
-                throw new RuntimeException("Login as " + username + ", " +
-                                                        randomId + " failed.");
-            }*/
-            //logger.fine("Login successful as " + username + ", " + randomId);
+        logger.fine("Login successful as " + username + ", " + randomId);
             isLoggedOn=true;
-        } else {
-            //already logged in --> logout,then log in again
-            doLogout();
-            doLogin();
+  
+
         }
-    }
 
 
     @BenchmarkOperation (
@@ -501,11 +529,11 @@ public class UIDriver {
     public void doLogout() throws IOException {
         if (isLoggedOn){
             logger.finer("Logging off = " + isLoggedOn);
-            http.fetchURL(logoutURL);
+            httpClient.executeMethod(new GetMethod(logoutURL));
             cachedURLs.clear();
             isCached = cached();
             isLoggedOn=false;
-            http = new HttpTransport(); // clear all state
+            // httpClient = new HttpClient(); // clear all state
         }
     }
 
@@ -539,14 +567,20 @@ public class UIDriver {
         timing  = Timing.MANUAL
     )
     public void doAddEvent() throws IOException {
-        logger.finer("doAddEvent");
+        logger.finer("entering doAddEvent()");
+        if(!isLoggedOn)
+            throw new IOException("User not logged when trying to add an event");
+
         ctx.recordTime();
-        http.readURL(addEventURL);
         loadStatics(addEventStatics);
 
         MultipartPostMethod post = new MultipartPostMethod(addEventResultURL);
-        if(isLoggedOn) {
+        GetMethod eventForm = new GetMethod(addEventURL);
+
+        // TODO: Implement prepareEvent() for Rails form data
 		    StringBuilder buffer = new StringBuilder(256);
+        post.addParameter("commit", "Create");
+        // post.addParameter("controller", "events");
 		    post.addParameter("event[title]", RandomUtil.randomText(random, 15, 20));
 		    post.addParameter("event[summary]", RandomUtil.randomText(random, 50, 200));
             post.addParameter("event[description]", RandomUtil.randomText(random, 100, 495));
@@ -557,15 +591,27 @@ public class UIDriver {
             post.addParameter("event[event_timestamp(4i)]", "20");
             post.addParameter("event[event_timestamp(5i)]", "10");
 
-            // We do the images last, not to split the fields into parts
-            post.addParameter("event[image]", eventImg);
-            post.addParameter("event[document]", eventPdf);
-            post.addParameter("tag_list", random.makeCString(4, 14));
+        Part imagePart = new FilePart("event_image", eventImg, "image/jpeg", null);
+        Part docPart = new FilePart("event_document", eventPdf, "application/pdf", null);
+
+        post.addPart(imagePart);
+        post.addPart(docPart);
+        post.addParameter("tag_list", "tag1");
 
             addAddress(post);
             
+        // GET the new event form within a user session
+        httpClient.executeMethod(eventForm);
+        String responseBuffer = eventForm.getResponseBodyAsString();
+        if (responseBuffer.length() == 0)
+             throw new IOException("Received empty response");
+
+        // Parse the authenticity_token from the response
+        String token = parseAuthToken(responseBuffer);
+
+        post.addParameter("authenticity_token", token);
+        
             doMultiPartPost(post);
-        }
         
         ctx.recordTime();
         ++driverMetrics.addEventTotal;
@@ -581,12 +627,11 @@ public class UIDriver {
         if (isLoggedOn)
             doLogout();
 
-        ctx.recordTime();
+        ctx.recordTime(); // Start critical section
         http.readURL(addPersonURL);
-        loadStatics(addPersonStatics);
-
         MultipartPostMethod post = new MultipartPostMethod(addPersonResultURL);
         
+        // TODO: Implement preparePerson() for Rails form data
         String fields[]  = new String[8];
         StringBuilder b = new StringBuilder(256);
         int id = loadedUsers + personsAdded++ * ScaleFactors.activeUsers +
@@ -609,11 +654,14 @@ public class UIDriver {
         post.addParameter("user[summary]", RandomUtil.randomText(random, 50, 200));
         post.addParameter("user[timezone]", RandomUtil.randomTimeZone(random));
         
-        // Images
-        post.addParameter("user_image", personImg);        
+        Part imagePart = new FilePart("user_image", personImg, "image/jpeg", null);
+        post.addPart(imagePart);
         
         addAddress(post);
+
+        loadStatics(addPersonStatics);
         doMultiPartPost(post);
+
         ctx.recordTime();
         ++driverMetrics.addPersonTotal;
     }
@@ -666,17 +714,19 @@ public class UIDriver {
     @BenchmarkOperation (
         name = "PersonDetail",
         max90th = 2,
-        timing = Timing.AUTO
+        timing = Timing.MANUAL
     )
     public void doPersonDetail() throws IOException {
         logger.finer("doPersonDetail");
         StringBuilder buffer = new StringBuilder(fileServiceURL.length() + 20);
         //buffer.append(fileServiceURL).append("file=p");
         
+        ctx.recordTime();
         if (isLoggedOn) {
             int id = random.random(1, ScaleFactors.users);
-            http.fetchURL(personDetailURL + id);
-            StringBuilder responseBuffer = http.getResponseBuffer();
+            GetMethod personDetailGet = new GetMethod(personDetailURL + id);
+            httpClient.executeMethod(personDetailGet);
+            StringBuilder responseBuffer = new StringBuilder(personDetailGet.getResponseBodyAsString());
             if (responseBuffer.length() == 0)
                 throw new IOException("Received empty response");
 
@@ -696,18 +746,45 @@ public class UIDriver {
             logger.warning("Trying to view user, but not logged in");
             http.fetchURL(homepageURL);
         }
+        ctx.recordTime();
     }
 
     public void doAddAttendee() throws IOException {
         //can only add yourself (one attendee) to party
-        http.readURL(addAttendeeURL + selectedEvent + "/attend", "");
+        PostMethod attendeePost = new PostMethod(addAttendeeURL + selectedEvent + "/attend");
+        int status = httpClient.executeMethod(attendeePost);
+                
+        switch (status) {
+            case HttpStatus.SC_ACCEPTED:
+                logger.finer("Status = SC_ACCEPTED");
+                break;
+            case HttpStatus.SC_MOVED_TEMPORARILY:
+                logger.finer("Status = SC_MOVED_TEMPORARILY");
+                // System.out.println(post.getResponseBodyAsString());
+                // for (Header header: post.getResponseHeaders()) {
+                //     logger.info(header.getName() + ":" + header.getValue());
+                // }
+                httpClient.executeMethod(new GetMethod(attendeePost.getResponseHeader("Location").getValue()));
+                break;
+            case HttpStatus.SC_OK:
+                logger.finer("Status = SC_OK");
+                break;
+            default:
+                String statusHeaderStr = attendeePost.getResponseHeader("Status").getValue();
+                logger.finer("Status = " + statusHeaderStr);
+        }
+        if (status != HttpStatus.SC_OK && status != HttpStatus.SC_MOVED_TEMPORARILY) {
+            throw new IOException("GET operation failed");
+        }
+
         // http.readURL(updatePageURL, "list=attendees");
     }
 
     public Set<String> parseImages(StringBuilder buffer) {
         LinkedHashSet<String> urlSet = new LinkedHashSet<String>();
-        String elStart = "<img ";
-        String attrStart = " src=\"";
+        //String elStart = "<img ";
+        String elStart = "background: ";
+        String attrStart = " url(";
         int elStartLen = elStart.length() - 1; // Don't include the trailing space
         int attrStartLen = attrStart.length();
         int idx = 0;
@@ -719,10 +796,11 @@ public class UIDriver {
             if (idx == -1)
                 break;
             idx += elStartLen;
-            int endIdx = buffer.indexOf("/>", idx);
+            int endIdx = buffer.indexOf(")", idx) + 1; // +1 to include the '('
             if (endIdx == -1)
                 break;
             String elText = buffer.substring(idx, endIdx);
+            logger.finest(elText);
             idx = endIdx + 1;
 
             // Find the attribute
@@ -731,34 +809,67 @@ public class UIDriver {
                 logger.finer("No img src attribute. Weird! " + elText);
                 continue;
             }
-            endIdx = elText.indexOf("\"", idx2 + attrStartLen);
+            endIdx = elText.indexOf(")", idx2 + attrStartLen);
             if (endIdx == -1) {
                 logger.warning("No img src attribute ending. Weird! " + elText);
                 continue;
             }
 
             String link = elText.substring(idx2 + attrStartLen, endIdx);
-            if (link.startsWith("fileService.")) {
+            if (link.startsWith("/filestore")) {
                 String url = baseURL + '/' + link;
 
-                logger.finest("Adding " + url + " from idx " + idx);
+                logger.finer("Adding " + url + " from idx " + idx);
                 urlSet.add(url);
             }
         }
         return urlSet;
     }
 
+    private String parseAuthToken(String responseBuffer) throws IOException {
+
+        int idx = responseBuffer.indexOf("authenticity_token");
+
+        if (idx == -1)
+            throw new IOException("Trying to add event but authenticity token not found");
+
+        int endIdx = responseBuffer.indexOf("\" />", idx);
+
+        if (endIdx == -1)
+            throw new IOException("Invalid authenticity_token element. Buffer(100 chars) = " +
+                    responseBuffer.substring(idx, idx + 100));
+
+        String tmpString = responseBuffer.substring(idx, endIdx);
+        String[] splitStr = tmpString.split("value=\"");
+
+        if (splitStr.length < 2)
+            throw new IOException("Invalid authenticity_token element. Buffer(100 chars) = " +
+                    responseBuffer.substring(idx, idx + 100));
+
+        String token = splitStr[1];
+
+        logger.finer("authenticity_token = " + token);
+
+        return token;
+
+    }
+
     private void loadImages(Set<String> images) throws IOException {
+        logger.finer("loadImages()");
+        logger.finest("No. images = " + images.size());
+
         if (images != null)
             for (String image : images)
                 // Loads image only if not cached, means we can add to cache.
                 if (cachedURLs.add(image)) {
-                    logger.finer("Loading image " + image);
+                    logger.finest("Loading image " + image);
                     imgBytes += http.readURL(image);
                     ++imagesLoaded;
                 } else {
-                    logger.finer("Image already cached: Not loading " + image);
+                    logger.finest("Image already cached: Not loading " + image);
                 }
+        else
+            logger.finest("images == null");
     }
 
     private boolean cached() {
@@ -814,20 +925,53 @@ public class UIDriver {
         return returnList;
     }
 
-    private String constructLoginPost(int randomId) {
-        return "users[username]=" + username + "&users[password]=" +
-                String.valueOf(randomId) + "&submit=Login";
+    private PostMethod constructLoginPost(int randomId) {
+        PostMethod loginPost = new PostMethod(loginURL);
+
+        loginPost.setFollowRedirects(true);
+        loginPost.addParameter("users[username]", username);
+        loginPost.addParameter("users[password]", String.valueOf(randomId));
+        loginPost.addParameter("submit", "Login");
+        
+        return loginPost;
     }
 
     public void doMultiPartPost(MultipartPostMethod post) throws IOException {
+        logger.finer("In doMultiPartPost()");
 
-        HttpClient client = new HttpClient();
-        client.setConnectionTimeout(5000);
-        int status = client.executeMethod(post);
-        if(status != HttpStatus.SC_OK)
+        if (httpClient == null) {
+            logger.warning("HttpClient is null, this shouldn't happen");
+            httpClient = new HttpClient();
+            httpClient.setConnectionTimeout(5000);
+        }
+
+        post.setFollowRedirects(false);
+        int status = httpClient.executeMethod(post);
+        switch (status) {
+            case HttpStatus.SC_ACCEPTED:
+                logger.finer("Status = SC_ACCEPTED");
+                break;
+            case HttpStatus.SC_MOVED_TEMPORARILY:
+                logger.finer("Status = SC_MOVED_TEMPORARILY");
+                // System.out.println(post.getResponseBodyAsString());
+                // for (Header header: post.getResponseHeaders()) {
+                //     logger.info(header.getName() + ":" + header.getValue());
+                // }
+                httpClient.executeMethod(new GetMethod(post.getResponseHeader("Location").getValue()));
+                break;
+            case HttpStatus.SC_OK:
+                logger.finer("Status = SC_OK");
+                break;
+            default:
+                String statusHeaderStr = post.getResponseHeader("Status").getValue();
+                logger.finer("Status = " + statusHeaderStr);
+        }
+        if (status != HttpStatus.SC_OK && status != HttpStatus.SC_MOVED_TEMPORARILY) {
             throw new IOException("Multipart Post did not work");
     }
+    }
 
+    // TODO: implement prepareAddress() for Rails form data
     public void addAddress(MultipartPostMethod post)
     {
         //add the address
@@ -988,7 +1132,7 @@ public class UIDriver {
             if (total > 0) {
                 double avgImgs = eventDetailImages / (double) total;
                 el[6].result = String.format("%.2f", avgImgs);
-                if (avgImgs >= 9d)
+                if (avgImgs >= 1d)
                     el[6].passed = Boolean.TRUE;
                 else
                     el[6].passed = Boolean.FALSE;

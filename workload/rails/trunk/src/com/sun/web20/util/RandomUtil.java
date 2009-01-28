@@ -174,21 +174,21 @@ public class RandomUtil {
         "W-SU", "WET", "Zulu"};
 
 
-    // Phone comes as +1 888 999 0000 or +77 66 999 0000 for non-US.
+    // Phone is 0018889990000 or 0077669990000 for non-US (no spaces for Rails app)
     // 50% of the time, do US, 50% non-us.
     public static String randomPhone(Random r, StringBuilder b) {
         String v = r.makeNString(1, 2);
         if (v.length() == 1) {
-            b.append("+1 ");
+            b.append("001"); // removed space
             v = r.makeNString(3, 3);
-            b.append(v).append(' ');
+            b.append(v); // removed space
         } else {
-            b.append("+").append(v);
+            b.append("00").append(v);
             v = r.makeNString(2, 2);
-            b.append(' ').append(v).append(' ');
+            b.append(v); //removed spaces
         }
         v = r.makeNString(3, 3);
-        b.append(v).append(' ');
+        b.append(v); // removed space
         v = r.makeNString(4, 4);
         b.append(v);
         return b.toString();
@@ -291,6 +291,7 @@ public class RandomUtil {
         String search1 = "<a href=\"/events/";
         int idx = 0;
         HashSet<String> eventIdSet = new HashSet<String>();
+        String eventItem = "";
         for (;;) {
             idx = eventListPage.indexOf(search1, idx);
             if (idx == -1)
@@ -300,6 +301,9 @@ public class RandomUtil {
             int endIdx = eventListPage.indexOf("\"", idx);
             if (endIdx == -1)
                 break;
+
+            eventItem = eventListPage.substring(idx, endIdx).trim();
+            if (!eventItem.contains("tagged") && !eventItem.contains("new") )
             eventIdSet.add(eventListPage.substring(idx, endIdx).trim());
             idx = endIdx;
         }
