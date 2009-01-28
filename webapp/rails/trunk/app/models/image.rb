@@ -13,6 +13,10 @@
 #  thumbnail    :string(255)     
 #
 
+unless Technoweenie::AttachmentFu.content_types.include? 'image/jpeg; charset=ISO-8859-1'
+  Technoweenie::AttachmentFu.content_types << 'image/jpeg; charset=ISO-8859-1'
+end
+
 class Image < ActiveRecord::Base
   has_attachment :content_type => :image, 
                  :storage => :file_system, 
