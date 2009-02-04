@@ -127,23 +127,9 @@ public class UIDriver {
         "/images/reflec_right.png",
         "/images/reflec_left.png",
         "/images/main_nav_hover_bg.gif",
-        "/javascripts/tiny_mce/tiny_mce.js",
-        "/javascripts/tiny_mce/themes/simple/editor_template.js",
-        "/javascripts/tiny_mce/langs/en.js",
-        "/javascripts/tiny_mce/themes/simple/css/editor_ui.css",
         "/images/reflec_tile.png",
         "/images/reflec_right.png",
-        "/images/reflec_left.png",
-        "/javascripts/tiny_mce/themes/simple/images/italic.gif",
-        "/javascripts/tiny_mce/themes/simple/images/underline.gif",
-        "/javascripts/tiny_mce/themes/simple/images/strikethrough.gif",
-        "/javascripts/tiny_mce/themes/simple/images/undo.gif",
-        "/javascripts/tiny_mce/themes/simple/images/separator.gif",
-        "/javascripts/tiny_mce/themes/simple/images/redo.gif",
-        "/javascripts/tiny_mce/themes/simple/images/cleanup.gif",
-        "/javascripts/tiny_mce/themes/simple/images/bullist.gif",
-        "/javascripts/tiny_mce/themes/simple/images/numlist.gif",
-        "/javascripts/tiny_mce/themes/simple/css/editor_content.css"
+        "/images/reflec_left.png"
     };
 
     public static final String[] ADDPERSON_STATICS = {
@@ -169,23 +155,9 @@ public class UIDriver {
         "/images/reflec_right.png",
         "/images/reflec_left.png",
         "/images/main_nav_hover_bg.gif",
-        "/javascripts/tiny_mce/tiny_mce.js",
-        "/javascripts/tiny_mce/themes/simple/editor_template.js",
-        "/javascripts/tiny_mce/langs/en.js",
-        "/javascripts/tiny_mce/themes/simple/css/editor_ui.css",
         "/images/reflec_tile.png",
         "/images/reflec_right.png",
-        "/images/reflec_left.png",
-        "/javascripts/tiny_mce/themes/simple/images/italic.gif",
-        "/javascripts/tiny_mce/themes/simple/images/underline.gif",
-        "/javascripts/tiny_mce/themes/simple/images/strikethrough.gif",
-        "/javascripts/tiny_mce/themes/simple/images/undo.gif",
-        "/javascripts/tiny_mce/themes/simple/images/separator.gif",
-        "/javascripts/tiny_mce/themes/simple/images/redo.gif",
-        "/javascripts/tiny_mce/themes/simple/images/cleanup.gif",
-        "/javascripts/tiny_mce/themes/simple/images/bullist.gif",
-        "/javascripts/tiny_mce/themes/simple/images/numlist.gif",
-        "/javascripts/tiny_mce/themes/simple/css/editor_content.css"
+        "/images/reflec_left.png"
     };
 
     public static final String[] ADDEVENT_STATICS = {
@@ -211,23 +183,9 @@ public class UIDriver {
         "/images/reflec_right.png",
         "/images/reflec_left.png",
         "/images/main_nav_hover_bg.gif",
-        "/javascripts/tiny_mce/tiny_mce.js",
-        "/javascripts/tiny_mce/themes/simple/editor_template.js",
-        "/javascripts/tiny_mce/langs/en.js",
-        "/javascripts/tiny_mce/themes/simple/css/editor_ui.css",
         "/images/reflec_tile.png",
         "/images/reflec_right.png",
-        "/images/reflec_left.png",
-        "/javascripts/tiny_mce/themes/simple/images/italic.gif",
-        "/javascripts/tiny_mce/themes/simple/images/underline.gif",
-        "/javascripts/tiny_mce/themes/simple/images/strikethrough.gif",
-        "/javascripts/tiny_mce/themes/simple/images/undo.gif",
-        "/javascripts/tiny_mce/themes/simple/images/separator.gif",
-        "/javascripts/tiny_mce/themes/simple/images/redo.gif",
-        "/javascripts/tiny_mce/themes/simple/images/cleanup.gif",
-        "/javascripts/tiny_mce/themes/simple/images/bullist.gif",
-        "/javascripts/tiny_mce/themes/simple/images/numlist.gif",
-        "/javascripts/tiny_mce/themes/simple/css/editor_content.css"
+        "/images/reflec_left.png"
     };
 
 
@@ -816,7 +774,7 @@ public class UIDriver {
             }
 
             String link = elText.substring(idx2 + attrStartLen, endIdx);
-            if (link.startsWith("/filestore")) {
+            if (link.startsWith("/uploaded_files")) {
                 String url = baseURL + '/' + link;
 
                 logger.finer("Adding " + url + " from idx " + idx);
