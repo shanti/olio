@@ -1,0 +1,5 @@
+<div id="approve_friend_<%= target.id %>">
+  <% form_remote_tag :url => user_friend_path(user, target), :method => :put, :html => {:method => :put, :class => 'friend_link'} do -%>
+    <%= submit_tag "Approve Friendship" %>
+  <% end -%>
+</div>

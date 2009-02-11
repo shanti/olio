@@ -1,0 +1,22 @@
+
+open '/selenium/setup?clear_tables=users,addresses&fixtures=login_user'
+include_partial 'login'
+
+click_and_wait 'link=Add Event'
+verify_text_present 'New event'
+type 'event_title', 'Dog wash'
+
+type_tiny_mce 'event[summary]', 'Come join us for a dog wash event'  
+type_tiny_mce 'event[description]', 'Big dog wash bash with soap and bones'
+
+type 'event_telephone', '555-555-5555'
+
+type 'address_street1', '100 Main St'
+type 'address_city', 'Oakland'
+type 'address_state', 'CA'
+type 'address_zip', '94611'
+select 'address_country', 'United States'
+
+click_and_wait 'commit'
+
+verify_text_present 'Event was successfully created.'

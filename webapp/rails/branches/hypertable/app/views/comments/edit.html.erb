@@ -1,0 +1,26 @@
+<h1>Editing your comment</h1>
+
+<fieldset id="comment_before_edit">
+  <legend>Your current comment</legend>
+  <%= display_name(@comment.author) %> (<%= output_date(@comment.created_at) %>):
+
+  <% unless @comment.rating == 0 %>
+    <span id="rating">
+      <% @comment.rating.times do -%>
+        <%= image_tag("16-star-hot.png") %>
+      <% end -%>
+      <% (5 - @comment.rating).times do -%>
+        <%= image_tag("16-star-cold.png") %>
+      <% end -%>
+    </span>
+  <% end -%>
+  
+  <p id="comment_text"><%=white_list @comment.comment %></p>
+</fieldset>
+
+<%= error_messages_for :comment %>
+
+<% form_for [@comment.event, @comment] do |f| %>
+  <%= render :partial => "form", :locals => {:f => f, :comment => @comment} %>
+  <p><%= f.submit "Update" %></p>
+<% end -%>

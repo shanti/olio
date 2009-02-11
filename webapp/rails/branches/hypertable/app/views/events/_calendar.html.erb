@@ -1,0 +1,15 @@
+<div id="calendar">
+  <%
+    year = (params[:year]) ? params[:year].to_i : Time.now.year
+    month = (params[:month]) ? params[:month].to_i : Time.now.month
+  -%>
+  <%= 
+    calendar(:year => year, :month => month, :abbrev => (0..0)) do |d| 
+      link_to_remote d.mday, { 
+          :url => events_path, :method => :get, 
+          :with => "'month=#{d.mon}&day=#{d.mday}&year=#{d.year}'"
+        }, 
+        :href => events_path(:month => d.mon, :day => d.mday, :year => d.year)
+    end
+  %>
+</div>
