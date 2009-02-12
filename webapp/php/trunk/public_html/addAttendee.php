@@ -43,7 +43,10 @@ if (!is_null($username)) {
 if (!isset($connection)) { // If connection not there, we're read-only.
     $connection = DBConnection::getInstance();
 }
-$listquery = "select username from PERSON_SOCIALEVENT where socialeventid = '$se'";
+$listquery = "select username from PERSON_SOCIALEVENT ".
+             "where socialeventid = '$se' and username = '$username' ".
+             "union select username from PERSON_SOCIALEVENT ".
+             "where socialeventid = '$se' limit 20";
 $listqueryresult = $connection->query($listquery);
 $username = $_SESSION["uname"];
 while($listqueryresult->next()) {

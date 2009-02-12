@@ -76,11 +76,21 @@ $query = "select title,description,submitterUserName,imagethumburl," .
                          $result->get(13).",".$result->get(14);
         }
 unset($result);
-$listquery = "select username from PERSON_SOCIALEVENT where socialeventid = '$se'";
+if (isset($_SESSION["uname"])) {
+    // Ensure our user name comes in first, if already attending.
+    $listquery = "select username from PERSON_SOCIALEVENT ".
+                 "where socialeventid = '$se' and username = '$username' ".
+                 "union select username from PERSON_SOCIALEVENT ".
+                 "where socialeventid = '$se' limit 20";
+
+} else {
+    $listquery = "select username from PERSON_SOCIALEVENT ".
+                 "where socialeventid = '$se' limit 20";
+}
 $listqueryresult = $connection->query($listquery);
 while($listqueryresult->next()) {
         $tmp_uname = $listqueryresult->get(1);
-        if (!is_null($_SESSION["uname"]) && $tmp_uname == $username) {
+        if (!isset($_SESSION["uname"]) && $tmp_uname == $username) {
                 $unattend = true; // show unattend button if user is already registered.
         }
         $attendeeList = $attendeeList." ".'<a href="users.php?username='.$tmp_uname.'">'.$tmp_uname.'</a><br />';
