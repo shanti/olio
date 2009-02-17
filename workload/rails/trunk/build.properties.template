@@ -1,6 +1,6 @@
-bench.shortname=Web20Driver
-faban.home=/Users/will/projects/RadLab/new/
-faban.url=http://dewberry.sfbay.sun.com:9980/
+bench.shortname=OlioDriver
+faban.home=/export/home/faban
+faban.url=http://host.sfbay:9980/
 deploy.user=deployer
 deploy.password=adminadmin
 deploy.clearconfig=false

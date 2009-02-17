@@ -4,7 +4,7 @@
     <configuration>
         <general-data xmlns="http://www.netbeans.org/ns/freeform-project/1">
             <!-- Do not use Project Properties customizer when editing this file manually. -->
-            <name>web2.0driver Benchmark</name>
+            <name>Olio Rails Driver</name>
             <properties/>
             <folders>
                 <source-folder>

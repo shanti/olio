@@ -20,8 +20,8 @@
 $web20config['includes'] = $_SERVER['DOCUMENT_ROOT'] . '/../includes/';
 
 $web20config['dbDriver'] = 'PDO';  // Which DB driver to use.
-
 // $web20config['dbTarget'] = 'myodbc3'; // ODBC target in odbc.ini.
+
 $web20config['dbTarget'] = 'mysql:host=localhost;dbname=web20load'; // PDO target.
 // For master/slave clusters, specify dbTarget as an array, listing the master first.
 // $web20config['dbTarget'] = array('mysql:host=master;dbname=web20load',
@@ -33,6 +33,8 @@ $web20config['dbUser'] = 'web20'; // DB user name.
 $web20config['dbPass'] = 'web20'; // DB password.
 
 $web20config['cacheSystem'] = 'MemCached';
+// Use below line for no cache - WARNING: db load will increase
+//$web20config['cacheSystem'] = 'NoCache';
 
 $web20config['cacheExpire'] = 7200; // Expiry time for memcache on set function in seconds
 
@@ -40,7 +42,9 @@ $web20config['fileSystem'] = 'LocalFS';
 
 $web20config['localfsRoot'] = '/filestore';
 
-$web20config['memcachedHosts'] = array('MEMCACHED_HOST:port', 'MEMCACHED_HOST:port'); // memcached host ip
+$web20config['memcachedHosts'] = array('MEMCACHED_HOST:11211'); // memcached host ip
+// For multiple instances, use the below line
+// $web20config['memcachedHosts'] = array('MEMCACHED_HOST1:port', 'MEMCACHED_HOST2:port'); // memcached host ip
 
 $web20config['geocoderURL'] = 'http://GEOCODER_HOST:8080/geocoder/geocode'; //Geocoder URL
 

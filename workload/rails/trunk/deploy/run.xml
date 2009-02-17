@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web20>
+<olio>
     <jvmConfig xmlns="http://faban.sunsource.net/ns/fabanharness">
         <javaHome>/usr/jdk/instances/jdk1.6.0</javaHome>
         <jvmOptions>-Xmx1g -Xms256m -XX:+DisableExplicitGC</jvmOptions>
     </jvmConfig>
     
-    <fa:runConfig definition="com.sun.web20.driver.UIDriver" xmlns="http://faban.sunsource.net/ns/fabandriver" xmlns:fa="http://faban.sunsource.net/ns/faban" xmlns:fh="http://faban.sunsource.net/ns/fabanharness">
+    <fa:runConfig definition="org.apache.olio.workload.driver.UIDriver" xmlns="http://faban.sunsource.net/ns/fabandriver" xmlns:fa="http://faban.sunsource.net/ns/faban" xmlns:fh="http://faban.sunsource.net/ns/fabanharness">
         <fh:description>Enter description for this run here</fh:description>
         
         <fa:hostConfig>
@@ -50,7 +50,7 @@
             <runtimeStats target="9988"/>
             <properties>
                 <property name="serverType">php</property>
-                <property name="resourcePath">/apps/faban/benchmarks/web20/resources/</property>
+                <property name="resourcePath">/apps/faban/benchmarks/olio/resources/</property>
             </properties>            
         </driverConfig>
     </fa:runConfig>
@@ -78,7 +78,7 @@
             <userCommands/>
         </fa:hostConfig>
         <dbDriver>com.mysql.jdbc.Driver</dbDriver>
-        <connectURL>jdbc:mysql://dbHost/web20load?user=web20&amp;password=web20&amp;relaxAutoCommit=true&amp;sessionVariables=FOREIGN_KEY_CHECKS=0</connectURL>
+        <connectURL>jdbc:mysql://dbHost/web20ror?user=web20&amp;password=web20&amp;relaxAutoCommit=true&amp;sessionVariables=FOREIGN_KEY_CHECKS=0</connectURL>
         <reloadDB>true</reloadDB>
         <scale>50</scale>
         <dbHomePath>/opt/coolstack/mysql_32bit</dbHomePath>
@@ -118,4 +118,4 @@
         <serverList></serverList>
     </otherServers>
     -->
-</web20>
+</olio>
