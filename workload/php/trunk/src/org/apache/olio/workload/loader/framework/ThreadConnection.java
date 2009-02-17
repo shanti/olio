@@ -1,10 +1,23 @@
-/* Copyright © 2008 Sun Microsystems, Inc. All rights reserved
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Use is subject to license terms.
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
  * $Id: ThreadConnection.java,v 1.1.1.1 2008/09/29 22:33:08 sp208304 Exp $
  */
-package com.sun.web20.loader.framework;
+package org.apache.olio.workload.loader.framework;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -123,7 +136,8 @@ public class ThreadConnection {
         }
     }
 
-    void processBatch(String name, int batchCount, Queue<Loadable> queue) {
+    void processBatch(String name, int batchCount,
+            Queue<? extends Loadable> queue) {
         // First we need to save the load objects from the queue
         // so we do not loose them in case we need to retry.
         if (batchBuffer == null) {
@@ -210,10 +224,11 @@ public class ThreadConnection {
         }
 
         // Once we're done with this buffer, don't hold on to the objects.
-        // Let them get GC'd so we don't bloat memory. Minimal CPU cost
-        // for such tight loop and setting all entries to null.
-        for (int i = 0; i < batchBuffer.length; i++)
+        // Return them to the pool so we don't bloat memory.
+        for (int i = 0; i < batchBuffer.length; i++) {
+            batchBuffer[i].pool.putLoader(batchBuffer[i]);
             batchBuffer[i] = null;
+    }
     }
 
     void flush() throws SQLException {
