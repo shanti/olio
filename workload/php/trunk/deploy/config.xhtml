@@ -11,7 +11,7 @@
         <xforms:model id="benchmark-model">
             <xforms:instance id="benchmark-instance" src="{benchmark.template}"/>
             <xforms:submission xforms:action="schedule-run.jsp" xforms:replace="all" id="submission-debug" xforms:method="post"/>
-            <xforms:bind id="bind-web20" xforms:nodeset="/web20">
+            <xforms:bind id="bind-olio" xforms:nodeset="/olio">
                 <xforms:bind id="bind-jvmConfig" xforms:nodeset="fh:jvmConfig">
                     <xforms:bind id="bind-javaHome" xforms:nodeset="fh:javaHome"/>
                     <xforms:bind id="bind-jvmOptions" xforms:nodeset="fh:jvmOptions"/>

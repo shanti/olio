@@ -29,7 +29,7 @@ fi
 
 BINDIR=`dirname $0`
 
-# This script is in $FABAN_HOME/benchmarks/Web20Driver/bin
+# This script is in $FABAN_HOME/benchmarks/OlioDriver/bin
 # we need to go up 4 levels to get to $FABAN_HOME.
 if [ -n "$BINDIR" ]
 then
@@ -40,11 +40,11 @@ fi
 
 B=$BENCH_HOME/lib
 L=$FABAN_HOME/lib
-CLASSPATH=$B/Web20Driver.jar:$L/commons-httpclient-2.0.1.jar:\
+CLASSPATH=$B/OlioDriver.jar:$L/commons-httpclient-2.0.1.jar:\
 $L/fabancommon.jar:$L/commons-logging.jar:$L/fabandriver.jar:$L/fabanagents.jar
 export CLASSPATH
 
-$JAVA_HOME/bin/java -server com.sun.web20.fsloader.FileLoader \
+$JAVA_HOME/bin/java -server org.apache.olio.workload.fsloader.FileLoader \
     $BENCH_HOME/resources $TARGET $SCALE
 
 EXIT_CODE=$?

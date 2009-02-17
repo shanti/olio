@@ -25,7 +25,7 @@ DB_HOST=$1
 
 BINDIR=`dirname $0`
 
-# This script is in $FABAN_HOME/benchmarks/Web20Driver/bin
+# This script is in $FABAN_HOME/benchmarks/OlioDriver/bin
 # we need to go up 4 levels to get to $FABAN_HOME.
 if [ -n "$BINDIR" ]
 then
@@ -36,12 +36,12 @@ fi
 
 B=$BENCH_HOME/lib
 L=$FABAN_HOME/lib
-CLASSPATH=$B/mysql-connector-java-5.0.6-bin.jar:$B/json.jar:$B/Web20Driver.jar:\
+CLASSPATH=$B/mysql-connector-java-5.0.6-bin.jar:$B/json.jar:$B/OlioDriver.jar:\
 $L/commons-httpclient-2.0.1.jar:$L/fabancommon.jar:$L/commons-logging.jar:\
 $L/fabandriver.jar:$L/fabanagents.jar
 export CLASSPATH
 
-$JAVA_HOME/bin/java -server com.sun.web20.loader.LoadController com.mysql.jdbc.Driver \
+$JAVA_HOME/bin/java -server org.apache.olio.workload.loader.LoadController com.mysql.jdbc.Driver \
 "jdbc:mysql://$DB_HOST/web20load?user=web20&password=web20&relaxAutoCommit=true&sessionVariables=FOREIGN_KEY_CHECKS=0" $SCALE
 EXIT_CODE=$?
 if [ "$EXIT_CODE" = 0 ] ; then
