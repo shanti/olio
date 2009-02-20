@@ -23,6 +23,11 @@ abstract class CacheSystem {
         $classname = Web20::$config['cacheSystem'];
         return new $classname;
     }
+
+    static function isCachingActive()
+    {
+        return !(Web20::$config['cacheSystem'] == 'NoCache');
+    }
     
     abstract function flush();
 

@@ -103,6 +103,14 @@ if(!is_null($page)){
     session_unregister ("currentpage");
 }
 
+/*
+ * In order to ensure that we do not loop indefinately we jimmy the $cacheType
+ * if the cache is turned off.
+ */
+if(!CacheSystem::isCachingActive())
+{
+    $cacheType = 0;
+}
 switch ($cacheType) {
     case 0: noCachePage(); break;
     case 1: contentCachePage(); break;
@@ -188,6 +196,7 @@ function contentCachePage() {
     global $order, $numPages, $curr_page, $prev_page, $next_page, $offset;
 
     $cache = CacheSystem::getInstance();
+
     for (;;) {
         $fillContent = $cache->get('HomeContent');
         if ($fillContent != '') {
