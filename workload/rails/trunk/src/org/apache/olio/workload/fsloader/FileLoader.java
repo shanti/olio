@@ -18,7 +18,7 @@
  */
 package com.sun.web20.fsloader;
 
-import com.sun.web20.util.ScaleFactors;
+import org.apache.olio.workload.util.ScaleFactors;
 
 import java.nio.channels.FileChannel;
 import java.io.FileInputStream;

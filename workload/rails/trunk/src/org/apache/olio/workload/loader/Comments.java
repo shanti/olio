@@ -1,3 +1,4 @@
+
 package org.apache.olio.workload.loader;
 
 import com.sun.faban.driver.util.Random;
@@ -48,7 +49,7 @@ public class Comments extends Loadable {
         ratings = new int[commentCount];
         for (int i = 0; i < users.length; i++) {
             users[i] = r.random(1, ScaleFactors.users);;
-            comments[i] = r.makeCString(10, 1000);
+            comments[i] = r.makeCString(250, 1000);
             ratings[i] = r.random(2, 5);
         }
         createdTimestamp = r.makeDateInInterval( //createdtimestamp

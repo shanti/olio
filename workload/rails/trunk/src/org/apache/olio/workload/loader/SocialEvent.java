@@ -50,8 +50,8 @@ public class SocialEvent extends Loadable {
         ThreadResource tr = ThreadResource.getInstance();
         Random r = tr.getRandom();
         StringBuilder buffer = tr.getBuffer();
-        fields[0] = RandomUtil.randomText(r, 15, 20); //title
-        fields[1] = RandomUtil.randomText(r, 50, 495); // description
+        fields[0] = RandomUtil.randomText(r, 20, 50); //title
+        fields[1] = RandomUtil.randomText(r, 500, 2000); // description
         fields[2] = RandomUtil.randomPhone(r, buffer); //phone
         DateFormat dateFormat = tr.getDateFormat(); // eventtimestamp
         String eventDate = dateFormat.format(
@@ -62,7 +62,7 @@ public class SocialEvent extends Loadable {
         fields[3] = String.format("%s %02d:%s:00",
                                             eventDate, eventHr, eventMin);
         fields[4] = eventDate; // eventdate
-        fields[5] = RandomUtil.randomText(r, 25, 99); // summary
+        fields[5] = RandomUtil.randomText(r, 50, 200); // summary
         
         createdTimestamp = r.makeDateInInterval( //createdtimestamp
                 BASE_DATE, -540, 0);
