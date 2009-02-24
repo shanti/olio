@@ -141,7 +141,7 @@ public class OlioBenchmark extends DefaultFabanBenchmark {
             ArrayList<String> cmdList = new ArrayList<String>();
             if (autoCommit)
                 cmdList.add("-Dcommit.tx=false");
-            cmdList.add("com.sun.web20.loader.LoadController");
+            cmdList.add("org.apache.olio.workload.loader.LoadController");
             cmdList.add(driver);
             cmdList.add(connectURL);
             cmdList.add(String.valueOf(scale));
@@ -155,7 +155,7 @@ public class OlioBenchmark extends DefaultFabanBenchmark {
             String mediaHost = params.getParameter(
                                         "dataStorage/fa:hostConfig/fa:host");
             String mediaDir = params.getParameter("dataStorage/mediaDir");
-            Command c = new Command("com.sun.web20.fsloader.FileLoader",
+            Command c = new Command("org.apache.olio.workload.fsloader.FileLoader",
                         getBenchmarkDir() + "resources", mediaDir,
                         String.valueOf(scale));
             c.setSynchronous(false);

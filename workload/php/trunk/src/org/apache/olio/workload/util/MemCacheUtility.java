@@ -225,8 +225,8 @@ public class MemCacheUtility {
     * -e end time: the steady state, in seconds. (time to do the statistics data collection)
     * -i interval time: the snapshot period to collect the stats, in seconds.
     *
-    *     Usage:  java com.sun.web20.MemCacheUtility server:port [server2:port server3:port] -s startTime -e endTime -i interval
-    *     eg. java com.sun.web20.util.MemCacheUtility server1:12100 server2:12100 -s 300 -e 600 -i 3
+    *     Usage:  java org.apache.olio.workload.util.MemCacheUtility server:port [server2:port server3:port] -s startTime -e endTime -i interval
+    *     eg. java org.apache.olio.workload.util.MemCacheUtility server1:12100 server2:12100 -s 300 -e 600 -i 3
     *     This will sleep for 300 seconds during ramp up, collect for 600 seconds with an interval of 3 seconds between
     *     each snapshot.
     *     @param args String []
@@ -235,7 +235,7 @@ public class MemCacheUtility {
     public static void main (String[] args) {
 
         if (args==null || args.length < 4) {//minimum amount of args - one server, -s, -e, -i
-            System.out.println("Usage:  java com.sun.web20.MemCacheUtility server:port [server2:port server3:port] -s startTime -e endTime -i interval");
+            System.out.println("Usage:  java org.apache.olio.workload.MemCacheUtility server:port [server2:port server3:port] -s startTime -e endTime -i interval");
             System.out.println(" where startTime = ramp up time in seconds.  Statistics collection will NOT occur during ramp up time and will sleep for startTime period");
             System.out.println(" endTime = steady State time in seconds.  Statistics collection will only occur during the steady state period");
             System.out.println(" interval = time between statistics collection snapshots, in seconds.");
