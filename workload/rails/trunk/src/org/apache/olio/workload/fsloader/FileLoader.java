@@ -16,7 +16,7 @@
  * limitations under the License.
  * 
  */
-package com.sun.web20.fsloader;
+package org.apache.olio.workload.fsloader;
 
 import org.apache.olio.workload.util.ScaleFactors;
 

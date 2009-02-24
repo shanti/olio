@@ -319,11 +319,11 @@ public class UIDriver {
         driverMetrics = new UIDriverMetrics();
         ctx.attachMetrics(driverMetrics);
         String hostPorts = ctx.getXPathValue(
-                                "/olio/webServer/fa:hostConfig/fa:hostPorts");
+                                "//webServer/fa:hostConfig/fa:hostPorts");
         List<NameValuePair<Integer>> hostPortList =
                                             Utilities.parseHostPorts(hostPorts);
         int loadedScale = Integer.parseInt(
-                                    ctx.getXPathValue("/olio/dbServer/scale"));
+                                    ctx.getXPathValue("//dbServer/scale"));
         loadedUsers = 4 * loadedScale;
         if (scale > loadedScale)
             throw new FatalException("Data loaded only for " + loadedScale +

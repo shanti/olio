@@ -225,7 +225,7 @@ public class MemCacheUtility {
     public static void main (String[] args) {
 
         if (args==null || args.length < 4) {//minimum amount of args - one server, -s, -e, -i
-            System.out.println("Usage:  java com.sun.web20.MemCacheUtility server:port [server2:port server3:port] -s startTime -e endTime -i interval");
+            System.out.println("Usage:  java org.apache.olio.workload.util.MemCacheUtility server:port [server2:port server3:port] -s startTime -e endTime -i interval");
             System.out.println(" where startTime = ramp up time in seconds.  Statistics collection will NOT occur during ramp up time and will sleep for startTime period");
             System.out.println(" endTime = steady State time in seconds.  Statistics collection will only occur during the steady state period");
             System.out.println(" interval = time between statistics collection snapshots, in seconds.");
