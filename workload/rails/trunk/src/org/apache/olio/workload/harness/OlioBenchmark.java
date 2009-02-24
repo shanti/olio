@@ -182,7 +182,7 @@ public class OlioBenchmark extends DefaultFabanBenchmark {
             // Un-escape the URL.
             connectURL = connectURL.replace("&amp;", "&");
             Command c = new Command("-Dcommit.tx=false " +
-                                    "com.sun.web20.loader.LoadController " +
+                                    "org.apache.olio.workload.loader.LoadController " +
                                     driver + ' ' + connectURL + ' ' + scale);
             c.setSynchronous(false);
             dbHandle = java(dbHost, c);
