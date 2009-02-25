@@ -38,8 +38,8 @@ import java.util.*;
 import java.util.logging.Logger;
 
 @BenchmarkDefinition (
-    name    = "Web20Bench",
-    version = "0.4",
+    name    = "OlioWorkload",
+    version = "0.1",
     scaleName = "Concurrent Users"
 
 )
