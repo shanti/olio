@@ -29,7 +29,7 @@ class EventsController < ApplicationController
 
     session[:order] = params[:order] || session[:order] || 'event_date'
       
-    @events = Event.paginate :page => params[:page], :conditions => conditions, :order => session[:order], :per_page => 10, :include => :address
+    @events = Event.paginate :page => params[:page], :conditions => conditions, :order => session[:order], :per_page => 10
     if @zipcode and !@zipcode.empty?
       @events.delete_if { |e| e.address.zip != @zipcode }
     end
