@@ -1,5 +1,5 @@
 <div id="attendees">
-  <h2 class="smaller_heading"><%= pluralize @attendees.size, 'Attendee' %>:</h2><br/>
+  <h2 class="smaller_heading">At least <%= pluralize @attendees.size, 'Attendee' %>:</h2><br/>
   
   <%= attendance_links(@event) %> 
 

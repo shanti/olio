@@ -6,6 +6,8 @@ class EventsController < ApplicationController
     :attend, :unattend, :tag
   ]
   protect_from_forgery :only => [:update, :destroy, :delete, :create]
+
+  MAX_ATTENDEES = 20
   
   # caches_page :index
     
@@ -44,9 +46,9 @@ class EventsController < ApplicationController
   # GET /events/1
   # GET /events/1.xml  
   def show
-    @event = Event.find(params[:id], :include => [:users, :image, :document, {:comments => :user }, :address])
+    @event = Event.find(params[:id], :include => [:image, :document, {:comments => :user }, :address])
     @address = @event.address
-    @attendees = @event.users
+    @attendees = attendee_list(@event, MAX_ATTENDEES)
     @image = @event.image
     @document = @event.document
     @comments = @event.comments
@@ -237,7 +239,7 @@ class EventsController < ApplicationController
       end
     end
     
-    @attendees = @event.users
+    @attendees = attendee_list(@event, MAX_ATTENDEES)
     
     respond_to do |format|
       format.html { redirect_to(event_path(@event)) }
@@ -259,7 +261,7 @@ class EventsController < ApplicationController
       end
     end
     
-    @attendees = @event.users
+    @attendees = attendee_list(@event, MAX_ATTENDEES)
     
     respond_to do |format|
       format.html { redirect_to(event_path(@event)) }
@@ -313,6 +315,19 @@ class EventsController < ApplicationController
   
   def new_document?
     return (params[:event_document] == '') ? false : true
+  end
+
+  def attendee_list(event, max)
+    users = event.users.find(:all, :limit => max)
+    if session[:user_id]
+      included = users.find { |u| u.id == session[:user_id] }
+      p included
+      p event.users.count(:conditions => ["users.id = ?",  session[:user_id]])
+      if !included and event.users.count(:conditions => ["users.id = ?",  session[:user_id]]) > 0
+        users<< (@user || User.find(session[:user_id]))
+      end
+    end
+    users
   end
   
 end

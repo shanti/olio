@@ -48,7 +48,7 @@ class Event < ActiveRecord::Base
   end
   
   def new_attendee(user)
-    users << user if user.valid? && !users.include?(user)
+    users << user if !users.include?(user)
   end
   
   def remove_attendee(user)

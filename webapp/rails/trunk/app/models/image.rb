@@ -27,6 +27,13 @@ class Image < ActiveRecord::Base
   validates_uniqueness_of :filename
   validates_as_attachment
   
+  # Overload the thumbnail name so it's compatible with the php file generator.
+  def thumbnail_name_for(thumbnail = nil)
+    name = super
+    name.sub!(/_thumb/, 't')
+    name
+  end
+  
   include Uploadable
   
 end
