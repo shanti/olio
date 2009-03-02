@@ -57,28 +57,28 @@ theme : 'simple'
       <label for="event_timestamp">Event date and time</label><br/>
       <select id="year" name="year">
       <?  
-          require(Web20::$config['includes'] . "year.php"); 
+          require(Olio::$config['includes'] . "year.php"); 
       ?>
       </select>
       <select id="month" name="month">
       <? 
-            require(Web20::$config['includes'] . "month.php"); 
+            require(Olio::$config['includes'] . "month.php"); 
       ?>
       </select>
       <select id="day" name="day">
       <? 
-            require(Web20::$config['includes'] . "day.php"); 
+            require(Olio::$config['includes'] . "day.php"); 
       ?>
       </select>
       &mdash;<br/> 
       <select id="hour" name="hour">
       <? 
-            require(Web20::$config['includes'] . "hour.php"); 
+            require(Olio::$config['includes'] . "hour.php"); 
       ?>
       </select>
       : <select id="minute" name="minute">
       <? 
-            require(Web20::$config['includes'] . "minute.php"); 
+            require(Olio::$config['includes'] . "minute.php"); 
       ?>
       </select>
       </p>
@@ -130,7 +130,7 @@ theme : 'simple'
     <label for="country">Country</label>
     <select id="country" name="country">
     <?  
-          readfile(Web20::$config['includes'] . "countries.html");
+          readfile(Olio::$config['includes'] . "countries.html");
         if(!is_null($se)){
           echo '<option selected="selected" value="'.$country.'">'.$country.'</option>';
         }

@@ -17,43 +17,43 @@
  * limitations under the License.
  */ 
     
-$web20config['includes'] = $_SERVER['DOCUMENT_ROOT'] . '/../includes/';
+$olioconfig['includes'] = $_SERVER['DOCUMENT_ROOT'] . '/../includes/';
 
-$web20config['dbDriver'] = 'PDO';  // Which DB driver to use.
-// $web20config['dbTarget'] = 'myodbc3'; // ODBC target in odbc.ini.
+$olioconfig['dbDriver'] = 'PDO';  // Which DB driver to use.
+// $olioconfig['dbTarget'] = 'myodbc3'; // ODBC target in odbc.ini.
 
-$web20config['dbTarget'] = 'mysql:host=localhost;dbname=web20load'; // PDO target.
+$olioconfig['dbTarget'] = 'mysql:host=localhost;dbname=web20load'; // PDO target.
 // For master/slave clusters, specify dbTarget as an array, listing the master first.
-// $web20config['dbTarget'] = array('mysql:host=master;dbname=web20load',
+// $olioconfig['dbTarget'] = array('mysql:host=master;dbname=web20load',
 //                                  'mysql:host=slave1;dbname=web20load',
 //                                  'mysql:host=slave2;dbname=web20load');
 
-$web20config['dbUser'] = 'web20'; // DB user name.
+$olioconfig['dbUser'] = 'web20'; // DB user name.
 
-$web20config['dbPass'] = 'web20'; // DB password.
+$olioconfig['dbPass'] = 'web20'; // DB password.
 
-$web20config['cacheSystem'] = 'MemCached';
+$olioconfig['cacheSystem'] = 'MemCached';
 // Use below line for no cache - WARNING: db load will increase
-//$web20config['cacheSystem'] = 'NoCache';
+//$olioconfig['cacheSystem'] = 'NoCache';
 
-$web20config['cacheExpire'] = 7200; // Expiry time for memcache on set function in seconds
+$olioconfig['cacheExpire'] = 7200; // Expiry time for memcache on set function in seconds
 
-$web20config['fileSystem'] = 'LocalFS';
+$olioconfig['fileSystem'] = 'LocalFS';
 
-$web20config['localfsRoot'] = '/filestore';
+$olioconfig['localfsRoot'] = '/filestore';
 
-$web20config['memcachedHosts'] = array('MEMCACHED_HOST:11211'); // memcached host ip
+$olioconfig['memcachedHosts'] = array('MEMCACHED_HOST:11211'); // memcached host ip
 // For multiple instances, use the below line
-// $web20config['memcachedHosts'] = array('MEMCACHED_HOST1:port', 'MEMCACHED_HOST2:port'); // memcached host ip
+// $olioconfig['memcachedHosts'] = array('MEMCACHED_HOST1:port', 'MEMCACHED_HOST2:port'); // memcached host ip
 
-$web20config['geocoderURL'] = 'http://GEOCODER_HOST:8080/geocoder/geocode'; //Geocoder URL
+$olioconfig['geocoderURL'] = 'http://GEOCODER_HOST:8080/geocoder/geocode'; //Geocoder URL
 
-class Web20 {
+class Olio {
     public static $config;
 }
 
 // Make the config available through the static in the class.
-Web20::$config = $web20config;
+Olio::$config = $olioconfig;
 
 function __autoload($class_name)
     {

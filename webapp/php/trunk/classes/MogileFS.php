@@ -32,9 +32,9 @@ class MogileFS extends FileSystem {
 	 * TODO
 	 */
 	function __construct() {
-		$this->domain = Web20::$config['mogilefsDomain'];
-		$this->hosts  = Web20::$config['mogilefsHosts'];
-		$this->root   = Web20::$config['mogilefsRoot'];
+		$this->domain = Olio::$config['mogilefsDomain'];
+		$this->hosts  = Olio::$config['mogilefsHosts'];
+		$this->root   = Olio::$config['mogilefsRoot'];
 		$this->error  = '';
 	}
 

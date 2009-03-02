@@ -65,8 +65,8 @@ if(isset($_POST['addpersonsubmit'])) {
         unlink($user_image_location);
         unlink($thumb_location);
 	} else {
-		$modified_image_name = Web20::$config['includes'] . "userphotomissing.gif";
-		$imagethumb = Web20::$config['includes'] . "userphotomissing.gif";
+		$modified_image_name = Olio::$config['includes'] . "userphotomissing.gif";
+		$imagethumb = Olio::$config['includes'] . "userphotomissing.gif";
 	}
 
 	$geocode = new Geocoder($street1, $city, $state, $zip);

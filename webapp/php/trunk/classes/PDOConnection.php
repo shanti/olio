@@ -27,7 +27,7 @@ class PDOConnection extends DBConnection {
         }
     	if (!isset($this->connection)) {
             $this->connection = new PDO($this->dbTarget,
-                Web20::$config['dbUser'], Web20::$config['dbPass'], 
+                Olio::$config['dbUser'], Olio::$config['dbPass'], 
                 array(PDO::ATTR_PERSISTENT => true));
             $this->connection->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
             $this->connection->setAttribute( // throw exception on error.

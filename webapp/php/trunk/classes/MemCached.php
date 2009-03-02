@@ -22,7 +22,7 @@ class MemCached extends CacheSystem {
 	function __construct() {
 	    // TODO: Support host:port arrays.	   
 	    $this->memcache = new Memcache();
-	    foreach (Web20::$config['memcachedHosts'] as $host) {
+	    foreach (Olio::$config['memcachedHosts'] as $host) {
 			list($ip,$port)=split(':',$host,2);
 			if ($port == null)
 				$port = 11211;				

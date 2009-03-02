@@ -20,13 +20,13 @@
 abstract class CacheSystem {
 
     static function getInstance() {
-        $classname = Web20::$config['cacheSystem'];
+        $classname = Olio::$config['cacheSystem'];
         return new $classname;
     }
 
     static function isCachingActive()
     {
-        return Web20::$config['cacheSystem'] != 'NoCache';
+        return Olio::$config['cacheSystem'] != 'NoCache';
     }
     
     abstract function flush();

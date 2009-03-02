@@ -20,7 +20,7 @@
 abstract class FileSystem {
 
     static function getInstance() {
-        $classname = Web20::$config['fileSystem'];
+        $classname = Olio::$config['fileSystem'];
         return new $classname;
     }
 

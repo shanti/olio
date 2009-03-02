@@ -58,7 +58,7 @@ if ($fileName != "") {
 
 	$fs = FileSystem::getInstance();
 	$paths = $fs->getPaths($fileName);
-	//$cache->set($fileName, $paths, 0, Web20::$config['cacheExpire']);
+	//$cache->set($fileName, $paths, 0, Olio::$config['cacheExpire']);
 	$path_keys = array_keys($paths);
 	$pathkeycount = count($path_keys);
 	$i=0;
@@ -73,7 +73,7 @@ if ($fileName != "") {
 } else {
 	$contentType = $mimeTypes['gif'];
 	header('Content-Type: ' . $contentType);
-	readfile(Web20::$config['includes'] . 'notavailable.gif');
+	readfile(Olio::$config['includes'] . 'notavailable.gif');
 }
 // }else{
 //        $path_keys = array_keys($memcachegetPaths);
@@ -90,7 +90,7 @@ if ($fileName != "") {
 	// }
 
 	//        if ($cacheFlag == "true"){
-	//                $cache->set($filename, file_get_contents($filename), $web20config['cacheExpire']);
+	//                $cache->set($filename, file_get_contents($filename), $olioconfig['cacheExpire']);
 	//        }
 	// } else {
 	//    echo $content;

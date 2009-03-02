@@ -26,7 +26,7 @@
 class LocalFS extends FileSystem {
 	
 	function __construct() {
-		$this->localFSRoot = Web20::$config['localfsRoot'];
+		$this->localFSRoot = Olio::$config['localfsRoot'];
 	}
 	
 	function getRootDir() {

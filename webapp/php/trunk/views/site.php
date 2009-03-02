@@ -43,7 +43,7 @@
           <? if(is_null($_SESSION["uname"])){ ?>
           <div id="inline_login">
             <a name="login"></a>
-            <? readfile(Web20::$config['includes'] . "login.html"); ?>
+            <? readfile(Olio::$config['includes'] . "login.html"); ?>
           </div>
           <? } ?>
           <ul id="main_nav">
@@ -123,7 +123,7 @@
         </div>
 
         <div id="footer">
-          <? readfile(Web20::$config['includes'] . "footer.html"); ?>
+          <? readfile(Olio::$config['includes'] . "footer.html"); ?>
         </div>
       </div>
 

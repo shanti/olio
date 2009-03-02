@@ -88,7 +88,7 @@ theme : 'simple'
 <label for="timezone">Timezone</label>
 <select id="timezone" name="timezone">
 <? 
-   readfile(Web20::$config['includes'] . "timezones.html"); 
+   readfile(Olio::$config['includes'] . "timezones.html"); 
    if(!is_null($uname)){
 	 echo '<option selected="selected" value="'.$tz.'">'.$tz.'</option>';
    }
@@ -126,7 +126,7 @@ theme : 'simple'
 <label for="country">Country</label>
 <select id="country" name="country">
 <? 
-  readfile(Web20::$config['includes'] . "countries.html");
+  readfile(Olio::$config['includes'] . "countries.html");
 if(!is_null($uname)){
   echo '<option selected="selected" value="'.$country.'">'.$country.'</option>';
 }

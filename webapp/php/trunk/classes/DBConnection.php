@@ -24,21 +24,21 @@ abstract class DBConnection {
 
 
     static function getInstance() {
-        $classname = Web20::$config['dbDriver'] . 'Connection';
+        $classname = Olio::$config['dbDriver'] . 'Connection';
         $instance = new $classname;
         $instance->writeInstance = false;
         return $instance;
     }
 
     static function getWriteInstance() {
-        $classname = Web20::$config['dbDriver'] . 'Connection';
+        $classname = Olio::$config['dbDriver'] . 'Connection';
         $instance = new $classname;
         $instance->writeInstance = true;
         return $instance;
     }
 
     function selectInstance() {
-        $this->dbTarget = Web20::$config['dbTarget'];
+        $this->dbTarget = Olio::$config['dbTarget'];
         if (is_array($this->dbTarget)) {
             if ($this->writeInstance || count($this->dbTarget) == 1) {
                 $this->dbTarget = $this->dbTarget[0];

@@ -27,7 +27,7 @@ class Geocoder {
         $this->city = $city;
         $this->state = $state;
         $this->zip = $zip;
-        $url = Web20::$config['geocoderURL'].'?appid=gsd5f&street='.
+        $url = Olio::$config['geocoderURL'].'?appid=gsd5f&street='.
                 $this->street.'&city='.$this->city.
                 '&state='.$this->state.'&zip='.$this0->zip;
         $stream = $this->curl_string($url);
@@ -43,7 +43,7 @@ class Geocoder {
     private function curl_string($url) {
 
         $ch = curl_init();
-        $geoProxy = trim(Web20::$config['proxy']);
+        $geoProxy = trim(Olio::$config['proxy']);
         if (strlen($geoProxy) > 0) {
             curl_setopt($ch, CURLOPT_PROXY, $geoProxy);
         } else {

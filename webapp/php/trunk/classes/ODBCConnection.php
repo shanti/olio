@@ -27,7 +27,7 @@ class ODBCConnection extends DBConnection {
         }
     	if (!isset($this->connection)) {
             $this->connection = odbc_connect($this->dbTarget,
-                Web20::$config['dbUser'], Web20::$config['dbPass']);
+                Olio::$config['dbUser'], Olio::$config['dbPass']);
             if (is_resource($this->connection))
                 throw new Exception("Unable to connect ".$this->dbTarget."!");
         }
