@@ -4,7 +4,7 @@ require 'cgi'
 class Geolocation
   attr_reader :address, :city, :state, :zip, :country, :latitude, :longitude
   
-  @@url = 'http://localhost:8080/Web20Emulator/geocode?appid=gsd5f'
+  @@url = 'http://localhost:8080/geocoder/geocode?appid=gsd5f'
   
   def self.url=(url)
     @@url = url
