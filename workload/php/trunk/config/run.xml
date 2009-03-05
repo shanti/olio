@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <webBenchmark>
     <!-- The definition binds the config file with the benchmark class -->
-    <runConfig definition="com.sun.web20.driver.UIDriver">
+    <runConfig definition="org.apache.olio.workload.driver.UIDriver">
         <!-- The hostConfig section is used by the harness to control hosts -->
         <hostConfig>
             <host>brazilian.sfbay</host>
@@ -58,7 +58,7 @@
         </runtimeStats>
 
         <!-- The driver-specific config.  -->
-        <driverConfig name="Web20Driver">
+        <driverConfig name="OlioDriver">
             <!-- The number of agents -->
             <agents>3</agents>
             <!-- The stats interval, overrides the ones specified for

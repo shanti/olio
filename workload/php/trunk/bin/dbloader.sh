@@ -42,7 +42,7 @@ $L/fabandriver.jar:$L/fabanagents.jar
 export CLASSPATH
 
 $JAVA_HOME/bin/java -server org.apache.olio.workload.loader.LoadController com.mysql.jdbc.Driver \
-"jdbc:mysql://$DB_HOST/web20load?user=web20&password=web20&relaxAutoCommit=true&sessionVariables=FOREIGN_KEY_CHECKS=0" $SCALE
+"jdbc:mysql://$DB_HOST/olio?user=olio&password=olio&relaxAutoCommit=true&sessionVariables=FOREIGN_KEY_CHECKS=0" $SCALE
 EXIT_CODE=$?
 if [ "$EXIT_CODE" = 0 ] ; then
     echo "Database Load Successful"

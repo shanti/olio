@@ -77,7 +77,7 @@
             <userCommands/>
         </fa:hostConfig>
         <dbDriver>com.mysql.jdbc.Driver</dbDriver>
-        <connectURL>jdbc:mysql://localhost/web20load?user=web20&amp;password=web20&amp;relaxAutoCommit=true&amp;sessionVariables=FOREIGN_KEY_CHECKS=0</connectURL>
+        <connectURL>jdbc:mysql://localhost/olio?user=olio&amp;password=olio&amp;relaxAutoCommit=true&amp;sessionVariables=FOREIGN_KEY_CHECKS=0</connectURL>
         <autoCommit>true</autoCommit>
         <reloadDB>true</reloadDB>
         <scale>2000</scale>
