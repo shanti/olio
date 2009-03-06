@@ -22,15 +22,15 @@ $olioconfig['includes'] = $_SERVER['DOCUMENT_ROOT'] . '/../includes/';
 $olioconfig['dbDriver'] = 'PDO';  // Which DB driver to use.
 // $olioconfig['dbTarget'] = 'myodbc3'; // ODBC target in odbc.ini.
 
-$olioconfig['dbTarget'] = 'mysql:host=localhost;dbname=web20load'; // PDO target.
+$olioconfig['dbTarget'] = 'mysql:host=localhost;dbname=olio'; // PDO target.
 // For master/slave clusters, specify dbTarget as an array, listing the master first.
-// $olioconfig['dbTarget'] = array('mysql:host=master;dbname=web20load',
-//                                  'mysql:host=slave1;dbname=web20load',
-//                                  'mysql:host=slave2;dbname=web20load');
+// $olioconfig['dbTarget'] = array('mysql:host=master;dbname=olio',
+//                                  'mysql:host=slave1;dbname=olio',
+//                                  'mysql:host=slave2;dbname=olio');
 
-$olioconfig['dbUser'] = 'web20'; // DB user name.
+$olioconfig['dbUser'] = 'olio'; // DB user name.
 
-$olioconfig['dbPass'] = 'web20'; // DB password.
+$olioconfig['dbPass'] = 'olio'; // DB password.
 
 $olioconfig['cacheSystem'] = 'MemCached';
 // Use below line for no cache - WARNING: db load will increase
