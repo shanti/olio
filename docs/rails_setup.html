@@ -335,6 +335,7 @@ $ ./mysqladmin -u root password <i>pwd</i></pre>
  $ ./mysql -u root -p <i>pwd</i>
  mysql&gt; create user 'web20'@'%' identified by 'web20';
  mysql&gt; grant all privileges on *.* to 'web20'@'%' identified by 'web20' with grant option;
+
 </pre>
       In some cases the wildcard '%' does not work reliably as a
       substitution for all hosts. You need to grant the privileges
@@ -600,7 +601,7 @@ rake db:migrate</pre>
 	The Host:Port Pairs field takes the host port pairs where the web
 	applications are running. The host and port is separated by a
 	colon. Each pair is separated by space. For the Webserver type
-	field, enter either "nginx" or "lighttpd" dependent on which web
+	field, enter either "nginx" or "apache" dependent on which web
 	server you're using, or leave the field blank if you're using
 	servers other than these two. Only these two servers are
 	supported at this time. Then provide the webserver's bin, log,

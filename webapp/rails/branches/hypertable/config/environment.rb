@@ -75,3 +75,7 @@ require RAILS_ROOT + '/test/selenium_helper' if defined? SeleniumOnRails::Fixtur
 require 'geolocation'
 Geolocation.url = 'http://localhost:8080/Web20Emulator/geocode?appid=gsd5f'
 
+require 'hypertable/thriftclient'
+require 'active_record/connection_adapters/hypertable_adapter'
+require 'hyper_record'
+
