@@ -1,0 +1,2 @@
+tomcat.home=/usr/local/apache-tomcat-6.0.13
+war.name=geocoder.war
