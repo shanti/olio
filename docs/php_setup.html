@@ -7,7 +7,8 @@
 	<META NAME="AUTHOR" CONTENT="Akara Sucharitakul">
 	<META NAME="CREATED" CONTENT="20070926;10111500">
 	<META NAME="CHANGEDBY" CONTENT="Shanti Subramanyam">
-	<META NAME="CHANGED" CONTENT="20090305;12352800">
+	<META NAME="CHANGED" CONTENT="20090311;9351100">
+	<META NAME="CHANGEDBY" CONTENT="Shanti Subramanyam">
 	<STYLE TYPE="text/css">
 	<!--
 		H1 { color: #000000 }
@@ -27,11 +28,11 @@ components:</P>
 	</P>
 	<LI><P STYLE="margin-bottom: 0in">The main database 
 	</P>
-	<LI><P STYLE="margin-bottom: 0in">Distributed storage servers
-	(MogileFS or NFS)</P>
+	<LI><P STYLE="margin-bottom: 0in">Distributed storage servers (NFS
+	or MogileFS)</P>
 	<LI><P STYLE="margin-bottom: 0in">The caching server (memcached)</P>
 	<LI><P STYLE="margin-bottom: 0in">Storage metadata database (for
-	MogileFS)</P>
+	MogileFS only)</P>
 	<LI><P STYLE="margin-bottom: 0in">Geocoder emulator 
 	</P>
 	<LI><P>Workload driver 
@@ -86,6 +87,9 @@ follows :</P>
 	all implementations of the application. The
 	<I>workload/workload/php/trunk</I> is referred to as $WORKLOAD in
 	this document.</P>
+	<LI><P>The <I>geocoder</I> directory contains the code for the
+	geocoder emulator. This code is shared across all implementations of
+	Olio.</P>
 </UL>
 <H2><A NAME="setupDriver"></A>Setting up the driver</H2>
 <P>Even if you don't plan to drive load against the application, this
@@ -104,7 +108,7 @@ system as the web application.</P>
 </OL>
 <UL>
 	<UL>
-		<LI><P ALIGN=LEFT>cd $WORKLOAD; cp build.properties.template 
+		<LI><P ALIGN=LEFT>cd $WORKLOAD; cp build.properties.template
 		build.properties</P>
 		<LI><P ALIGN=LEFT>Edit build.properties and set faban.home to
 		$FABAN_HOME, faban.url to http://<I>driver_host</I>:9980 where
@@ -114,7 +118,7 @@ system as the web application.</P>
 		to your JDK1.6 installation.</P>
 		<LI><P ALIGN=LEFT>Build the driver using the command: <I>ant
 		deploy.jar. </I><SPAN STYLE="font-style: normal">If successful, you
-		should see the file </SPAN><I>Olio</I><I>Driver.jar</I> <SPAN STYLE="font-style: normal">in
+		should see the file </SPAN><I>OlioDriver.jar</I> <SPAN STYLE="font-style: normal">in
 		the </SPAN><I>build</I> <SPAN STYLE="font-style: normal">sub-directory.</SPAN></P>
 	</UL>
 </UL>
@@ -161,7 +165,7 @@ follow the steps below to set up the application.
 	<LI><P>After installing all the above packages, edit the httpd.conf
 	used by your system's apache installation. Set the <B>Listen</B>
 	parameter to the hostname or ip address and set the <B>DocumentRoot</B>
-	to $APP_DIR/public_html. See the <I>httpd.conf </I> file in
+	to $APP_DIR/public_html. See the <I>httpd.conf </I>file in
 	$APP_DIR/etc for additional settings.</P>
 	<LI><P STYLE="margin-bottom: 0in">See the php.ini provided in
 	$APP_DIR/etc and copy the settings appropriately to the php.ini for
@@ -169,18 +173,6 @@ follow the steps below to set up the application.
 </OL>
 <P STYLE="margin-bottom: 0in"><BR>
 </P>
-<OL START=4>
-	<LI><P>Go to $APP_DIR/etc. Edit the file config.php and set the
-	appropriate values for geocoderHost, localfsRoot. localfsRoot is the
-	directory where the object filestore resides (either a local
-	filesystem or nfs-mounted from a remote location – see the section
-	<A HREF="#Setting up the filestore|outline"><SPAN STYLE="font-style: normal"><SPAN STYLE="font-weight: medium">Setting
-	up the filestore</SPAN></SPAN></A>). The default location is
-	/filestore. The geocoderHost is usually the driver system – see
-	the section <A HREF="#Setting up the Geocoder Emulator|outline">Setting
-	up the Geocoder Emulator</A>.</P>
-	<LI><P></P>
-</OL>
 <P STYLE="margin-bottom: 0in"><A NAME="setupDB"></A><BR><FONT SIZE=4><B>Setting
 up the database</B></FONT> 
 </P>
@@ -197,19 +189,26 @@ up the database</B></FONT>
 	<LI><P>Create the database :<BR><FONT FACE="monospace"># su -
 	mysql</FONT><BR><FONT FACE="monospace">$ cd&nbsp;bin</FONT><BR><FONT FACE="monospace">$
 	./mysql_install_db</FONT></P>
+	<LI><P><FONT FACE="Times New Roman, serif">A sample MySQL
+	configuration file (my.cnf) is included in the $APP_DIR/etc. Please
+	read the embedded comments and edit the file appropriately after
+	copying it to /etc. </FONT>
+	</P>
 	<LI><P>Start the mysql server. Substitute your own password for <I>pwd
 	</I><SPAN STYLE="font-style: normal">(we typically use</SPAN>
 	<I>adminadmin</I><SPAN STYLE="font-style: normal">)</SPAN><BR><FONT FACE="monospace">$&nbsp;./mysqld_safe
-	&amp;</FONT><BR><FONT FACE="monospace">$ ./mysqladmin -u root
-	password </FONT><FONT FACE="monospace"><I>pwd</I></FONT></P>
-	<LI><P>Create the web20 user and grant privileges:<BR><FONT FACE="monospace">$
+	–defaults-file=/etc/my.cnf &amp;</FONT><BR><FONT FACE="monospace">$
+	./mysqladmin -u root password </FONT><FONT FACE="monospace"><I>pwd</I></FONT></P>
+	<LI><P>Create the olio user and grant privileges:<BR><FONT FACE="monospace">$
 	./mysql -uroot -p</FONT><FONT FACE="monospace"><I>pwd</I></FONT><BR><FONT FACE="monospace">mysql&gt;
 	create user 'olio'@'%' identified by 'olio';</FONT><BR><FONT FACE="monospace">mysql&gt;
 	grant all privileges on *.* to 'olio'@'%' identified by 'olio' with
 	grant option;<BR></FONT><BR>In some cases the wildcard '%' does not
 	work reliably as a substitution for all hosts. You need to grant the
 	privileges to 'olio'@'&lt;hostname&gt;' individually, where hostname
-	are the names of the driver and apache systems.</P>
+	is localhost, the name of the database system and any other names
+	that are used to access the database system. 
+	</P>
 	<LI><P STYLE="margin-bottom: 0in">Create database<BR><FONT FACE="monospace">mysql&gt;
 	create database olio;</FONT><BR><FONT FACE="monospace">mysql&gt; use
 	olio;</FONT> 
@@ -241,8 +240,6 @@ re-load the database before the run.</FONT></P>
 	containing the loader script:<BR></FONT><FONT FACE="monospace"><FONT SIZE=3>#
 	cd </FONT></FONT><FONT FACE="monospace"><I>$FABAN_HOME</I></FONT><FONT FACE="monospace">/benchmarks/OlioDriver/bin</FONT></P>
 </OL>
-<P STYLE="margin-bottom: 0in"> 
-</P>
 <OL START=3>
 	<LI><P STYLE="margin-bottom: 0in">Ensure the script has execute
 	permissions. Faban takes care of this for the runs, but since we
@@ -257,9 +254,15 @@ re-load the database before the run.</FONT></P>
 	&lt;load_scale&gt;</I></FONT><BR>You can start small with a SCALE of
 	50 for initial testing. 
 	</P>
+	<LI><P>Edit the $APP_DIR/etc/config.php and set the database host
+	name, replacing <I>localhost</I> in the dbTarget entry.</P>
 </OL>
-<H2><A NAME="setupFileStore"></A><A NAME="Setting up the filestore|outline"></A>
-<FONT SIZE=4>Setting up the filestore</FONT></H2>
+<OL START=4>
+	<P STYLE="margin-bottom: 0.04in"><FONT FACE="Courier New, monospace"><FONT SIZE=2 STYLE="font-size: 11pt">$olioconfig['dbTarget']
+	= 'mysql:host=localhost;dbname=olio'; // PDO target.</FONT></FONT></P>
+</OL>
+<H2><A NAME="setupFileStore"></A><FONT SIZE=4>Setting up the
+filestore</FONT></H2>
 <P><FONT SIZE=3>Olio can be configured to use either a local
 filesystem or MogileFS for the object data. Our initial testing with
 MogileFS found some severe performance issues, so for now we advice
@@ -279,8 +282,7 @@ mounted on the system running the web application.</FONT></P>
 	mkdir -p </FONT></FONT><FONT FACE="monospace"><FONT SIZE=3><SPAN STYLE="font-style: normal">$FILESTORE</SPAN></FONT></FONT><FONT SIZE=3><BR></FONT><FONT FACE="monospace"><FONT SIZE=3>#
 	chmod a+rwx </FONT></FONT><FONT FACE="monospace"><FONT SIZE=3><SPAN STYLE="font-style: normal">$FILESTORE</SPAN></FONT></FONT></P>
 	<LI><P><FONT SIZE=3>Now load the filestore. You should have the
-	$FABAN_HOME/benchmarks/OlioDriver.jar file on this system.<BR></FONT>
-	<FONT FACE="monospace"><FONT SIZE=3><BR>#
+	$FABAN_HOME/benchmarks/OlioDriver.jar file on this system.<BR></FONT><FONT FACE="monospace"><FONT SIZE=3><BR>#
 	JAVA_HOME</FONT></FONT><FONT FACE="mon"><FONT SIZE=3><I>=</I></FONT></FONT><FONT FACE="monospace"><FONT SIZE=3><I>&lt;java_install_dir&gt;</I></FONT></FONT><FONT FACE="monospace"><FONT SIZE=3>;
 	export $JAVA_HOME</FONT></FONT></P>
 </OL>
@@ -294,12 +296,12 @@ $FILESTORE</I></FONT></FONT>
 <OL START=2>
 	<P><FONT SIZE=3>This loads files for use for up to <FONT FACE="monospace"><I>load_scale</I></FONT>
 	number of active users.</FONT></P>
-	<LI><P><FONT SIZE=3>Ensure the $APP_DIR/etc/config.php parameter
-	</FONT>localfsRoot is pointing to $FILESTORE. 
+	<LI><P><FONT SIZE=3>Edit the $APP_DIR/etc/config.php parameter
+	</FONT><I>localfsRoot</I> and set it to $FILESTORE. 
 	</P>
 </OL>
-<H2><A NAME="setupEmulator"></A><A NAME="Setting up the Geocoder Emulator|outline"></A>
-<FONT SIZE=4>Setting up the Geocoder Emulator</FONT></H2>
+<H2><A NAME="setupEmulator"></A><FONT SIZE=4>Setting up the Geocoder
+Emulator</FONT></H2>
 <P>The Geocoder Emulator is a simple servlet deployed on Tomcat. It
 is typically run on a driver machine. The following steps describe
 how to install it :</P>
@@ -313,12 +315,15 @@ how to install it :</P>
 	<LI><P>Copy the geocoder.war file from the geocoder/dist directory
 	to $TOMCAT_HOME/webapps.</P>
 	<LI><P>Start Tomcat using $TOMCAT_HOME/bin/startup.sh.</P>
+	<LI><P>Edit $APP_DIR/etc/config.php parameter <I>geocoderURL</I> and
+	replace <I>GEOCODER_HOST:8080</I> with the host and port where
+	Tomcat is running.</P>
 </OL>
 <H2><FONT SIZE=4>Setting up memcached</FONT></H2>
 <P><FONT SIZE=3>The Olio application uses memcached for caching the
 home page which dramatically reduces the load on the database. If you
 are running Olio to stress MySQL, you may not want to have the
-caching tier. In this case,  set the <I>CacheSystem</I> to <I>NoCache</I>
+caching tier. In this case, set the <I>CacheSystem</I> to <I>NoCache</I>
 in $APP_DIRetc/config.php. This will eliminate the use of memcached
 and all requests will directly go to the database. However, if you do
 want to use memcached (scaling will be very difficult without it),
@@ -330,7 +335,7 @@ the same system as the web server. </FONT>
 	plan to use.</FONT></P>
 	<LI><P><FONT SIZE=3>Start memcached : “memcached -u mysql &amp;”</FONT></P>
 	<LI><P><FONT SIZE=3>Edit $APP_DIR/etc/config.php and replace
-	MEMCACHED_HOST with your host name. </FONT>
+	MEMCACHED_HOST with the host name where memcached is running. </FONT>
 	</P>
 </OL>
 <H2><A NAME="testWebApp"></A><FONT SIZE=4>Testing the web application</FONT></H2>
@@ -358,7 +363,7 @@ the same system as the web server. </FONT>
 	</P>
 	<LI><P><FONT SIZE=3>Click on the sign up tab. Fill in the form and
 	create a user. Make sure you find some jpeg images to upload. If
-	not, take them from $FABAN_HOME/benchmarks/web20/resources. <BR>Submit
+	not, take them from $FABAN_HOME/benchmarks/olio/resources. <BR>Submit
 	the form. Make sure the form goes through. This completes the
 	AddPerson transaction. </FONT>
 	</P>
@@ -373,7 +378,7 @@ the same system as the web server. </FONT>
 	</P>
 	<LI><P><FONT SIZE=3>Click on the add event tab and add an event.
 	Make sure to include an image and some literature. You can also use
-	the files from <BR>$FABAN_HOME/benchmarks/web20/resources. Fill in
+	the files from <BR>$FABAN_HOME/benchmarks/olio/resources. Fill in
 	the form and submit. This is the AddEvent transaction. </FONT>
 	</P>
 </OL>

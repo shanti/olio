@@ -3,10 +3,11 @@
 <HEAD>
 	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
 	<TITLE>Olio/PHP Install and Setup Guide</TITLE>
-	<META NAME="GENERATOR" CONTENT="NeoOffice 2.2  (Unix)">
+	<META NAME="GENERATOR" CONTENT="StarOffice 8  (Solaris Sparc)">
 	<META NAME="AUTHOR" CONTENT="Akara Sucharitakul">
 	<META NAME="CREATED" CONTENT="20070926;10111500">
-	<META NAME="CHANGED" CONTENT="20090310;17144700">
+	<META NAME="CHANGEDBY" CONTENT="Shanti Subramanyam">
+	<META NAME="CHANGED" CONTENT="20090311;9350500">
 	<STYLE TYPE="text/css">
 	<!--
 		H1 { color: #000000 }
@@ -62,7 +63,7 @@ over the steps needed to configure each component :</P>
 <P><A HREF="#setupEmulator">Setting up the Geocoder Emulator</A></P>
 <P><A HREF="#testWebApp">Testing the web application</A></P>
 <P><A HREF="#startRun">Starting a performance test</A></P>
-<H2>Extracting the Contents</H2>
+<H2><A NAME="Contents"></A>Extracting the Contents</H2>
 <P>The Olio/PHP kit is packaged as a gzipped tar file. The first task
 is to unzip the file and untar it to extract it's contents. This can
 be done as follows:</P>
@@ -72,15 +73,14 @@ xvf -</FONT></FONT></P>
 <P>This will cause a directory named
 olio-php-<I>&lt;version&gt;</I>b<I>&lt;build_date&gt;</I><SPAN STYLE="font-style: normal">to
 be created whose contents should look like:</SPAN></P>
-<P STYLE="margin-bottom: 0.04in"><FONT FACE="Courier New, monospace"><FONT SIZE=2 STYLE="font-size: 11pt"><SPAN STYLE="font-style: normal">#
-ls olio-php-0.1*</SPAN></FONT></FONT></P>
-<P STYLE="margin-bottom: 0.04in"><FONT FACE="Courier New, monospace"><FONT SIZE=2 STYLE="font-size: 11pt"><SPAN STYLE="font-style: normal">LICENSE
-             OlioDriver.jar       geocoder.war        
-php_setup_kit.html</SPAN></FONT></FONT></P>
-<P STYLE="margin-bottom: 0.04in"><FONT FACE="Courier New, monospace"><FONT SIZE=2 STYLE="font-size: 11pt"><SPAN STYLE="font-style: normal">NOTICE
-              OlioDriver_src.zip   oliophp/             release</SPAN></FONT></FONT></P>
-<P STYLE="margin-bottom: 0.04in"><FONT FACE="Courier New, monospace"><FONT SIZE=2 STYLE="font-size: 11pt"><SPAN STYLE="font-style: normal">#
-</SPAN></FONT></FONT>
+<P STYLE="margin-bottom: 0.04in; font-style: normal"><FONT FACE="Courier New, monospace"><FONT SIZE=2 STYLE="font-size: 11pt">#
+ls olio-php-0.1*</FONT></FONT></P>
+<P STYLE="margin-bottom: 0.04in; font-style: normal"><FONT FACE="Courier New, monospace"><FONT SIZE=2 STYLE="font-size: 11pt">LICENSE
+OlioDriver.jar geocoder.war php_setup_kit.html</FONT></FONT></P>
+<P STYLE="margin-bottom: 0.04in; font-style: normal"><FONT FACE="Courier New, monospace"><FONT SIZE=2 STYLE="font-size: 11pt">NOTICE
+OlioDriver_src.zip oliophp/ release</FONT></FONT></P>
+<P STYLE="margin-bottom: 0.04in; font-style: normal"><FONT FACE="Courier New, monospace"><FONT SIZE=2 STYLE="font-size: 11pt">#
+</FONT></FONT>
 </P>
 <P>We will use $OLIO_HOME to designate the name of this directory. A
 description of the contents follows :</P>
@@ -91,13 +91,13 @@ description of the contents follows :</P>
 	(which we typically refer to simply as <I>driver</I>). The driver is
 	implemented using <A HREF="http://faban.sunsource.net/"><I>Faban</I></A>
 	– an open source benchmarking toolkit.</P>
-	<LI><P><I>geocoder.war</I>  contains the simple servlet used to
+	<LI><P><I>geocoder.war</I> contains the simple servlet used to
 	emulate the geocoder.</P>
-	<LI><P> <I>php_setup_kit.html</I> is this document.</P>
+	<LI><P><I>php_setup_kit.html</I> is this document.</P>
 	<LI><P><I>release</I> contains the release name. LICENSE and NOTICE
 	contain the licenses.</P>
 </UL>
-<H2>Setting up the Driver</H2>
+<H2><A NAME="setupDriver"></A>Setting up the Driver</H2>
 <P>Even if you don't plan to drive load against the application,
 steps 1 and 2 are required as the database and file loaders are part
 of the workload driver – feel free to install the driver on the
@@ -196,8 +196,9 @@ up the database</B></FONT>
 	grant option;<BR></FONT><BR>In some cases the wildcard '%' does not
 	work reliably as a substitution for all hosts. You need to grant the
 	privileges to 'olio'@'&lt;hostname&gt;' individually, where hostname
-	are the names of the driver, database (localhost) and web server
-	systems.</P>
+	is localhost, the name of the database system and any other name
+	that's used to access the database system. 
+	</P>
 	<LI><P STYLE="margin-bottom: 0in">Create database<BR><FONT FACE="monospace">mysql&gt;
 	create database olio;</FONT><BR><FONT FACE="monospace">mysql&gt; use
 	olio;</FONT> 
@@ -282,10 +283,10 @@ $FABAN_HOME/benchmarks/olio/bin/fileloader.sh </FONT></FONT><FONT FACE="monospac
 $FILESTORE</I></FONT></FONT> 
 </P>
 <OL START=2>
-	<P><FONT SIZE=3>This loads files for use for up to <FONT FACE="monospace"><I>load_scale</I></FONT>
+	<P><FONT SIZE=3>This loads files for use for up to </FONT><FONT FACE="monospace"><FONT SIZE=3><I>load_scale</I></FONT></FONT><FONT SIZE=3>
 	number of active users.</FONT></P>
 	<LI><P><FONT SIZE=3>Edit the $APP_DIR/etc/config.php parameter
-	</FONT>localfsRoot and set it to $FILESTORE. 
+	</FONT><I>localfsRoot</I> and set it to $FILESTORE. 
 	</P>
 </OL>
 <H2><A NAME="setupEmulator"></A><FONT SIZE=4>Setting up the Geocoder
