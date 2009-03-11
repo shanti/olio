@@ -73,5 +73,5 @@ require 'will_paginate'
 require RAILS_ROOT + '/test/selenium_helper' if defined? SeleniumOnRails::FixtureLoader
 
 require 'geolocation'
-Geolocation.url = 'http://localhost:8080/Web20Emulator/geocode?appid=gsd5f'
+Geolocation.url = 'http://localhost:8080/geocoder/geocode?appid=gsd5f'
 
