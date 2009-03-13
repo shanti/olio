@@ -8,11 +8,10 @@
     <property name="build.metainf.dir" value="${build.web.dir}/META-INF"/>
     <property name="dist.dir" value="dist"/>
     <property name="dist.war" value="${dist.dir}/${war.name}"/>
-    <property name="j2ee.libs" value="${tomcat.home}/lib"/>
     <property name="web.docbase.dir" value="web"/>
 
     <path id="class.path">
-        <fileset dir="${j2ee.libs}" includes="*.jar"/>
+        <fileset dir="${servlet.lib.path}" includes="*.jar"/>
     </path>
 
     <target name="init">
