@@ -1,4 +1,12 @@
 #!/bin/sh
+##############################################################
+#  Copyright ?? 2008 Sun Microsystems, Inc. All rights reserved
+#
+#  Use is subject to license terms.
+#
+#  $Id: fileloader.sh,v 1.1.1.1 2008/09/29 22:33:07 sp208304 Exp $
+##############################################################
+
 #Script to run loader by hand
 
 if [ -z "$1" ] ; then
