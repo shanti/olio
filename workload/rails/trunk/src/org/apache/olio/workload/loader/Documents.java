@@ -44,7 +44,7 @@ public class Documents extends Loadable {
             PreparedStatement s = c.prepareStatement(STATEMENT);
             s.setInt(1, 129585);
             s.setString(2, "application/pdf");
-            s.setString(3, "e" + eventId + "l.pdf");
+            s.setString(3, "e" + eventId + ".pdf");
             s.setInt(4, this.eventId);
             c.addBatch();
         } catch (SQLException e) {
