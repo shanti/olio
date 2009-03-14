@@ -72,6 +72,9 @@ class UsersController < ApplicationController
   def create
     @user = User.new(params[:user])
     @address = Address.new(params[:address])
+    @geolocation = Geolocation.new(@address.street1, @address.city, @address.state, @address.zip)
+    @address.longitude = @geolocation.longitude
+    @address.latitude = @geolocation.latitude
     begin
       User.transaction do
         @user.image = Image.make_from_upload params[:user_image], @user.id if new_image?
