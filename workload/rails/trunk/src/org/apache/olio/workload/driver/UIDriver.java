@@ -651,6 +651,8 @@ public class UIDriver {
         Set<String> images = parseImages(responseBuffer);
         loadStatics(eventDetailStatics);
         loadImages(images);
+        if (ctx.isTxSteadyState())
+	    driverMetrics.eventDetailImages += images.size();
         if (canAddAttendee) {
             // 10% of the time we can add ourselves, we will.
             int card = random.random(0, 9);
@@ -661,8 +663,6 @@ public class UIDriver {
             }
             if (ctx.isTxSteadyState())
                 ++driverMetrics.addAttendeeReadyCount;
-                driverMetrics.eventDetailImages += images.size();
-
         }
     }
 
