@@ -321,8 +321,6 @@ class EventsController < ApplicationController
     users = event.users.find(:all, :limit => max)
     if session[:user_id]
       included = users.find { |u| u.id == session[:user_id] }
-      p included
-      p event.users.count(:conditions => ["users.id = ?",  session[:user_id]])
       if !included and event.users.count(:conditions => ["users.id = ?",  session[:user_id]]) > 0
         users<< (@user || User.find(session[:user_id]))
       end
