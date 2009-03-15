@@ -83,7 +83,8 @@ module Rails
       def load_rubygems
         require 'rubygems'
 
-        unless rubygems_version >= '0.9.4'
+        gem_ver = defined? Gem::RubyGemsVersion ? Gem::RubyGemsVersion : rubygems_version
+        unless gem_ver >= '0.9.4'
           $stderr.puts %(Rails requires RubyGems >= 0.9.4 (you have #{rubygems_version}). Please `gem update --system` and try again.)
           exit 1
         end

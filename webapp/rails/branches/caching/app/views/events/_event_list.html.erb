@@ -39,9 +39,6 @@
     <div>
       <h1 class="tight_heading"><%= @date.nil? ? "All Events" : "#{simple_date(@date)} events" %></h1>
       <h2 id="which_timezone" class="tight_heading"><%= (@zipcode and !@zipcode.nil? and !@zipcode.empty?) ? "for #{@zipcode}" : "for all locations" %>
-  		<% if @geolocation %>
-  			<%= "(#{@geolocation.city}, #{@geolocation.state_code})" %>
-  		<% end %>
   		</h2>
 		</div>
       

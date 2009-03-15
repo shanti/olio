@@ -11,9 +11,13 @@ RAILS_GEM_VERSION = '2.1.0' unless defined? RAILS_GEM_VERSION
 require File.join(File.dirname(__FILE__), 'boot')
 require 'hodel_3000_compliant_logger'
 
-Memcached = true
+CACHED = true
+Memcached = false
 
-if Memcached
+IMAGE_STORE_PATH = 'public/uploaded_files'
+DOCUMENT_STORE_PATH = 'public/uploaded_files'
+
+if CACHED and Memcached
   require 'memcache'
   CACHE = MemCache.new :c_threshold => 1_000,:compression => true,:debug => false,:namespace => 'mycachespace',:readonly => false,:urlencode => false
   CACHE.servers = '10.251.63.95:11211'
@@ -53,7 +57,7 @@ Rails::Initializer.run do |config|
   # config.active_record.default_timezone = :utc
 
   # Memcached Config ## START ##
-  if Memcached
+  if CACHED and Memcached
     config.action_controller.session_store = :mem_cache_store
     config.action_controller.cache_store = CACHE, {}
     config.action_controller.fragment_cache_store = CACHE, {}
@@ -80,7 +84,7 @@ Rails::Initializer.run do |config|
   # See Rails::Configuration for more options  
 end
 
-if Memcached
+if CACHED and Memcached
   # Memcached Config ## START ##
   ActionController::CgiRequest::DEFAULT_SESSION_OPTIONS.merge!({ 'cache' => CACHE })
   # Memcached Config ## END ##
@@ -96,6 +100,5 @@ require 'will_paginate'
 require 'lazy'
 require RAILS_ROOT + '/test/selenium_helper' if defined? SeleniumOnRails::FixtureLoader
 
-IMAGE_STORE_PATH = 'public/assets'
-DOCUMENT_STORE_PATH = 'public/assets'
-
+require 'geolocation'
+Geolocation.url = 'http://localhost:8080/geocoder/geocode?appid=gsd5f'

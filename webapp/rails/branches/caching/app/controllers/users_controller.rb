@@ -2,14 +2,7 @@ class UsersController < ApplicationController
   
   before_filter :authorize, :except => [ :new, :create, :login, :check_name, :show ]
   layout "site"
-  
-  # CACHING
-  #cache_sweeper :event_sweeper, :only => [:login, :logout]
-  
-  # This will reduce load times for pages that don't use 
-  # TinyMCE by not forcing all pages to unnecessarily load TinyMCE's .js files - Hubert
-  uses_tiny_mce :only => [:new, :edit]
-  
+    
   # GET /users
   # GET /users.xml
   def index
@@ -79,6 +72,9 @@ class UsersController < ApplicationController
   def create
     @user = User.new(params[:user])
     @address = Address.new(params[:address])
+    @geolocation = Geolocation.new(@address.street1, @address.city, @address.state, @address.zip)
+    @address.longitude = @geolocation.longitude
+    @address.latitude = @geolocation.latitude
     begin
       User.transaction do
         @user.image = Image.make_from_upload params[:user_image], @user.id if new_image?
@@ -157,14 +153,14 @@ class UsersController < ApplicationController
         session[:upcoming] = user.upcoming_events[0,3].map { |e| e.id } # top 3 upcoming events
         uri = session[:original_uri]
         session[:original_uri] = nil
-        
-        #flash[:notice] = "Successfully logged in!"
+                
+        flash[:notice] = "Successfully logged in!"
         redirect_to(uri || events_path)
       else
         user = nil
         params[:email] = nil
         params[:password] = nil
-        #flash[:notice] = "Invalid user/password combination."
+        flash[:notice] = "Invalid user/password combination."
         redirect_to(root_path)
       end
     end

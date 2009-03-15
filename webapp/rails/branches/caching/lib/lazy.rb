@@ -13,7 +13,7 @@ class LazyBastard
   end
   
   def resolve
-    puts caller.join("\n") unless @obj
+    # puts caller.join("\n") unless @obj
     @obj ||= @block.call
   end
     

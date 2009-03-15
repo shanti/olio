@@ -5,26 +5,27 @@ class EventsController < ApplicationController
     :new, :edit, :create, :update, :destroy, 
     :attend, :unattend, :tag
   ]
-  # Turned off for memcached
-  protect_from_forgery :only => [:update, :destroy, :delete, :create] unless Memcached
 
-  after_filter :expire_home, :only => :index
-  after_filter :expire_calendar, :only => :update_calendar
-  after_filter :expire_tag, :only => :tag
+  MAX_ATTENDEES = 20
   
-  caches_page :index, {:expire => 2.minutes.to_i}
-  cache_sweeper :event_sweeper, :only => [:create, :destroy, :update]
+  if CACHED
+  # Turned off for memcached
+    protect_from_forgery :only => [:update, :destroy, :delete, :create] unless Memcached
+
+    after_filter :expire_home, :only => :index
+    after_filter :expire_calendar, :only => :update_calendar
+    after_filter :expire_tag, :only => :tag
   
-  # This will reduce load times for pages that don't use 
-  # TinyMCE by not forcing all pages to unnecessarily load TinyMCE's .js files - Hubert
-  uses_tiny_mce :only => [:new, :edit, :show]
-  
+    caches_page :index, {:expire => 2.minutes.to_i}
+    cache_sweeper :event_sweeper, :only => [:create, :destroy, :update]
+  end
+    
   ### CRUD Actions ######################################################## 
   
   # GET /events
   # GET /events.xml
   def home
-    if !session[:user_id].nil?
+    if CACHED and !session[:user_id].nil?
       do_index_page
       respond_to do |format|
         format.html { render :template => "events/index.html.erb" } # index.html.erb
@@ -38,7 +39,7 @@ class EventsController < ApplicationController
   
   # "home" = root page for those not logged in
   def index
-    if session[:user_id].nil?
+    if !CACHED or session[:user_id].nil?
       do_index_page
       respond_to do |format|
         format.html # index.html.erb
@@ -53,7 +54,8 @@ class EventsController < ApplicationController
   # GET /events/1
   # GET /events/1.xml  
   def show
-    @event = lazy { Event.find(params[:id]) }
+    @event = lazy { Event.find(params[:id], :include => [:image, :document, {:comments => :user }, :address]) }
+    @attendees = lazy { attendee_list(@event, MAX_ATTENDEES) }
     @comment = Comment.new
     @comment.rating = 0
     respond_to do |format|
@@ -81,6 +83,9 @@ class EventsController < ApplicationController
     @event.user_id = session[:user_id]
     @event.set_date
     @address = Address.new(params[:address])
+    @geolocation = Geolocation.new(@address.street1, @address.city, @address.state, @address.zip)
+    @address.longitude = @geolocation.longitude
+    @address.latitude = @geolocation.latitude
     begin
       Event.transaction do
         @address.save!
@@ -140,7 +145,9 @@ class EventsController < ApplicationController
         
         @event.image = Image.make_from_upload(params[:event_image], @event.id) if new_image?
         @event.document = Document.make_from_upload(params[:event_document], @event.id) if new_document?
-        
+        @geolocation = Geolocation.new(@address.street1, @address.city, @address.state, @address.zip)
+        @address.longitude = @geolocation.longitude
+        @address.latitude = @geolocation.latitude
         @event.save! # must come after all other updates
         
         set_tags(@event)
@@ -235,7 +242,7 @@ class EventsController < ApplicationController
       end
     end
     
-    @attendees = @event.users
+    @attendees = attendee_list(@event, MAX_ATTENDEES)
     
     respond_to do |format|
       format.html { redirect_to(event_path(@event)) }
@@ -258,7 +265,7 @@ class EventsController < ApplicationController
       end
     end
     
-    @attendees = @event.users
+    @attendees = attendee_list(@event, MAX_ATTENDEES)
     
     respond_to do |format|
       format.html { redirect_to(event_path(@event)) }
@@ -309,10 +316,9 @@ class EventsController < ApplicationController
 
     session[:order] = params[:order] || session[:order] || 'event_date'
       
-    @events = Event.paginate :page => params[:page], :conditions => conditions, :order => session[:order], :per_page => 10, :include => [:address, :image]
+    @events = Event.paginate :page => params[:page], :conditions => conditions, :order => session[:order], :per_page => 10,  :include => [:address, :image]
     if @zipcode and !@zipcode.empty?
       @events.delete_if { |e| e.address.zip != @zipcode }
-      @geolocation = Geolocation.find_by_zip @zipcode
     end
       
     @tags = lazy { Event.top_n_tags(50) }
@@ -337,6 +343,17 @@ class EventsController < ApplicationController
   
   def new_document?
     return (params[:event_document] == '') ? false : true
+  end
+
+  def attendee_list(event, max)
+    users = event.users.find(:all, :limit => max)
+    if session[:user_id]
+      included = users.find { |u| u.id == session[:user_id] }
+      if !included and event.users.count(:conditions => ["users.id = ?",  session[:user_id]]) > 0
+        users<< (@user || User.find(session[:user_id]))
+      end
+    end
+    users
   end
   
   # CACHING - methods to expire fragments

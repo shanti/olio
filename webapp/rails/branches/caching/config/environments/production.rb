@@ -16,6 +16,11 @@ config.action_controller.perform_caching             = true
 # config.action_controller.asset_host                  = "http://assets.example.com"
 
 # Disable delivery errors, bad email addresses will be ignored
-# config.action_mailer.raise_delivery_errors = false
-#config.action_controller.cache_store = :file_store, RAILS_ROOT + '/tmp/cache/'
-config.action_controller.cache_store = :mem_cache_store
+if CACHED
+  if Memcached
+    config.action_controller.cache_store = :mem_cache_store
+  else
+    config.action_mailer.raise_delivery_errors = false
+    config.action_controller.cache_store = :file_store, RAILS_ROOT + '/tmp/cache/'
+  end
+end

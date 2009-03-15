@@ -3,7 +3,7 @@ module EventsHelper
   def attendance_links(event)
     links = ""
     if logged_in?
-      attending = event.users.map{ |u| u.id }.include?(session[:user_id])
+      attending = @attendees.find { |u| u.id == session[:user_id] }
       if attending
         links += form_remote_tag :url => unattend_event_path(event), :method => :post, :html => {:method => :post}
         links += submit_tag "Unattend"

@@ -11,7 +11,8 @@
 
 class Document < ActiveRecord::Base
   
-  has_attachment :content_type => ['application/pdf', 'application/msword', 'text/plain'],
+  has_attachment :content_type => ['application/pdf', 'application/pdf; charset=ISO-8859-1',
+                                   'application/msword', 'text/plain'],
                  :storage => :file_system, 
                  :path_prefix => DOCUMENT_STORE_PATH
   

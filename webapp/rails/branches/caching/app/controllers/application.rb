@@ -3,7 +3,7 @@
 
 class ApplicationController < ActionController::Base
   # Pick a unique cookie name to distinguish our session data from others'
-  session :session_key => '_perf_session_id'# unless $Memcached
+  session :session_key => '_perf_session_id'
   
   def authorize
     begin
