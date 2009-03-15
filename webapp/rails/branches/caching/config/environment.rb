@@ -13,6 +13,7 @@ require 'hodel_3000_compliant_logger'
 
 CACHED = true
 MEMCACHED = true
+CACHE_SERVER = 'localhost'
 
 IMAGE_STORE_PATH = 'public/uploaded_files'
 DOCUMENT_STORE_PATH = 'public/uploaded_files'
