@@ -26,6 +26,7 @@ import com.sun.faban.common.NameValuePair;
 import org.apache.olio.workload.util.RandomUtil;
 import org.apache.olio.workload.util.ScaleFactors;
 import org.apache.olio.workload.util.UserName;
+import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.MultipartPostMethod;
@@ -313,7 +314,7 @@ public class UIDriver {
         int scale = ctx.getScale();
         ScaleFactors.setActiveUsers(scale);
         http = new HttpTransport();
-        // http.setFollowRedirects(true);
+
         logger = ctx.getLogger();
         random = ctx.getRandom();
         driverMetrics = new UIDriverMetrics();
@@ -421,10 +422,11 @@ public class UIDriver {
         selectedEvent = RandomUtil.randomEvent(random, responseBuffer);
         logger.finer("Images loaded: " + imagesLoaded);
         logger.finer("Image bytes loaded: " + imgBytes);
-        if (ctx.isTxSteadyState())
+        if (ctx.isTxSteadyState()) {
             driverMetrics.homePageImages += images.size();
             driverMetrics.homePageImagesLoaded += imagesLoaded;
             driverMetrics.homePageImageBytes += imgBytes;
+        }
     }
 
     @BenchmarkOperation (
@@ -433,47 +435,34 @@ public class UIDriver {
         timing  = Timing.MANUAL
     )
     public void doLogin() throws IOException, Exception {
-
         httpClient = new HttpClient();
         logger.finer("In doLogin");
         int randomId = 0; //use as password
         username = null;
 
         if (isLoggedOn) {
-            //already logged in --> logout,then log in again
             doLogout();
         }
 
-        // http.fetchURL(loginURL);
-        // HttpClient _httpClient = new HttpClient();
-        // _httpClient.setConnectionTimeout(5000);
-
-        // httpClient = _httpClient;
-
-            randomId = selectUserID();
-            username = UserName.getUserName(randomId);
-            logger.fine("Logging in as " + username + ", " + randomId);
+        randomId = selectUserID();
+        username = UserName.getUserName(randomId);
+        logger.fine("Logging in as " + username + ", " + randomId);
         PostMethod loginPost = constructLoginPost(randomId);
+        loginPost.setFollowRedirects(true);
 
         ctx.recordTime();
 
         httpClient.executeMethod(loginPost);
 
-        // Should redirect automatically but doesn't seem to
-        GetMethod loginGet = new GetMethod(homepageURL);
-        httpClient.executeMethod(loginGet);
-
         ctx.recordTime();
 
-        int loginIdx = loginGet.getResponseBodyAsString().indexOf("Login:");
-            if (loginIdx != -1)
-                throw new Exception(" Found login prompt at index " + loginIdx); 
-            
-        logger.fine("Login successful as " + username + ", " + randomId);
-            isLoggedOn=true;
-  
+        int loginIdx = loginPost.getResponseBodyAsString().indexOf("Login:");
+        if (loginIdx != -1)
+            throw new Exception(" Found login prompt at index " + loginIdx); 
 
-        }
+        logger.fine("Login successful as " + username + ", " + randomId);
+        isLoggedOn=true;
+    }
 
 
     @BenchmarkOperation (
@@ -484,11 +473,11 @@ public class UIDriver {
     public void doLogout() throws IOException {
         if (isLoggedOn){
             logger.finer("Logging off = " + isLoggedOn);
-            httpClient.executeMethod(new GetMethod(logoutURL));
+	    GetMethod logout = new GetMethod(logoutURL);
+            httpClient.executeMethod(logout);
             cachedURLs.clear();
             isCached = cached();
             isLoggedOn=false;
-            // httpClient = new HttpClient(); // clear all state
         }
     }
 
@@ -521,7 +510,7 @@ public class UIDriver {
         max90th = 3,
         timing  = Timing.MANUAL
     )
-    public void doAddEvent() throws IOException {
+    public void doAddEvent() throws Exception {
         logger.finer("entering doAddEvent()");
         if(!isLoggedOn)
             throw new IOException("User not logged when trying to add an event");
@@ -533,18 +522,18 @@ public class UIDriver {
         GetMethod eventForm = new GetMethod(addEventURL);
 
         // TODO: Implement prepareEvent() for Rails form data
-		    StringBuilder buffer = new StringBuilder(256);
+        StringBuilder buffer = new StringBuilder(256);
         post.addParameter("commit", "Create");
         // post.addParameter("controller", "events");
-		    post.addParameter("event[title]", RandomUtil.randomText(random, 15, 20));
-		    post.addParameter("event[summary]", RandomUtil.randomText(random, 50, 200));
-            post.addParameter("event[description]", RandomUtil.randomText(random, 100, 495));
-            post.addParameter("event[telephone]", RandomUtil.randomPhone(random, buffer));
-            post.addParameter("event[event_timestamp(1i)]", "2008");
-            post.addParameter("event[event_timestamp(2i)]", "10");
-            post.addParameter("event[event_timestamp(3i)]", "20");
-            post.addParameter("event[event_timestamp(4i)]", "20");
-            post.addParameter("event[event_timestamp(5i)]", "10");
+        post.addParameter("event[title]", RandomUtil.randomText(random, 15, 20));
+        post.addParameter("event[summary]", RandomUtil.randomText(random, 50, 200));
+        post.addParameter("event[description]", RandomUtil.randomText(random, 100, 495));
+        post.addParameter("event[telephone]", RandomUtil.randomPhone(random, buffer));
+        post.addParameter("event[event_timestamp(1i)]", "2008");
+        post.addParameter("event[event_timestamp(2i)]", "10");
+        post.addParameter("event[event_timestamp(3i)]", "20");
+        post.addParameter("event[event_timestamp(4i)]", "20");
+        post.addParameter("event[event_timestamp(5i)]", "10");
 
         Part imagePart = new FilePart("event_image", eventImg, "image/jpeg", null);
         Part docPart = new FilePart("event_document", eventPdf, "application/pdf", null);
@@ -553,21 +542,21 @@ public class UIDriver {
         post.addPart(docPart);
         post.addParameter("tag_list", "tag1");
 
-            addAddress(post);
-            
+        addAddress(post);
+
         // GET the new event form within a user session
         httpClient.executeMethod(eventForm);
         String responseBuffer = eventForm.getResponseBodyAsString();
         if (responseBuffer.length() == 0)
-             throw new IOException("Received empty response");
+            throw new IOException("Received empty response");
 
         // Parse the authenticity_token from the response
         String token = parseAuthToken(responseBuffer);
 
         post.addParameter("authenticity_token", token);
-        
-            doMultiPartPost(post);
-        
+
+        doMultiPartPost(post, "Event was successfully created.");
+
         ctx.recordTime();
         ++driverMetrics.addEventTotal;
     }
@@ -577,7 +566,7 @@ public class UIDriver {
         max90th = 3,
         timing  = Timing.MANUAL
     )
-    public void doAddPerson() throws IOException {
+    public void doAddPerson() throws Exception {
         logger.finer("doAddPerson");
         if (isLoggedOn)
             doLogout();
@@ -615,7 +604,7 @@ public class UIDriver {
         addAddress(post);
 
         loadStatics(addPersonStatics);
-        doMultiPartPost(post);
+        doMultiPartPost(post, "Succeeded in creating user.");
 
         ctx.recordTime();
         ++driverMetrics.addPersonTotal;
@@ -626,7 +615,7 @@ public class UIDriver {
         max90th = 2,
         timing  = Timing.AUTO
     )
-    public void doEventDetail() throws IOException {
+    public void doEventDetail() throws Exception {
         //select random event
         logger.finer("doEventDetail");
         if (selectedEvent == null) {
@@ -638,21 +627,19 @@ public class UIDriver {
                 throw new IOException("In event detail and select event is null");
             }    
         }
-        
+
         http.fetchURL(eventDetailURL + selectedEvent);
         StringBuilder responseBuffer = http.getResponseBuffer();
         if (responseBuffer.length() == 0)
             throw new IOException("Received empty response");
         boolean canAddAttendee = isLoggedOn &&
-                                responseBuffer.indexOf("Attend") != -1;
-        if (isLoggedOn && !canAddAttendee)
-           logger.warning("Logged on and can't attend");
+            responseBuffer.indexOf("Unattend") == -1;
 
         Set<String> images = parseImages(responseBuffer);
         loadStatics(eventDetailStatics);
         loadImages(images);
         if (ctx.isTxSteadyState())
-	    driverMetrics.eventDetailImages += images.size();
+            driverMetrics.eventDetailImages += images.size();
         if (canAddAttendee) {
             // 10% of the time we can add ourselves, we will.
             int card = random.random(0, 9);
@@ -685,12 +672,6 @@ public class UIDriver {
             if (responseBuffer.length() == 0)
                 throw new IOException("Received empty response");
 
-           // loadStatics(personStatics);
-           // for (String url : personGets)
-           //    http.readURL(url);
-
-            // http.readURL(buffer.append(id).append(".jpg").toString());
-
             String event = RandomUtil.randomEvent(random, responseBuffer);
             if (event != null)
                 selectedEvent = event;
@@ -704,35 +685,22 @@ public class UIDriver {
         ctx.recordTime();
     }
 
-    public void doAddAttendee() throws IOException {
+    public void doAddAttendee() throws Exception {
         //can only add yourself (one attendee) to party
+        // Need to add header that will request js instead of
+        // html. This will prevent the redirect.
         PostMethod attendeePost = new PostMethod(addAttendeeURL + selectedEvent + "/attend");
+        Header header = new Header("Accept", "text/javascript");
+        attendeePost.setRequestHeader(header);
         int status = httpClient.executeMethod(attendeePost);
-                
-        switch (status) {
-            case HttpStatus.SC_ACCEPTED:
-                logger.finer("Status = SC_ACCEPTED");
-                break;
-            case HttpStatus.SC_MOVED_TEMPORARILY:
-                logger.finer("Status = SC_MOVED_TEMPORARILY");
-                // System.out.println(post.getResponseBodyAsString());
-                // for (Header header: post.getResponseHeaders()) {
-                //     logger.info(header.getName() + ":" + header.getValue());
-                // }
-                httpClient.executeMethod(new GetMethod(attendeePost.getResponseHeader("Location").getValue()));
-                break;
-            case HttpStatus.SC_OK:
-                logger.finer("Status = SC_OK");
-                break;
-            default:
-                String statusHeaderStr = attendeePost.getResponseHeader("Status").getValue();
-                logger.finer("Status = " + statusHeaderStr);
+        if (status != HttpStatus.SC_OK) {
+            throw new Exception("Add attendee returned: " + status);
         }
-        if (status != HttpStatus.SC_OK && status != HttpStatus.SC_MOVED_TEMPORARILY) {
-            throw new IOException("GET operation failed");
+        String buffer = attendeePost.getResponseBodyAsString();
+        if (buffer.indexOf("You are attending") == -1) {
+            logger.warning("Add attendee failed, possible race condition");
+            // throw new Exception("Add attendee failed, could not find: You are attending");
         }
-
-        // http.readURL(updatePageURL, "list=attendees");
     }
 
     public Set<String> parseImages(StringBuilder buffer) {
@@ -813,8 +781,8 @@ public class UIDriver {
         logger.finer("loadImages()");
         logger.finest("No. images = " + images.size());
 
-        if (images != null)
-            for (String image : images)
+        if (images != null) {
+            for (String image : images) {
                 // Loads image only if not cached, means we can add to cache.
                 if (cachedURLs.add(image)) {
                     logger.finest("Loading image " + image);
@@ -823,8 +791,10 @@ public class UIDriver {
                 } else {
                     logger.finest("Image already cached: Not loading " + image);
                 }
-        else
+            }
+        } else {
             logger.finest("images == null");
+        }
     }
 
     private boolean cached() {
@@ -839,15 +809,16 @@ public class UIDriver {
     }
 
     private void loadStatics(String[] urls) throws IOException {
-
-        if (!isCached)
-            for (String url : urls)
+        if (!isCached) {
+            for (String url : urls) {
                 if (cachedURLs.add(url)) {
                     logger.finer("Loading URL " + url);
                     http.readURL(url);
                 } else {
                     logger.finer("URL already cached: Not loading " + url);
                 }
+            }
+        }
     }
 
     public DateFormat getDateFormat() {
@@ -891,7 +862,7 @@ public class UIDriver {
         return loginPost;
     }
 
-    public void doMultiPartPost(MultipartPostMethod post) throws IOException {
+    public void doMultiPartPost(MultipartPostMethod post, String message) throws Exception {
         logger.finer("In doMultiPartPost()");
 
         if (httpClient == null) {
@@ -902,28 +873,17 @@ public class UIDriver {
 
         post.setFollowRedirects(false);
         int status = httpClient.executeMethod(post);
-        switch (status) {
-            case HttpStatus.SC_ACCEPTED:
-                logger.finer("Status = SC_ACCEPTED");
-                break;
-            case HttpStatus.SC_MOVED_TEMPORARILY:
-                logger.finer("Status = SC_MOVED_TEMPORARILY");
-                // System.out.println(post.getResponseBodyAsString());
-                // for (Header header: post.getResponseHeaders()) {
-                //     logger.info(header.getName() + ":" + header.getValue());
-                // }
-                httpClient.executeMethod(new GetMethod(post.getResponseHeader("Location").getValue()));
-                break;
-            case HttpStatus.SC_OK:
-                logger.finer("Status = SC_OK");
-                break;
-            default:
-                String statusHeaderStr = post.getResponseHeader("Status").getValue();
-                logger.finer("Status = " + statusHeaderStr);
+        if (status == HttpStatus.SC_MOVED_TEMPORARILY) {
+            // Manually follow redirect
+            GetMethod get = new GetMethod(post.getResponseHeader("Location").getValue());
+            httpClient.executeMethod(get);
+            String buffer = get.getResponseBodyAsString();
+            int idx = buffer.indexOf(message);
+            if (idx == -1 )
+                throw new Exception("Could not find success message '" + message + "' in result body");
+        } else {
+            throw new Exception("Multipart post did not redirect");
         }
-        if (status != HttpStatus.SC_OK && status != HttpStatus.SC_MOVED_TEMPORARILY) {
-            throw new IOException("Multipart Post did not work");
-    }
     }
 
     // TODO: implement prepareAddress() for Rails form data
