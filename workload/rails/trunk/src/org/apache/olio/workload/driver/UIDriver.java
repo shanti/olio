@@ -549,8 +549,8 @@ public class UIDriver {
 
         // Parse the authenticity_token from the response
         String token = parseAuthToken(responseBuffer);
-
-        post.addParameter("authenticity_token", token);
+        if (token != null)
+            post.addParameter("authenticity_token", token);
 
         doMultiPartPost(post, "Event was successfully created.");
 
@@ -750,8 +750,10 @@ public class UIDriver {
 
         int idx = responseBuffer.indexOf("authenticity_token");
 
-        if (idx == -1)
-            throw new IOException("Trying to add event but authenticity token not found");
+        if (idx == -1) {
+            logger.info("Trying to add event but authenticity token not found");
+            return null;
+        }
 
         int endIdx = responseBuffer.indexOf("\" />", idx);
 
