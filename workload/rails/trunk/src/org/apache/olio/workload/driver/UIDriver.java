@@ -996,11 +996,11 @@ public class UIDriver {
 
             el[3] = new Element();
             el[3].description = "Average images loaded per Home Page";
-            el[3].target = "&gt;= 3";
+            el[3].target = "&gt;= 2.5";
             if (cnt > 0) {
                 double avgImgs = homePageImagesLoaded / (double) cnt;
                 el[3].result = String.format("%.2f", avgImgs);
-                if (avgImgs >= 3d)
+                if (avgImgs >= 2.5)
                     el[3].passed = Boolean.TRUE;
                 else
                     el[3].passed = Boolean.FALSE;
