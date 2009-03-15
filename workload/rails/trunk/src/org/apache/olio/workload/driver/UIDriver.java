@@ -413,9 +413,6 @@ public class UIDriver {
 
         Set<String> images = parseImages(responseBuffer);
         if (!isCached) {
-
-            // Fetch the CSS/JS files
-
             loadStatics(homepageStatics);
         }
         loadImages(images);
@@ -734,13 +731,13 @@ public class UIDriver {
             }
             endIdx = elText.indexOf(")", idx2 + attrStartLen);
             if (endIdx == -1) {
-                logger.warning("No img src attribute ending. Weird! " + elText);
+                logger.warning("No ) attribute ending. Weird! " + elText);
                 continue;
             }
 
             String link = elText.substring(idx2 + attrStartLen, endIdx);
             if (link.startsWith("/uploaded_files")) {
-                String url = baseURL + '/' + link;
+                String url = baseURL + link;
 
                 logger.finer("Adding " + url + " from idx " + idx);
                 urlSet.add(url);
