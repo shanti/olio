@@ -5,14 +5,14 @@
 ENV['RAILS_ENV'] ||= 'production'
 
 # Specifies gem version of Rails to use when vendor/rails is not present
-RAILS_GEM_VERSION = '2.1.0' unless defined? RAILS_GEM_VERSION
+RAILS_GEM_VERSION = '2.2.2' unless defined? RAILS_GEM_VERSION
 
 # Bootstrap the Rails environment, frameworks, and default configuration
 require File.join(File.dirname(__FILE__), 'boot')
 require 'hodel_3000_compliant_logger'
 
 CACHED = true
-Memcached = false
+Memcached = true
 
 IMAGE_STORE_PATH = 'public/uploaded_files'
 DOCUMENT_STORE_PATH = 'public/uploaded_files'
@@ -20,7 +20,7 @@ DOCUMENT_STORE_PATH = 'public/uploaded_files'
 if CACHED and Memcached
   require 'memcache'
   CACHE = MemCache.new :c_threshold => 1_000,:compression => true,:debug => false,:namespace => 'mycachespace',:readonly => false,:urlencode => false
-  CACHE.servers = '10.251.63.95:11211'
+  CACHE.servers = 'r5:11211'
 end
 
 Rails::Initializer.run do |config|
@@ -58,19 +58,14 @@ Rails::Initializer.run do |config|
 
   # Memcached Config ## START ##
   if CACHED and Memcached
-    config.action_controller.session_store = :mem_cache_store
-    config.action_controller.cache_store = CACHE, {}
-    config.action_controller.fragment_cache_store = CACHE, {}
-    config.action_controller.session = {
-    :session_key => '_perf_session'
-    }
-  else
-    config.action_controller.session = {
-    :session_key => '_perf_session',
-    :secret      => 'dab95a8389324e5fa99cf6b178d4377d320b3c94ac2af58946b59118b92d2149a3091bbada03862361ee401e594279022b15fdaeee0df45ee17de07caa912576'
-    }
+    config.action_controller.cache_store = CACHE
   end
   # Memcached Config ## END ##
+
+  config.action_controller.session = {
+    :session_key => '_perf_session',
+    :secret      => 'dab95a8389324e5fa99cf6b178d4377d320b3c94ac2af58946b59118b92d2149a3091bbada03862361ee401e594279022b15fdaeee0df45ee17de07caa912576'
+  }
 
   # Add new inflection rules using the following format
   # (all these examples are active by default):
@@ -82,12 +77,6 @@ Rails::Initializer.run do |config|
   # end
 
   # See Rails::Configuration for more options  
-end
-
-if CACHED and Memcached
-  # Memcached Config ## START ##
-  ActionController::CgiRequest::DEFAULT_SESSION_OPTIONS.merge!({ 'cache' => CACHE })
-  # Memcached Config ## END ##
 end
 
 # Add new mime types for use in respond_to blocks:
