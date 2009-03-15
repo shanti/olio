@@ -12,16 +12,10 @@ require File.join(File.dirname(__FILE__), 'boot')
 require 'hodel_3000_compliant_logger'
 
 CACHED = true
-Memcached = true
+MEMCACHED = true
 
 IMAGE_STORE_PATH = 'public/uploaded_files'
 DOCUMENT_STORE_PATH = 'public/uploaded_files'
-
-if CACHED and Memcached
-  require 'memcache'
-  CACHE = MemCache.new :c_threshold => 1_000,:compression => true,:debug => false,:namespace => 'mycachespace',:readonly => false,:urlencode => false
-  CACHE.servers = 'r5:11211'
-end
 
 Rails::Initializer.run do |config|
   # Settings in config/environments/* take precedence over those specified here
@@ -55,12 +49,6 @@ Rails::Initializer.run do |config|
 
   # Make Active Record use UTC-base instead of local time
   # config.active_record.default_timezone = :utc
-
-  # Memcached Config ## START ##
-  if CACHED and Memcached
-    config.action_controller.cache_store = CACHE
-  end
-  # Memcached Config ## END ##
 
   config.action_controller.session = {
     :session_key => '_perf_session',

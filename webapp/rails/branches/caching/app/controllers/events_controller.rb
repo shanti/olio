@@ -9,9 +9,6 @@ class EventsController < ApplicationController
   MAX_ATTENDEES = 20
   
   if CACHED
-  # Turned off for memcached
-    protect_from_forgery :only => [:update, :destroy, :delete, :create] unless Memcached
-
     after_filter :expire_home, :only => :index
     after_filter :expire_calendar, :only => :update_calendar
     after_filter :expire_tag, :only => :tag
