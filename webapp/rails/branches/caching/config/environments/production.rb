@@ -18,7 +18,7 @@ config.action_controller.perform_caching             = true
 # Disable delivery errors, bad email addresses will be ignored
 if CACHED
   if MEMCACHED
-    config.action_controller.cache_store = :mem_cache_store, 'r5.millennium.berkeley,edu'
+    config.action_controller.cache_store = :mem_cache_store, 'localhost'
   else
     config.action_mailer.raise_delivery_errors = false
     config.action_controller.cache_store = :file_store, RAILS_ROOT + '/tmp/cache/'

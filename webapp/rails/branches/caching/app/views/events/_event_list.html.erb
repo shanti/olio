@@ -15,15 +15,13 @@
         <%= zipcode_filter(@zipcode) %>
         <br />
         
-        <% unless @events.empty? -%>
-          <% unless @date -%>
-						Sort: 
-           	<%= created_at_radio_button %>
-            Created Date
-            
-            <%= event_date_radio_button %>
-            Event Date
-          <% end -%>
+        <% unless @date -%>
+					Sort: 
+         	<%= created_at_radio_button %>
+          Created Date
+          
+          <%= event_date_radio_button %>
+          Event Date
         <% end -%>
         <% if @date -%>
           <input type="hidden" name="month" value="<%= month %>" />
