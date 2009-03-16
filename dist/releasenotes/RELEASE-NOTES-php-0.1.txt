@@ -1,0 +1,15 @@
+This is the first release of the PHP implementation of Olio.
+There are two tarballs for this release: 
+apache-olio-php-0.1.tar.gz is the binary kit.
+apache-olio-php-src-0.1.tar.gz is the source that corresponds to the binary kit.
+
+Please use gtar to extract the contents:
+% gzcat apache-olio-php-0.1.tar.gz | gtar -xvf - 
+
+The instructions for setting up Olio from the binary kit are contained in 
+php_setup_kit.html which is located in the top-level directory. 
+You can also browse the document at 
+  https://svn.apache.org/repos/asf/incubator/olio/docs/php_setup_kit.html
+
+The instructions for setting up Olio from the source kit are contained in
+php_setup.html which is located in the 'docs' directory.
