@@ -7,7 +7,25 @@
 	<META NAME="AUTHOR" CONTENT="Akara Sucharitakul">
 	<META NAME="CREATED" CONTENT="20070926;10111500">
 	<META NAME="CHANGEDBY" CONTENT="Shanti Subramanyam">
-	<META NAME="CHANGED" CONTENT="20090311;9351100">
+	<META NAME="CHANGED" CONTENT="20090316;12552900">
+	<!-- Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+     with the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing,
+     software distributed under the License is distributed on an
+     "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+     specific language governing permissions and limitations
+     under the License.    
+-->
+	<META NAME="CHANGEDBY" CONTENT="Shanti Subramanyam">
 	<META NAME="CHANGEDBY" CONTENT="Shanti Subramanyam">
 	<STYLE TYPE="text/css">
 	<!--
@@ -83,10 +101,9 @@ follows :</P>
 	The driver is implemented using <A HREF="http://faban.sunsource.net/"><I>Faban</I></A>
 	– an open source benchmarking toolkit. The <I>php/trunk</I>
 	sub-directory has the faban driver code to drive the php
-	application. In future, we'd like to integrate the driver source for
-	all implementations of the application. The
-	<I>workload/workload/php/trunk</I> is referred to as $WORKLOAD in
-	this document.</P>
+	application. In future, we plan to integrate the driver source for
+	all implementations of the application. The <I>workload/php/trunk</I>
+	directory is referred to as $WORKLOAD in this document.</P>
 	<LI><P>The <I>geocoder</I> directory contains the code for the
 	geocoder emulator. This code is shared across all implementations of
 	Olio.</P>
@@ -108,8 +125,8 @@ system as the web application.</P>
 </OL>
 <UL>
 	<UL>
-		<LI><P ALIGN=LEFT>cd $WORKLOAD; cp build.properties.template
-		build.properties</P>
+		<LI><P ALIGN=LEFT><FONT FACE="Cumberland, monospace"><FONT SIZE=3>cd
+		$WORKLOAD; cp build.properties.template build.properties</FONT></FONT></P>
 		<LI><P ALIGN=LEFT>Edit build.properties and set faban.home to
 		$FABAN_HOME, faban.url to http://<I>driver_host</I>:9980 where
 		<I>driver_host</I> is the name of the machine where the Faban
@@ -123,10 +140,10 @@ system as the web application.</P>
 	</UL>
 </UL>
 <OL START=3>
-	<LI><P ALIGN=LEFT>Copy $WORKLOAD/build/Olio<SPAN STYLE="font-weight: medium">Driver</SPAN><I><SPAN STYLE="font-weight: medium">.</SPAN></I><SPAN STYLE="font-style: normal"><SPAN STYLE="font-weight: medium">jar</SPAN></SPAN>
-	to the $FABAN_HOME/benchmarks directory. IAlso copy the
-	OlioDriver.jar file to the $FABAN_HOME/benchmarks directory on the
-	web server system.</P>
+	<LI><P ALIGN=LEFT>Copy <FONT FACE="Cumberland, monospace">$WORKLOAD/build/Olio</FONT><FONT FACE="Cumberland, monospace"><SPAN STYLE="font-weight: medium">Driver</SPAN></FONT><FONT FACE="Cumberland, monospace"><I><SPAN STYLE="font-weight: medium">.</SPAN></I></FONT><FONT FACE="Cumberland, monospace"><SPAN STYLE="font-style: normal"><SPAN STYLE="font-weight: medium">jar</SPAN></SPAN></FONT>
+	to the <FONT FACE="Cumberland, monospace">$FABAN_HOME/benchmarks</FONT>
+	directory. Also copy the OlioDriver.jar file to the
+	$FABAN_HOME/benchmarks directory on the web server system.</P>
 	<LI><P ALIGN=LEFT>For the driver to work, you will need JDK 1.6. Set
 	JAVA_HOME to the path of the JDK in the faban user's environment.</P>
 	<LI><P ALIGN=LEFT>Start the faban master on the master driver
@@ -145,7 +162,7 @@ following components:</P>
 	Lighttpd</P>
 	<LI><P STYLE="margin-bottom: 0in">PHP 5 with extensions: apc.so,
 	curl.so, gd.so, pdo_mysql.so</P>
-	<LI><P STYLE="margin-bottom: 0in">MySQL 5</P>
+	<LI><P STYLE="margin-bottom: 0in">MySQL 5 (5.1 recommended)</P>
 	<LI><P STYLE="margin-bottom: 0in">Memcached 
 	</P>
 </OL>
@@ -240,6 +257,8 @@ re-load the database before the run.</FONT></P>
 	containing the loader script:<BR></FONT><FONT FACE="monospace"><FONT SIZE=3>#
 	cd </FONT></FONT><FONT FACE="monospace"><I>$FABAN_HOME</I></FONT><FONT FACE="monospace">/benchmarks/OlioDriver/bin</FONT></P>
 </OL>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
 <OL START=3>
 	<LI><P STYLE="margin-bottom: 0in">Ensure the script has execute
 	permissions. Faban takes care of this for the runs, but since we
