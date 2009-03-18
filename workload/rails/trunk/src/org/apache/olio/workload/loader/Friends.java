@@ -27,15 +27,12 @@ public class Friends extends Loadable {
     int id;
     int[] friends;
 
-    public Friends(int id) {
-        this.id = ++id;
-    }
-
     public String getClearStatement() {
         return "truncate table invites";
     }
 
     public void prepare() {
+		id = getSequence() + 1;
         ThreadResource tr = ThreadResource.getInstance();
         Random r = tr.getRandom();
         int count = r.random(2, 28);

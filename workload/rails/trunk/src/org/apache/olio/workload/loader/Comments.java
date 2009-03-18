@@ -32,15 +32,13 @@ public class Comments extends Loadable {
     int[] ratings;
     Date createdTimestamp;
 
-    public Comments(int eventId) {
-        this.eventId = ++eventId;
-    }
 
     public String getClearStatement() {
         return "truncate table comments";
     }
 
     public void prepare() {
+		eventId = getSequence() + 1;
         ThreadResource tr = ThreadResource.getInstance();
         Random r = tr.getRandom();
         int commentCount = r.random(0, 20);

@@ -1,3 +1,22 @@
+ /*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ * $Id: LoadController.java,v 1.1.1.1 2008/09/29 22:33:08 sp208304 Exp $
+ */
 package org.apache.olio.workload.loader;
 
 import org.apache.olio.workload.util.ScaleFactors;
@@ -16,44 +35,36 @@ public class LoadController {
         ScaleFactors.setActiveUsers(Integer.parseInt(args[2]));
 
         // Clear the database
-        logger.info("Clearing database tables.");
-        clear(new Person(0, 0));
-        clear(new Friends(0));
-        clear(new Address());
-        clear(new Tag(0));
-        clear(new SocialEvent(0));
-        clear(new EventTag(0));
-        clear(new Attendees(0));
-        clear(new Comments(0));
-        clear(new Documents(0));
-        clear(new Images(0, ""));
+        clear(Person.class);
+        clear(Friends.class);
+        clear(Address.class);
+        clear(Tag.class);
+        clear(SocialEvent.class);
+        clear(EventTag.class);
+        clear(Attendees.class);
+        clear(Comments.class);
+        clear(Documents.class);
+        clear(PersonImages.class);
+        clear(EventImages.class);
+        logger.info("Done clearing database tables.");
 
         // load person, friends, and addresses
-        logger.info("Creating persons, friends, and addresses.");
-        for (int i = 0; i < ScaleFactors.users; i++) {
-            int imageId = ScaleFactors.events + i + 1;
-            load(new Person(i, imageId));
-            load(new Friends(i));
-            load(new Address());
-            load(new Images(imageId, "p"));
-        }
+        load(Person.class, ScaleFactors.users);
+        load(Friends.class, ScaleFactors.users);
+        load(Address.class, ScaleFactors.users);
+		// load(new Images(imageId, "p"));
+        load(PersonImages.class, ScaleFactors.users);
 
         // load tags
-        logger.info("Creating tags.");
-        for (int i = 0; i < ScaleFactors.tagCount; i++) {
-            load(new Tag(i));
-        }
+        load(Tag.class, ScaleFactors.tagCount);
 
         // load events and all relationships to events
-        logger.info("Creating events, attendees, comments.");
-        for (int i = 0; i < ScaleFactors.events; i++) {
-            load(new SocialEvent(i));
-            load(new Documents(i));
-            load(new Images(i, "e"));
-            load(new EventTag(i));
-            load(new Attendees(i));
-            load(new Comments(i));
-        }
+        load(SocialEvent.class, ScaleFactors.events);
+        load(EventTag.class, ScaleFactors.events);
+        load(Attendees.class, ScaleFactors.events);
+        load(Comments.class, ScaleFactors.events);
+        load(EventImages.class, ScaleFactors.events);
+        load(Documents.class, ScaleFactors.events);
 
         waitProcessing();
         logger.info("Done data creation.");
@@ -64,7 +75,7 @@ public class LoadController {
 
         // We use a new set of connections and thread pools for postLoad.
         // This is to ensure all load tasks are done before this one starts.
-        postLoad(new Tag(0));
+        postLoad(Tag.class);
         shutdown();
         logger.info("Done post-load.");
         System.exit(0); // Signal successful loading.

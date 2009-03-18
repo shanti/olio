@@ -1,3 +1,22 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ * $Id: ThreadConnection.java,v 1.1.1.1 2008/09/29 22:33:08 sp208304 Exp $
+ */
 package org.apache.olio.workload.loader.framework;
 
 import java.sql.*;
@@ -24,7 +43,7 @@ public class ThreadConnection {
     };
 
     private static boolean COMMIT_TX = Boolean.parseBoolean(
-                                     System.getProperty("commit.tx", "true"));
+                                    System.getProperty("commit.tx", "true"));
     private static final List<ThreadConnection> CONNECTIONLIST =
             Collections.synchronizedList(new ArrayList<ThreadConnection>());
 
@@ -63,7 +82,6 @@ public class ThreadConnection {
         try {
             if (conn == null || conn.isClosed()) {
                 conn = DriverManager.getConnection(connectionURL);
-		        //conn.setAutoCommit(false);
                 statement = null;
                 statementText = null;
             }
@@ -118,7 +136,8 @@ public class ThreadConnection {
         }
     }
 
-    void processBatch(String name, int batchCount, Queue<Loadable> queue) {
+    void processBatch(String name, int batchCount,
+            Queue<? extends Loadable> queue) {
         // First we need to save the load objects from the queue
         // so we do not loose them in case we need to retry.
         if (batchBuffer == null) {
@@ -148,7 +167,7 @@ public class ThreadConnection {
             batchName = "final " + count +  " object batch.";
 
         int flushed = 0;
-        for (int retry = 0; retry < 10; retry++) {
+        for (int retry = 0; retry < 2; retry++) {
             try {
                 for (int i = flushed; i < count; i++) {
                     batchBuffer[i].load();
@@ -175,7 +194,7 @@ public class ThreadConnection {
                 logger.fine(name + ": Loaded " + batchName);
                 break; // We won't retry if everything is OK.
             } catch (BatchUpdateException e) {
-                if (retry < 10) {
+                if (retry == 0) {
                     resetConnection();
                     logger.log(Level.WARNING, name +
                                                 ": Retry loading.", e);
@@ -205,10 +224,11 @@ public class ThreadConnection {
         }
 
         // Once we're done with this buffer, don't hold on to the objects.
-        // Let them get GC'd so we don't bloat memory. Minimal CPU cost
-        // for such tight loop and setting all entries to null.
-        for (int i = 0; i < batchBuffer.length; i++)
+        // Return them to the pool so we don't bloat memory.
+        for (int i = 0; i < batchBuffer.length; i++) {
+            batchBuffer[i].pool.putLoader(batchBuffer[i]);
             batchBuffer[i] = null;
+    }
     }
 
     void flush() throws SQLException {
@@ -227,7 +247,6 @@ public class ThreadConnection {
     }
 
     static void closeConnections() {
-        System.out.println("Closing connection");
         synchronized (CONNECTIONLIST) {
             for (ThreadConnection c : CONNECTIONLIST)
                 try {

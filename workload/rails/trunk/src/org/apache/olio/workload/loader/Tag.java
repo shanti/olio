@@ -25,15 +25,13 @@ public class Tag extends Loadable {
     int id;
     String tag;
 
-    public Tag(int id) {
-        this.id = ++id;
-    }
 
     public String getClearStatement() {
         return "truncate table tags";
     }
 
     public void prepare() {
+		id = getSequence() + 1;
         tag = UserName.getUserName(id);
     }
 

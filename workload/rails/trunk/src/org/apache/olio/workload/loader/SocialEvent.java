@@ -38,15 +38,13 @@ public class SocialEvent extends Loadable {
     Date createdTimestamp;
     int[] ifields = new int[7];
 
-    public SocialEvent(int id) {
-        this.id = ++id;
-    }
 
     public String getClearStatement() {
         return "truncate table events";
     }
 
     public void prepare() {
+		id = getSequence() + 1;
         ThreadResource tr = ThreadResource.getInstance();
         Random r = tr.getRandom();
         StringBuilder buffer = tr.getBuffer();

@@ -26,15 +26,13 @@ public class Documents extends Loadable {
 
     int eventId;
 
-    public Documents(int eventId) {
-        this.eventId = ++eventId;
-    }
-
     public String getClearStatement() {
         return "truncate table documents";
     }
 
     public void prepare() {
+		eventId = getSequence();
+		++eventId;
     }
 
 

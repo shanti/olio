@@ -32,11 +32,8 @@ public class Attendees extends Loadable {
         return "truncate table events_users";
     }
 
-    public Attendees(int eventId) {
-        this.eventId = ++eventId;
-    }
-
     public void prepare() {
+		eventId = getSequence() + 1;
         ThreadResource tr = ThreadResource.getInstance();
         Random r = tr.getRandom();
         int attendees = r.random(10, 100);

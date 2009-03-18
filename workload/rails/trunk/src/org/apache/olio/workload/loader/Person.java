@@ -29,16 +29,15 @@ public class Person extends Loadable {
     String[] fields = new String[10];
     int addressId, thumbnail, imageId;
 
-    public Person(int id, int imageId) {
-        this.id = ++id;
-        this.imageId = imageId;
-    }
 
     public String getClearStatement() {
         return "truncate table users";
     }
 
     public void prepare() {
+		id = getSequence();
+        ++id;
+	    imageId = ScaleFactors.events + id;
         ThreadResource tr = ThreadResource.getInstance();
         Random r = tr.getRandom();
         StringBuilder b = tr.getBuffer();
