@@ -32,7 +32,8 @@ class UsersController < ApplicationController
   # GET /users/1.xml
   def show
     @user = User.find(params[:id])
-    @you = User.find(session[:user_id])
+	# Shanti: removing requirement for being logged in
+    # @you = User.find(session[:user_id])
     @address = Address.find(@user.address_id)
     @image = @user.image
     @posted = @user.posted_events[0..2]
