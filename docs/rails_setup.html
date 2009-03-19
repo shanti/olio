@@ -7,7 +7,9 @@
 	<META NAME="AUTHOR" CONTENT="Akara Sucharitakul">
 	<META NAME="CREATED" CONTENT="20070926;10111500">
 	<META NAME="CHANGEDBY" CONTENT="Shanti Subramanyam">
-	<META NAME="CHANGED" CONTENT="20090316;13050200">
+	<META NAME="CHANGED" CONTENT="20090319;14304900">
+	<META NAME="CHANGEDBY" CONTENT="Shanti Subramanyam">
+	<META NAME="CHANGEDBY" CONTENT="Shanti Subramanyam">
 	<META NAME="CHANGEDBY" CONTENT="Shanti Subramanyam">
 	<!-- Licensed to the Apache Software Foundation (ASF) under one
     or more contributor license agreements.  See the NOTICE file
@@ -39,6 +41,9 @@
 <H1>Olio/Rails<BR>Install and Setup Guide from Source Tree</H1>
 <P>Note: The application currently does not use memcached. Please
 ignore the memcached related setup instructions.</P>
+<P>This document assumes some familiarity with setting up Ruby on
+Rails. If you have never set up rails before, you may need to do some
+web searching if you get stuck in any of the steps.</P>
 <H2>Overview</H2>
 <P>Olio is a macro-level toolkit consisting of the following
 components:</P>
@@ -191,13 +196,15 @@ following components:</P>
 	following gems: 
 	</P>
 	<UL>
-		<LI><P STYLE="margin-bottom: 0in">rails 
+		<LI><P STYLE="margin-bottom: 0in">rails</P>
+		<LI><P STYLE="margin-bottom: 0in">rake 
 		</P>
 		<LI><P STYLE="margin-bottom: 0in">thin (mongrel can be used if
 		desired) 
 		</P>
 		<LI><P STYLE="margin-bottom: 0in">mysql</P>
-		<LI><P STYLE="margin-bottom: 0in">image_science</P>
+		<LI><P STYLE="margin-bottom: 0in">image_science (uses FreeImage
+		which needs to be downloaded and built)</P>
 		<LI><P STYLE="margin-bottom: 0in">rcov</P>
 		<LI><P STYLE="margin-bottom: 0in">will_paginate</P>
 		<LI><P STYLE="margin-bottom: 0in">FreeImage</P>
@@ -208,7 +215,7 @@ following components:</P>
 <OL START=3>
 	<LI><P>MySQL 5 (5.1 recommended)</P>
 </OL>
-<P>For Linux (debian or ubunu), the following command can be used:</P>
+<P>For Linux (debian or ubuntu), the following command can be used :</P>
 <PRE STYLE="margin-bottom: 0.2in">     aptitude install build-essential subversion ruby1.8 ruby1.8-dev nginx libmysqlclient-dev rubygems libgems-ruby1.8</PRE><P STYLE="margin-bottom: 0in">
 For OpenSolaris 2008.11:</P>
 <UL>
@@ -216,22 +223,88 @@ For OpenSolaris 2008.11:</P>
 	latest in the pkg.opensolaris.org/dev repository. This will give you
 	Rubygems 1.3.1 and Ruby 1.8.7p72. 
 	</P>
-	<LI><P STYLE="margin-bottom: 0in">Since some of the gems install in
-	/usr/local, edit
+</UL>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">Set the environment variable CXX
+	to /usr/sfw/bin/gcc. This is required to build eventmachine (a thin
+	dependency).</P>
+</UL>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">Edit
 	<FONT FACE="Cumberland, monospace">/usr/ruby/1.8/lib/ruby/1.8/i386-solaris2.11/rbconfig.rb</FONT>
 	as follows :</P>
 </UL>
-<P STYLE="margin-left: 0.79in; margin-bottom: 0in">CONFIG[CFLAGS] =
-&quot;-g -O3 -fPIC -R/usr/local/lib”</P>
-<P STYLE="margin-left: 0.79in; margin-bottom: 0in">CONFIG[&quot;LDFLAGS&quot;]
-= &quot;-L/usr/sfw/lib -R/usr/sfw/lib -R/usr/local/lib&quot;</P>
 <P STYLE="margin-left: 0.79in; margin-bottom: 0in">CONFIG[&quot;LDSHARED&quot;]
-= &quot;gcc -G&quot;</P>
+= &quot;/usr/sfw/bin/gcc -G&quot;</P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
 <UL>
-	<LI><P STYLE="margin-bottom: 0in">Install nginx following the
+	<LI><P STYLE="margin-bottom: 0in">Download and build FreeImage.
+	Instructions are given in
+	<A HREF="http://wiki.joyent.com/accelerators:freeimage_imagescience">http://wiki.joyent.com/accelerators:freeimage_imagescience</A>.
+	Do not change the COMPILERFLAGS setting. Set INSTALLDIR to
+	/opt/local. The entries for the 'install' directive in
+	Makefile.solaris should read:</P>
+</UL>
+<P STYLE="margin-bottom: 0in">i<FONT FACE="Courier New, monospace"><FONT SIZE=2 STYLE="font-size: 11pt">nstall:</FONT></FONT></P>
+<P STYLE="margin-bottom: 0in"><FONT FACE="Courier New, monospace"><FONT SIZE=2 STYLE="font-size: 11pt">install
+-m 644 -u root -g root -f $(INSTALLDIR)/include Source/FreeImage.h </FONT></FONT>
+</P>
+<P STYLE="margin-bottom: 0in"><FONT FACE="Courier New, monospace"><FONT SIZE=2 STYLE="font-size: 11pt">install
+-m 644 -u root -g root -f $(INSTALLDIR)/lib $(STATICLIB) </FONT></FONT>
+</P>
+<P STYLE="margin-bottom: 0in"><FONT FACE="Courier New, monospace"><FONT SIZE=2 STYLE="font-size: 11pt">install
+-m 755 -u root -g root -f $(INSTALLDIR)/lib $(SHAREDLIB) </FONT></FONT>
+</P>
+<P STYLE="margin-bottom: 0in"><FONT FACE="Courier New, monospace"><FONT SIZE=2 STYLE="font-size: 11pt">ln
+-sf $(INSTALLDIR)/lib/$(SHAREDLIB) $(INSTALLDIR)/lib/$(LIBNAME)</FONT></FONT></P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">Now install these gems: 
+	</P>
+</UL>
+<P STYLE="margin-bottom: 0in"><FONT FACE="Courier New, monospace"><FONT SIZE=2 STYLE="font-size: 11pt">gem
+install rake rails thin rcov will_paginate image_science</FONT></FONT></P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">To install the mysql gem, you will
+	need to use the <A HREF="http://developers.sun.com/sunstudio/downloads/">Sun
+	Studio compiler</A>. Edit
+	<FONT FACE="Cumberland, monospace">/usr/ruby/1.8/lib/ruby/1.8/i386-solaris2.11/rbconfig.rb</FONT>
+	as follows :</P>
+</UL>
+<P STYLE="margin-left: 0.79in; margin-bottom: 0in">CONFIG[CC] = &quot;cc”</P>
+<P STYLE="margin-left: 0.79in; margin-bottom: 0in">CONFIG[CFLAGS] =
+&quot;-xO4 -xtarget=generic”</P>
+<P STYLE="margin-left: 0.79in; margin-bottom: 0in">CONFIG[&quot;LDFLAGS&quot;]
+= &quot;&quot;</P>
+<P STYLE="margin-left: 0.79in; margin-bottom: 0in">CONFIG[&quot;LDSHARED&quot;]
+= &quot;ld -G&quot;</P>
+<P STYLE="margin-left: 0.79in; margin-bottom: 0in"><BR>
+</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">Ensure the Studio compiler bin
+	directory is in your PATH, then run: <FONT FACE="Courier New, monospace">gem
+	install mysql</FONT>.</P>
+</UL>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">Install nginx. You can build nginx
+	from source by using the Makefile in
+	<A HREF="http://hg.opensolaris.org/sc/src/webstack/nginx/">http://hg.opensolaris.org/sc/src/webstack/nginx/</A>.
+	Alternatively, you can install a pre-build binary following the
 	instructions in 
 	</P>
-	<P STYLE="margin-bottom: 0in"><A HREF="http://blogs.sun.com/jyrivirkki/entry/nginx_package_updates">http://blogs.sun.com/jyrivirkki/entry/nginx_package_updates</A></P>
+</UL>
+<UL>
+	<P STYLE="margin-bottom: 0in"><A HREF="http://blogs.sun.com/jyrivirkki/entry/nginx_package_updates">http://blogs.sun.com/jyrivirkki/entry/nginx_package_updates</A><A HREF="http://blogs.sun.com/jyrivirkki/entry/nginx_package_updates">.</A><A HREF="http://blogs.sun.com/jyrivirkki/entry/nginx_package_updates"><SPAN STYLE="text-decoration: none">
+	</SPAN></A>
+	</P>
 </UL>
 <P STYLE="margin-bottom: 0in"><BR>
 </P>
@@ -265,28 +338,7 @@ path to your rails app's public directory: </CODE>
 to <CODE>root $APP_DIR;</CODE> 
 </P>
 <OL START=3>
-	<P STYLE="margin-bottom: 0.14in">Wait until the next step before
-	starting nginx. 
-	</P>
-</OL>
-<P STYLE="margin-bottom: 0in"><BR>
-</P>
-<OL START=4>
-	<LI><P>Start thin: 
-	</P>
-	<PRE>$ cd $APP_DIR
-$ thin -d -p 3000 -e production -s 4</PRE><P>
-	This will start four thin servers on ports 3000, 3001, 3002, and
-	3004. You can change the port and number of servers if you want, the
-	<CODE>nginx.conf</CODE> file will need to be modified as well. You
-	can also change to unix domain sockets by using the --socket option
-	and <CODE>server unix:/tmp/projects.0.sock;</CODE> for each of the
-	sockets. 
-	</P>
-	<LI><P>Start nginx. Check that you can connect to it from your
-	browser (http://<I>host</I>:80), but don't try to access any of the
-	application pages yet ! 
-	</P>
+	<P STYLE="margin-bottom: 0.14in">Do not start nginx yet.</P>
 </OL>
 <H2><A NAME="setupDB"></A>Setting up the database</H2>
 <OL>
@@ -326,11 +378,16 @@ $ ./mysqladmin -u root password <I>pwd</I></PRE>
 <OL START=6>
 	<LI><P>Create database: 
 	</P>
-	<PRE>mysql&gt; create database olio;
-mysql&gt; use olio;</PRE>
-	<LI><P>Create database schema:</P>
-	<PRE STYLE="margin-bottom: 0.2in">rake db:migrate</PRE>
+	<PRE STYLE="margin-bottom: 0.2in">mysql&gt; create database olio;</PRE>
 </OL>
+<OL START=6>
+	<LI><PRE STYLE="margin-bottom: 0.2in"><FONT FACE="Times New Roman, serif"><FONT SIZE=3>In the web application directory, go to the config directory. Copy database.yml.template to database.yml and edit it to set the hostname running the database.</FONT></FONT></PRE>
+</OL>
+<OL START=6>
+	<LI><PRE STYLE="margin-bottom: 0.2in"><FONT FACE="Times New Roman, serif"><FONT SIZE=3>Create database schema from the rails application :</FONT></FONT></PRE>
+</OL>
+<P><FONT FACE="Cumberland, monospace"><FONT SIZE=2>cd $APP_DIR; rake
+db:migrate</FONT></FONT></P>
 <H2><A NAME="loadDB"></A>Loading the database</H2>
 <P>It is best to load the database manually the first time so that we
 can test the web application. However, while doing performance tests,
@@ -382,9 +439,9 @@ but needs to be exported and mounted on the web application.</P>
 <FONT FACE="Times New Roman, serif"><FONT SIZE=3>This loads files for use for up to </FONT></FONT><CODE><FONT FACE="Times New Roman, serif"><FONT SIZE=3><I>load_scale</I></FONT></FONT></CODE> <FONT FACE="Times New Roman, serif"><FONT SIZE=3>number of concurrent users. </FONT></FONT></PRE>
 	<LI><P>Edit $APP_DIR/config/environment.rb and modify the values of
 	<CODE>IMAGE_STORE_PATH</CODE> and <CODE>DOCUMENT_STORE_PATH </CODE><CODE><FONT FACE="Times New Roman, serif">to
-	point to $FILESTORE</FONT></CODE><CODE>.</CODE><CODE><FONT FACE="Times New Roman, serif">Alternatively,
-	create a symbolic link from the default IMAGE_STORE_PATH to
-	$FILESTORE.</FONT></CODE></P>
+	point to $FILESTORE</FONT></CODE><CODE>.</CODE><CODE><FONT FACE="Times New Roman, serif">Note
+	that $FILESTORE is relative to $APP_DIR. Alternatively, create a
+	symbolic link from the default IMAGE_STORE_PATH to $FILESTORE.</FONT></CODE></P>
 </OL>
 <H2><A NAME="setupEmulator"></A>Setting up the Geocoder Emulator</H2>
 <P>The Geocoder Emulator is a simple servlet deployed on Tomcat. It
@@ -423,16 +480,32 @@ how to install it :</P>
 	the geocoder emulator is running.</P>
 </OL>
 <H2><A NAME="testWebApp"></A>Testing the web application</H2>
-<OL>
-	<LI><P STYLE="margin-bottom: 0in">Check the home page (HomePage)
-	http://&lt;web_server&gt;:8080/index.php . If there are no error
-	messages and all images get loaded, that's a great start! 
+<UL>
+	<LI><P STYLE="margin-bottom: 0.04in">Start thin: 
 	</P>
-	<LI><P STYLE="margin-bottom: 0in">Click on an event (EventDetail).
-	Make sure the whole page looks OK. 
+</UL>
+<PRE STYLE="margin-top: 0.02in; margin-bottom: 0.2in">      $ cd $APP_DIR
+      $ thin -d -p 3000 -e production -l /var/log/thin.log –-pid /var/run/thin.pid -s 4 start</PRE>
+<UL>
+	<LI><P>This will start four thin servers on ports 3000, 3001, 3002,
+	and 3004. You can change the port and number of servers if you want,
+	the <CODE>nginx.conf</CODE> file will need to be modified as well.
+	You can also change to unix domain sockets by using the --socket
+	option and <CODE>server unix:/tmp/projects.0.sock;</CODE> for each
+	of the sockets. 
 	</P>
-	<LI><P STYLE="margin-bottom: 0in">Click on an attendee
-	(PersonDetail) to see a person's profile. 
+	<LI><P>Start nginx. Check that you can connect to it from your
+	browser (<A HREF="http://host:80/">http://<I>host</I>:80</A>). Check
+	the home page (HomePage). If there are no error messages and all
+	images get loaded, that's a great start! If not, check the rails
+	application log (in $APP_DIR/log), thin and nginx error logs to
+	debug. 
+	</P>
+	<LI><P>Click on an event (EventDetail). Make sure the whole page
+	looks OK. 
+	</P>
+	<LI><P>Click on an attendee (PersonDetail) to see a person's
+	profile. 
 	</P>
 	<LI><P STYLE="margin-bottom: 0in">Go back to the home page and click
 	on a tag in the tag cloud. Choose a big tag and check that we have
@@ -453,12 +526,12 @@ how to install it :</P>
 	an attendee. This is the EventDetail transaction with attendee added
 	(about 8-9% of all EventDetail views). 
 	</P>
-	<LI><P>Click on the add event tab and add an event. Make sure to
-	include an image and some literature. You can also use the files
-	from <CODE>$FABAN_HOME/benchmarks/web20/resources</CODE>. Fill in
-	the form and submit. This is the AddEvent transaction. 
+	<LI><P STYLE="margin-bottom: 0in">Click on the add event tab and add
+	an event. Make sure to include an image and some literature. You can
+	also use the files from <CODE>$FABAN_HOME/benchmarks/web20/resources</CODE>.
+	Fill in the form and submit. This is the AddEvent transaction. 
 	</P>
-</OL>
+</UL>
 <H2><A NAME="startRun"></A>Starting a performance test</H2>
 <P>Now that we know that the web application is running and the faban
 harness is up, it is time to kick off a test.</P>
@@ -476,35 +549,40 @@ harness is up, it is time to kick off a test.</P>
 	<LI><P STYLE="margin-bottom: 0in">Select the Driver tab. 
 	</P>
 </OL>
-<P STYLE="margin-bottom: 0in">Enter a Description for the run (say
-'First test run' for this case). In general, the Description field is
-very useful to get a quick idea of what a particular</P>
-<P STYLE="margin-bottom: 0in">run is testing. 
-</P>
-<P STYLE="margin-bottom: 0in">Enter the name of your driver(s)
-machine for Host (when using more than one machine, simply separate
-them by a space). 
-</P>
-<P STYLE="margin-bottom: 0in">Enter 10 for 'Concurrent Users' (we
-want to start small). 
-</P>
-<P STYLE="margin-bottom: 0in">Enter 'vmstat 10' for Tools. This
-indicates the measurement tools that will be run on the driver
-machine. It's a good idea to keep an eye on the driver cpu</P>
-<P STYLE="margin-bottom: 0in">utilization. 
-</P>
-<P STYLE="margin-bottom: 0in">Now enter 30, 30, 30 for the Ramp up,
-Steady State and Ramp down times. This is a very short test run. For
-normal runs, you may need a ramp up of</P>
-<P STYLE="margin-bottom: 0in">200 seconds and a steady state of at
-least 600 seconds during which measurements are made. 
-</P>
-<P STYLE="margin-bottom: 0in">For current systems, the time between
-client startup of 200 milliseconds is good enough. Some web servers
-or slower systems may not be able to 
-</P>
-<P STYLE="margin-bottom: 0in">accept connections very frequently. In
-that case we may want to increase this value to 1000 milliseconds. 
+<UL>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0in">Enter a Description for the run
+		(say 'First test run' for this case). In general, the Description
+		field is very useful to get a quick idea of what a particular run
+		is testing. 
+		</P>
+		<LI><P STYLE="margin-bottom: 0in">Enter the name of your driver(s)
+		machine for Host (when using more than one machine, simply separate
+		them by a space). 
+		</P>
+		<LI><P STYLE="margin-bottom: 0in">Enter 10 for 'Concurrent Users'
+		(we want to start small). 
+		</P>
+		<LI><P STYLE="margin-bottom: 0in">Enter 'vmstat 10' for Tools. This
+		indicates the measurement tools that will be run on the driver
+		machine. It's a good idea to keep an eye on the driver cpu
+		utilization. 
+		</P>
+		<LI><P STYLE="margin-bottom: 0in">Now enter 30, 30, 30 for the Ramp
+		up, Steady State and Ramp down times. This is a very short test
+		run. For normal runs, you may need a ramp up of 200 seconds and a
+		steady state of at least 600 seconds during which measurements are
+		made. 
+		</P>
+		<LI><P STYLE="margin-bottom: 0in">For current systems, the time
+		between client startup of 200 milliseconds is good enough. Some web
+		servers or slower systems may not be able to accept connections
+		very frequently. In that case we may want to increase this value to
+		1000 milliseconds. 
+		</P>
+	</UL>
+</UL>
+<P STYLE="margin-bottom: 0in"><BR>
 </P>
 <OL START=5>
 	<LI><P>Select the Web Server tab. 

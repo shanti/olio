@@ -3,10 +3,11 @@
 <HEAD>
 	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
 	<TITLE>Olio/Rails Install and Setup Guide</TITLE>
-	<META NAME="GENERATOR" CONTENT="NeoOffice 2.2  (Unix)">
+	<META NAME="GENERATOR" CONTENT="StarOffice 8  (Solaris Sparc)">
 	<META NAME="AUTHOR" CONTENT="Akara Sucharitakul">
 	<META NAME="CREATED" CONTENT="20070926;10111500">
-	<META NAME="CHANGED" CONTENT="20090317;16320600">
+	<META NAME="CHANGEDBY" CONTENT="Shanti Subramanyam">
+	<META NAME="CHANGED" CONTENT="20090319;14293500">
 	<!-- Licensed to the Apache Software Foundation (ASF) under one
     or more contributor license agreements.  See the NOTICE file
     distributed with this work for additional information
@@ -116,7 +117,7 @@ ls olio-rails-0.1*</FONT></FONT></P>
 <P STYLE="margin-bottom: 0.04in; font-style: normal"><FONT FACE="Courier New, monospace"><FONT SIZE=2 STYLE="font-size: 11pt">LICENSE
 OlioDriver.jar geocoder.war rails_setup_kit.html</FONT></FONT></P>
 <P STYLE="margin-bottom: 0.04in; font-style: normal"><FONT FACE="Courier New, monospace"><FONT SIZE=2 STYLE="font-size: 11pt">NOTICE
- RELEASE-NOTES-rails-0.1.txt oliorails/ release</FONT></FONT></P>
+RELEASE-NOTES-rails-0.1.txt oliorails/ release</FONT></FONT></P>
 <P STYLE="margin-bottom: 0.04in; font-style: normal"><FONT FACE="Courier New, monospace"><FONT SIZE=2 STYLE="font-size: 11pt">#
 </FONT></FONT>
 </P>
@@ -196,14 +197,13 @@ following components:</P>
 <OL START=3>
 	<LI><P>MySQL 5 (5.1 recommended)</P>
 </OL>
-<P>For Linux (debian or ubunu), the following command can be used:</P>
+<P>For Linux (debian or ubuntu), the following command can be used:</P>
 <PRE STYLE="margin-bottom: 0.2in">     aptitude install build-essential subversion ruby1.8 ruby1.8-dev nginx libmysqlclient-dev rubygems libgems-ruby1.8</PRE><P STYLE="margin-bottom: 0in">
 For OpenSolaris 2008.11:</P>
 <UL>
 	<LI><P STYLE="margin-bottom: 0in">Upgrade your Ruby version to the
 	latest in the pkg.opensolaris.org/dev repository. This will give you
 	Rubygems 1.3.1 and Ruby 1.8.7p72.</P>
-	<P STYLE="margin-bottom: 0in"></P>
 </UL>
 <UL>
 	<LI><P STYLE="margin-bottom: 0in">Set the environment variable CXX
@@ -229,17 +229,17 @@ For OpenSolaris 2008.11:</P>
 	/opt/local. The entries for the 'install' directive in
 	Makefile.solaris should read:</P>
 </UL>
-<P STYLE="margin-bottom: 0in">            i<FONT FACE="Courier New, monospace"><FONT SIZE=2 STYLE="font-size: 11pt">nstall:</FONT></FONT></P>
-<P STYLE="margin-bottom: 0in">            <FONT FACE="Courier New, monospace"><FONT SIZE=2 STYLE="font-size: 11pt">install
+<P STYLE="margin-bottom: 0in">i<FONT FACE="Courier New, monospace"><FONT SIZE=2 STYLE="font-size: 11pt">nstall:</FONT></FONT></P>
+<P STYLE="margin-bottom: 0in"><FONT FACE="Courier New, monospace"><FONT SIZE=2 STYLE="font-size: 11pt">install
 -m 644 -u root -g root -f $(INSTALLDIR)/include Source/FreeImage.h </FONT></FONT>
 </P>
-<P STYLE="margin-bottom: 0in">            <FONT FACE="Courier New, monospace"><FONT SIZE=2 STYLE="font-size: 11pt">install
+<P STYLE="margin-bottom: 0in"><FONT FACE="Courier New, monospace"><FONT SIZE=2 STYLE="font-size: 11pt">install
 -m 644 -u root -g root -f $(INSTALLDIR)/lib $(STATICLIB) </FONT></FONT>
 </P>
-<P STYLE="margin-bottom: 0in">            <FONT FACE="Courier New, monospace"><FONT SIZE=2 STYLE="font-size: 11pt">install
+<P STYLE="margin-bottom: 0in"><FONT FACE="Courier New, monospace"><FONT SIZE=2 STYLE="font-size: 11pt">install
 -m 755 -u root -g root -f $(INSTALLDIR)/lib $(SHAREDLIB) </FONT></FONT>
 </P>
-<P STYLE="margin-bottom: 0in">            <FONT FACE="Courier New, monospace"><FONT SIZE=2 STYLE="font-size: 11pt">ln
+<P STYLE="margin-bottom: 0in"><FONT FACE="Courier New, monospace"><FONT SIZE=2 STYLE="font-size: 11pt">ln
 -sf $(INSTALLDIR)/lib/$(SHAREDLIB) $(INSTALLDIR)/lib/$(LIBNAME)</FONT></FONT></P>
 <P STYLE="margin-bottom: 0in"><BR>
 </P>
@@ -247,7 +247,7 @@ For OpenSolaris 2008.11:</P>
 	<LI><P STYLE="margin-bottom: 0in">Now install these gems: 
 	</P>
 </UL>
-<P STYLE="margin-bottom: 0in">                    <FONT FACE="Courier New, monospace"><FONT SIZE=2 STYLE="font-size: 11pt">gem
+<P STYLE="margin-bottom: 0in"><FONT FACE="Courier New, monospace"><FONT SIZE=2 STYLE="font-size: 11pt">gem
 install rake rails thin rcov will_paginate image_science</FONT></FONT></P>
 <P STYLE="margin-bottom: 0in"><BR>
 </P>
@@ -269,7 +269,7 @@ install rake rails thin rcov will_paginate image_science</FONT></FONT></P>
 </P>
 <UL>
 	<LI><P STYLE="margin-bottom: 0in">Ensure the Studio compiler bin
-	directory is in your PATH, then run:  <FONT FACE="Courier New, monospace">gem
+	directory is in your PATH, then run: <FONT FACE="Courier New, monospace">gem
 	install mysql</FONT>.</P>
 </UL>
 <P STYLE="margin-bottom: 0in"><BR>
@@ -321,7 +321,7 @@ $ cd /var/app</PRE>
 path to your rails app's public directory: </CODE>
 </P>
 <PRE STYLE="margin-bottom: 0.2in"><CODE>       root /var/www/virtual/example.com/rails/railsapp/public;</CODE></PRE><P STYLE="margin-bottom: 0.04in">
-             to         <CODE>root $APP_DIR/public;</CODE> 
+to <CODE>root $APP_DIR/public;</CODE> 
 </P>
 <OL START=3>
 	<P STYLE="margin-bottom: 0.14in">Do not start nginx yet.</P>
@@ -348,7 +348,7 @@ $ ./mysql_install_db</PRE>
 	</P>
 	<PRE>$ ./mysqld_safe &amp;
 $ ./mysqladmin -u root password <I>pwd</I></PRE>
-	<LI><P>Create the web20 user and grant privileges: 
+	<LI><P>Create the olio user and grant privileges: 
 	</P>
 	<PRE> $ ./mysql -u root -p <I>pwd</I>
  mysql&gt; create user 'olio'@'%' identified by 'olio';
@@ -364,15 +364,11 @@ $ ./mysqladmin -u root password <I>pwd</I></PRE>
 <OL START=6>
 	<LI><P>Create database: 
 	</P>
-	<PRE>mysql&gt; create database olio;</PRE>
+	<PRE STYLE="margin-bottom: 0.2in">mysql&gt; create database olio;</PRE>
+	<LI><PRE STYLE="margin-bottom: 0.2in"><FONT FACE="Times New Roman, serif"><FONT SIZE=3>In the web application directory, go to the config directory. Copy database.yml.template to database.yml and edit it to set the hostname running the database.</FONT></FONT></PRE>
+	<LI><PRE STYLE="margin-bottom: 0.2in"><FONT FACE="Times New Roman, serif"><FONT SIZE=3>Create database schema from the rails application :</FONT></FONT></PRE>
 </OL>
-<PRE></PRE>
 <OL START=6>
-	<LI><PRE><FONT FACE="Times New Roman, serif"><FONT SIZE=3>In the web application directory, go to the config directory. Copy database.yml.template to database.yml and edit it to set the hostname running the database.</FONT></FONT></PRE>
-</OL>
-<PRE STYLE="margin-bottom: 0.2in"></PRE>
-<OL START=6>
-	<LI><P>Create database schema from the rails application :</P>
 	<PRE STYLE="margin-bottom: 0.2in">cd $APP_DIR; rake db:migrate</PRE>
 </OL>
 <H2><A NAME="loadDB"></A>Loading the database</H2>
@@ -426,10 +422,9 @@ but needs to be exported and mounted on the web application.</P>
 <FONT FACE="Times New Roman, serif"><FONT SIZE=3>This loads files for use for up to </FONT></FONT><CODE><FONT FACE="Times New Roman, serif"><FONT SIZE=3><I>load_scale</I></FONT></FONT></CODE> <FONT FACE="Times New Roman, serif"><FONT SIZE=3>number of concurrent users. </FONT></FONT></PRE>
 	<LI><P>Edit $APP_DIR/config/environment.rb and modify the values of
 	<CODE>IMAGE_STORE_PATH</CODE> and <CODE>DOCUMENT_STORE_PATH </CODE><CODE><FONT FACE="Times New Roman, serif">to
-	point to $</FONT></CODE><CODE><FONT FACE="Times New Roman, serif">FILESTORE.
-	Note that $FILESTORE is relative to $APP_DIR. Alternatively</FONT></CODE><CODE><FONT FACE="Times New Roman, serif">,
-	create a symbolic link from the default IMAGE_STORE_PATH to
-	$FILESTORE. </FONT></CODE>
+	point to $FILESTORE. Note that $FILESTORE is relative to $APP_DIR.
+	Alternatively, create a symbolic link from the default
+	IMAGE_STORE_PATH to $FILESTORE. </FONT></CODE>
 	</P>
 </OL>
 <H2><A NAME="setupEmulator"></A>Setting up the Geocoder Emulator</H2>
@@ -467,10 +462,13 @@ how to install it :</P>
 </OL>
 <H2><A NAME="testWebApp"></A>Testing the web application</H2>
 <UL>
-	<LI><P>Start thin: 
+	<LI><P STYLE="margin-bottom: 0.04in">Start thin: 
 	</P>
-	<LI><PRE>$ cd $APP_DIR</PRE>
-	<LI><PRE STYLE="margin-bottom: 0.2in">$ thin -d -p 3000 -e production -l /var/log/thin.log –-pid /var/run/thin.pid -s 4 start</PRE>
+</UL>
+<PRE STYLE="margin-top: 0.02in">      $ cd $APP_DIR
+      $ thin -d -p 3000 -e production -l /var/log/thin.log –-pid /var/run/thin.pid -s 4 start
+</PRE>
+<UL>
 	<LI><P>This will start four thin servers on ports 3000, 3001, 3002,
 	and 3004. You can change the port and number of servers if you want,
 	the <CODE>nginx.conf</CODE> file will need to be modified as well.
@@ -479,10 +477,11 @@ how to install it :</P>
 	of the sockets. 
 	</P>
 	<LI><P>Start nginx. Check that you can connect to it from your
-	browser (<A HREF="http://host:80/">http://<I>host</I>:80</A>). 
-	Check the home page (HomePage).  If there are no error messages and
-	all images get loaded, that's a great start! If not, check the thin
-	and nginx error logs to debug. 
+	browser (<A HREF="http://host:80/">http://<I>host</I>:80</A>). Check
+	the home page (HomePage). If there are no error messages and all
+	images get loaded, that's a great start! If not, check the rails
+	application log (in $APP_DIR/log), thin and nginx error logs to
+	debug. 
 	</P>
 	<LI><P>Click on an event (EventDetail). Make sure the whole page
 	looks OK. 
