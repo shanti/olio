@@ -69,6 +69,7 @@ import org.apache.commons.httpclient.methods.multipart.Part;
             @Row({  0,  0,  0,100,  0, 0,  0 })  // Add Event
           }
 )
+
 @NegativeExponential (
     cycleType = CycleType.CYCLETIME,
     cycleMean = 5000,
@@ -668,7 +669,10 @@ public class UIDriver {
         //buffer.append(fileServiceURL).append("file=p");
         
         ctx.recordTime();
+		// Shanti: No need to be logged on to see user
+		/**
         if (isLoggedOn) {
+		**/
             int id = random.random(1, ScaleFactors.users);
             GetMethod personDetailGet = new GetMethod(personDetailURL + id);
             httpClient.executeMethod(personDetailGet);
@@ -679,6 +683,7 @@ public class UIDriver {
             String event = RandomUtil.randomEvent(random, responseBuffer);
             if (event != null)
                 selectedEvent = event;
+		/***
         }
         else
         {
@@ -686,6 +691,7 @@ public class UIDriver {
             logger.warning("Trying to view user, but not logged in");
             http.fetchURL(homepageURL);
         }
+		***/
         ctx.recordTime();
     }
 
@@ -887,7 +893,7 @@ public class UIDriver {
             int idx = buffer.indexOf(message);
             if (idx == -1 )
                 throw new Exception("Could not find success message '" + message + "' in result body");
-        } else {
+        } else if (status != HttpStatus.SC_OK) {
             throw new Exception("Multipart post did not redirect");
         }
     }
