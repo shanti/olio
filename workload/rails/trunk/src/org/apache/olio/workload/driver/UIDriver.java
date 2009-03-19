@@ -60,13 +60,13 @@ import org.apache.commons.httpclient.methods.multipart.Part;
 //                  "Logout", "AddEvent",  "AddPerson"},
     operations = { "HomePage", "Login", "TagSearch", "EventDetail", "PersonDetail", "AddPerson", "AddEvent" },
 
-    mix = { @Row({  0, 10, 50, 35,  0, 5,  0 }), // Home Page
-            @Row({  0,  0, 30, 20, 20, 0, 30 }), // Login
-            @Row({ 20,  5, 40, 30,  0, 5,  0 }), // Tag Search
-            @Row({ 70, 20,  0,  0,  0, 5,  0 }), // Event Detail
-            @Row({  0,  0,  0, 30, 10, 0, 30 }), // Person Detail
-            @Row({ 30, 65,  0,  0,  0, 0,  0 }), // Add Person
-            @Row({  0,  0, 25, 75, 15, 0,  0 })  // Add Event
+    mix = { @Row({  0, 11, 52, 36,  0, 1,  0 }), // Home Page
+            @Row({  0,  0, 60, 20,  0, 0, 20 }), // Login
+            @Row({ 21,  6, 41, 31,  0, 1,  0 }), // Tag Search
+            @Row({ 72, 21,  0,  0,  6, 1,  0 }), // Event Detail
+            @Row({ 52,  6,  0, 31, 11, 0,  0 }), // Person Detail
+            @Row({  0,  0,  0,  0,100, 0,  0 }), // Add Person
+            @Row({  0,  0,  0,100,  0, 0,  0 })  // Add Event
           }
 )
 @NegativeExponential (
@@ -320,12 +320,12 @@ public class UIDriver {
         driverMetrics = new UIDriverMetrics();
         ctx.attachMetrics(driverMetrics);
         String hostPorts = ctx.getXPathValue(
-                                "//webServer/fa:hostConfig/fa:hostPorts");
+                                "/olio/webServer/fa:hostConfig/fa:hostPorts");
         List<NameValuePair<Integer>> hostPortList =
                                             Utilities.parseHostPorts(hostPorts);
         int loadedScale = Integer.parseInt(
-                                    ctx.getXPathValue("//dbServer/scale"));
-        loadedUsers = 4 * loadedScale;
+                                    ctx.getXPathValue("/olio/dbServer/scale"));
+        loadedUsers = ScaleFactors.USERS_RATIO * loadedScale;
         if (scale > loadedScale)
             throw new FatalException("Data loaded only for " + loadedScale +
                     " concurrent users. Run is set for " + scale +
@@ -334,7 +334,7 @@ public class UIDriver {
 
         //String type = ctx.getProperty("serverType");
         String type = "html";
-        String resourcePath = ctx.getProperty("resourcePath");
+        String resourcePath = ctx.getResourceDir();
         if (!resourcePath.endsWith(File.separator))
             resourcePath += File.separator;
         eventImg = new File(resourcePath + "event.jpg");
@@ -352,7 +352,10 @@ public class UIDriver {
                             ctx.getClientsInDriver(), hostPortList.size());
         NameValuePair<Integer> hostPort = hostPortList.get(bucket);
 
-        baseURL = "http://" + hostPort.name + ':' + hostPort.value;
+        if (hostPort.value == null)
+            baseURL = "http://" + hostPort.name;
+        else
+            baseURL = "http://" + hostPort.name + ':' + hostPort.value;
         personDetailURL = baseURL + "/users/";
         tagSearchURL = baseURL + "/events/tag_search/";
         tagCloudURL = baseURL + "/tagCloud." + type;
@@ -377,7 +380,10 @@ public class UIDriver {
         addPersonStatics = populateList(ADDPERSON_STATICS);
         addEventStatics = populateList(ADDEVENT_STATICS);
 
-        loginHeaders.put("Host", hostPort.name + ':' + hostPort.value);
+       if (hostPort.value == null)
+            loginHeaders.put("Host", hostPort.name);
+        else
+            loginHeaders.put("Host", hostPort.name + ':' + hostPort.value);
         loginHeaders.put("User-Agent", "Mozilla/5.0");
         loginHeaders.put("Accept", "text/xml.application/xml,application/" +
                 "xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;" +
@@ -391,6 +397,7 @@ public class UIDriver {
 
         isLoggedOn = false;
         isCached = cached();
+// Shanti: Why are we creating httpClient here ?
         httpClient = new HttpClient();
         httpClient.setConnectionTimeout(5000);
     }
@@ -504,7 +511,7 @@ public class UIDriver {
 
     @BenchmarkOperation (
         name    = "AddEvent",
-        max90th = 3,
+        max90th = 4,
         timing  = Timing.MANUAL
     )
     public void doAddEvent() throws Exception {
@@ -827,8 +834,8 @@ public class UIDriver {
     }
 
     public int selectUserID() {
-        return random.random(0,3) * ScaleFactors.activeUsers +
-                                                        ctx.getThreadId() + 1;
+        return random.random(0, ScaleFactors.USERS_RATIO - 1) *
+                     ScaleFactors.activeUsers + ctx.getThreadId() + 1;
     }
 
 
@@ -996,6 +1003,7 @@ public class UIDriver {
                 el[2].passed = Boolean.FALSE;
             }
 
+// Shanti: This should be 3. Changed to 2.5 temporarily
             el[3] = new Element();
             el[3].description = "Average images loaded per Home Page";
             el[3].target = "&gt;= 2.5";

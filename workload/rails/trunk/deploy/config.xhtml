@@ -80,15 +80,16 @@
                         <xforms:bind id="bind-dataStorage-userCommands" xforms:nodeset="fh:userCommands"/>
                     </xforms:bind>
                     <xforms:bind id="bind-reloadMedia" xforms:nodeset="reloadMedia" xforms:type="boolean"/>
+                    <xforms:bind id="bind-mediaDir" xforms:nodeset="mediaDir"/>
                 </xforms:bind>
 <!-- change here -->
                 <xforms:bind id="bind-cacheServers" xforms:nodeset="cacheServers">
                     <xforms:bind id="bind-cacheServers-hostConfig" xforms:nodeset="fa:hostConfig">
+                        <xforms:bind id="bind-cacheServers-hostPorts" xforms:nodeset="fa:hostPorts"/>
                         <xforms:bind id="bind-cacheServers-tools" xforms:nodeset="fh:tools"/>
                         <xforms:bind id="bind-cacheServers-userCommands" xforms:nodeset="fh:userCommands"/>
                     </xforms:bind>
                     <xforms:bind id="bind-cache-binPath" xforms:nodeset="cacheBinPath"/>
-                    <xforms:bind id="bind-cacheServers-serverList" xforms:nodeset="serverList"/>
                 </xforms:bind>
                 <!-- Shanti - comenting for now, as not used
                 <xforms:bind id="bind-otherServers" xforms:nodeset="otherServers">
@@ -135,10 +136,11 @@
                     <reloadDB>Reload Database</reloadDB>
                     <reloadMedia>Reload Images</reloadMedia>
                     <dbHomePath>Path for Database Home</dbHomePath>
-                    <webserverType>Webserver type(apache,lighttpd)</webserverType>
+                    <webserverType>Web Server</webserverType>
                     <webserverBinPath>Webserver bin Directory</webserverBinPath>
                     <webserverLogPath>Webserver logs Directory</webserverLogPath>
                     <webserverConfPath>Webserver config files Directory</webserverConfPath>
+                    <mediaDir>Media Directory</mediaDir>
                     <phpIniPath>php.ini Directory</phpIniPath>
                     <dbConfPath>DB config file Directory</dbConfPath>
                     <otherServers>Cache, Storage, or Other Servers</otherServers>
@@ -150,12 +152,15 @@
                     <hosts>Hosts</hosts>
                     <hostPorts>Host:Port Pairs</hostPorts>
                     <port>Port</port>
-                    <serverList>Memcached Hosts:Ports</serverList>
+                    <cacheHostPorts>Memcached Hosts:Ports</cacheHostPorts>
                     <cacheBinPath>Memcached bin Directory</cacheBinPath>
                     <pathConfig>URL Path Configurations</pathConfig>
                     <java>Java</java>
                     <php>PHP</php>
                     <rails>Rails</rails>
+                    <apache>Apache</apache>
+                    <lighttpd>lighttpd</lighttpd>
+                    <glassfish>GlassFish</glassfish>
                     <tools>Tools</tools>
                     <userCommands>User Commands</userCommands>
                     <ok>Ok</ok>
@@ -305,11 +310,25 @@
                             <xforms:hint>The server host names or IP addresses and ports in the form host:port, space separated</xforms:hint>
                             <xforms:help>Enter the server host names or IP addresses and ports in the form host:port, space separated</xforms:help>
                         </xforms:input>
-                      <xforms:input id="input-webServer-type" xforms:bind="bind-webServer-type">
-                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/webserverType"/>
-                            <xforms:hint>Which webserver (apache or lighttpd)</xforms:hint>
-                            <xforms:help>Enter the webserver type</xforms:help>
-                       </xforms:input>
+                        <xforms:select1 id="select1-webServer-type" xforms:bind="bind-webServer-type">
+                             <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/webserverType"/>
+                             <xforms:choices>
+                                 <xforms:item>
+                                     <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/apache"/>
+                                     <xforms:value>apache</xforms:value>
+                                 </xforms:item>
+                                 <xforms:item>
+                                     <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/lighttpd"/>
+                                     <xforms:value>lighttpd</xforms:value>
+                                 </xforms:item>
+                                 <xforms:item>
+                                     <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/glassfish"/>
+                                     <xforms:value>glassfish</xforms:value>
+                                 </xforms:item>
+                                 <xforms:hint>Choose the web server type.</xforms:hint>
+                                 <xforms:help>Choose the web server type.</xforms:help>
+                             </xforms:choices>
+                         </xforms:select1>
                         <xforms:input id="input-webServer-binPath" xforms:bind="bind-webServer-binPath">
                             <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/webserverBinPath"/>
                             <xforms:hint>Enter the path to the webserver bin directory</xforms:hint>
@@ -363,7 +382,7 @@
                         <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/dbServer"/>
                         <xforms:input id="input-dbServer-host" xforms:bind="bind-dbServer-host">
                             <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/host"/>
-                            <xforms:hint>The server host name or IP address</xforms:hint>
+                            <xforms:hint>The Database server host name or IP address. For multiple servers, enter the master first then the slaves</xforms:hint>
                             <xforms:help>Enter the server host name or IP address</xforms:help>
                         </xforms:input>
                         <xforms:input id="input-dbDriver" xforms:bind="bind-dbDriver">
@@ -439,6 +458,11 @@
                                 <xforms:help>Yes to reload the images, otherwise images not reloaded.</xforms:help>
                             </xforms:choices>
                         </xforms:select1>
+                        <xforms:input id="input-mediaDir" xforms:bind="bind-mediaDir">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/mediaDir"/>
+                            <xforms:hint>The directory where images are stored</xforms:hint>
+                            <xforms:help>Enter the directory where the images are stored</xforms:help>
+                        </xforms:input>
                         <xforms:input id="input-dataStorage-tools" xforms:bind="bind-dataStorage-tools">
                             <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/tools"/>
                             <xforms:hint>Enter tool commands to collect statistics, separated by semi-colon</xforms:hint>
@@ -452,8 +476,8 @@
                     </xforms:group>
                     <xforms:group id="group-cacheServers">
                         <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/cacheServers"/>
-                        <xforms:input id="input-cacheServers-serverList" xforms:bind="bind-cacheServers-serverList">
-                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/serverList"/>
+                        <xforms:input id="input-cacheServers-hostPorts" xforms:bind="bind-cacheServers-hostPorts">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/cacheHostPorts"/>
                             <xforms:hint>The memcached servers' [host:port] pairs, space separated</xforms:hint>
                             <xforms:help>Enter the memcached servers' [host:port] pairs, space separated</xforms:help>
                         </xforms:input>

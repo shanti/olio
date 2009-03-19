@@ -27,10 +27,12 @@ import com.sun.faban.harness.DefaultFabanBenchmark;
 import com.sun.faban.harness.RunContext;
 import com.sun.faban.harness.engine.ApacheHttpdService;
 import com.sun.faban.harness.engine.LighttpdService;
+import com.sun.faban.harness.engine.GlassfishService;
 import com.sun.faban.harness.engine.MemcachedService;
 
 import com.sun.faban.harness.engine.WebServerService;
 import java.io.File;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.logging.Logger;
@@ -53,73 +55,12 @@ public class OlioBenchmark extends DefaultFabanBenchmark {
     static Logger logger = Logger.getLogger(
                                         OlioBenchmark.class.getName());
     int totalRunningTimeInSecs = 0;
-    private LinkedHashSet<String> hostsSet;
-    private ArrayList<NameValuePair<Integer>> hostsPorts;    
+	private List<NameValuePair<Integer>> memcacheServers;
     private String webServerBinPath, webServerLogPath, webServerConfPath;
     private String webServerPidPath, phpIniPath, cacheBinPath, dbConfPath;
     WebServerService webServerService;
     MemcachedService memcachedService = MemcachedService.getHandle();
 
-    /**
-     * Allows benchmark to validate the configuration file. Note that no
-     * execution facility is available during validation.
-     *
-     * @throws Exception if any error occurred.
-     * @see com.sun.faban.harness.RunContext#exec(com.sun.faban.common.Command)
-     */
-    public void validate() throws Exception {
-        params = getParamRepository();
-        params.setParameter("fa:runConfig/fd:driverConfig" +
-                "[@name='UIDriver']/fd:properties/fd:property" +
-                "[@name='resourcePath']",
-                getBenchmarkDir() + "resources" + File.separator);
-
-        //cache servers get list of servers for the host
-        String cacheServers = params.getParameter("cacheServers/serverList");
-
-        // replacing all the newline characters and other white space
-        // characters with a blank space
-        cacheServers = cacheServers.replaceAll("\\s", " ");
-
-        // Find the patterns that have either hostname or hostname:port values
-        Pattern p1 = Pattern.compile("([a-zA-Z_0-9-\\.]+):?(\\w*)\\s*");
-        Matcher m1 = p1.matcher(cacheServers + ' '); // add a whitespace at end
-
-        hostsSet = new LinkedHashSet<String>();
-        hostsPorts = new ArrayList<NameValuePair<Integer>>();
-
-        //need to get these data structures for restarting memcache servers for RunContext
-
-        //  Fill up the hosts set with names of all the hosts
-        for (boolean found = m1.find(); found; found = m1.find()) {
-            NameValuePair<Integer> hostPort = new NameValuePair<Integer>();
-            hostPort.name = m1.group(1);
-            String port = m1.group(2);
-            if (port != null && port.length() > 1)
-                hostPort.value = new Integer(port);
-            else
-                hostPort.value = 11211;
-            //logger.info("with port number " + hostPort.value);
-            hostsSet.add(hostPort.name);
-            hostsPorts.add(hostPort);
-        }
-
-        // Now extract the unique hosts
-        StringBuffer hosts = new StringBuffer();
-        for (String host : hostsSet) {
-            hosts.append(host);
-            hosts.append(' ');
-        }
-
-        // Update the unique hosts to the host filed and save
-        String cacheHosts = hosts.toString().trim();
-        params.setParameter("cacheServers/fa:hostConfig/fa:host", cacheHosts);
-        logger.info("Memcached Hosts: " + cacheHosts);
-
-        params.save();
-        super.validate();
-
-    }
 
     /**
      * This method is called to configure the specific benchmark run
@@ -130,6 +71,8 @@ public class OlioBenchmark extends DefaultFabanBenchmark {
      */
     public void configure() throws Exception {
         
+		params = getParamRepository();
+
         //Obtaining configuration parameters
         String webserverType = params.getParameter("webServer/type");
  
@@ -137,30 +80,42 @@ public class OlioBenchmark extends DefaultFabanBenchmark {
         webServerLogPath = params.getParameter("webServer/hostLogPath");
         webServerConfPath = params.getParameter("webServer/hostConfPath");
         webServerPidPath = params.getParameter("webServer/hostPidPath");
-        phpIniPath = params.getParameter("webServer/phpIniPath");
         cacheBinPath = params.getParameter("cacheServers/cacheBinPath");
         dbConfPath = params.getParameter("dbServer/dbConfPath");
-        String dbhost = params.getParameter("dbServer/fa:hostConfig/fa:host");
-        String webhost = params.getParameter("webServer/fa:hostConfig/fa:host");
-        /*
-       if (webserverType.equals("apache")) {
-            webServerService = ApacheHttpdService.getHandle();                           
-            RunContext.getFile(webhost, webServerConfPath +
-                    File.separator + "httpd.conf",
-                            RunContext.getOutDir() + "httpd.conf." + webhost);
-       } else {
-            webServerService = LighttpdService.getHandle();
-            RunContext.getFile(webhost, webServerConfPath + 
-                    File.separator + "lighttpd.conf",
-                            RunContext.getOutDir() + "lighttpd.conf." + webhost);
-       }
-       */
-        /* RunContext.getFile(webhost, phpIniPath + "/php.ini",
-                            RunContext.getOutDir() + "php.ini." + webhost);
+        String[] dbhosts = params.getParameter(
+                            "dbServer/fa:hostConfig/fa:host").split(" ");
+        String[] webhosts = params.getParameter(
+                            "webServer/fa:hostConfig/fa:host").split(" ");
 
-        RunContext.getFile(dbhost, dbConfPath + "/my.cnf",
-                RunContext.getOutDir() + "my.cnf." + dbhost);
-        */
+        if ("apache".equals(webserverType)) {
+            webServerService = ApacheHttpdService.getHandle();
+            for (String webhost : webhosts) {
+                RunContext.getFile(webhost, webServerConfPath +
+                        File.separator + "httpd.conf", RunContext.getOutDir() +
+                        "httpd_conf.log." + getHostName(webhost));
+            }
+        } else if ("lighttpd".equals(webserverType)) {
+            webServerService = LighttpdService.getHandle();
+            for (String webhost : webhosts) {
+                RunContext.getFile(webhost, webServerConfPath +
+                        File.separator + "lighttpd.conf",
+                        RunContext.getOutDir() + "lighttpd_conf.log." +
+                        getHostName(webhost));
+            }
+        } else if ("glassfish".equals(webserverType)) {
+            webServerService = GlassfishService.getHandle();
+            for (String webhost : webhosts) {
+                RunContext.getFile(webhost, webServerConfPath +
+                        File.separator + "domain.xml",
+                        RunContext.getOutDir() + "domain_xml.log." +
+                        getHostName(webhost));
+            }
+        }
+ 
+        for (String dbhost : dbhosts) {
+            RunContext.getFile(dbhost, dbConfPath + "/my.cnf",
+            RunContext.getOutDir() + "my_cnf.log." + getHostName(dbhost));
+        }
 
         // Reloading database and media as necessary.
         boolean reloadDB = Boolean.parseBoolean(
@@ -175,27 +130,34 @@ public class OlioBenchmark extends DefaultFabanBenchmark {
         CommandHandle dbHandle = null;
         CommandHandle mediaHandle = null;
         if (reloadDB) {
-            String dbHost =
-                    params.getParameter("dbServer/fa:hostConfig/fa:host");
+           logger.info("Reloading the database for " + scale + " users!");
+            String dbhost = dbhosts[0];
             String driver = params.getParameter("dbServer/dbDriver");
             String connectURL = params.getParameter("dbServer/connectURL");
             // Un-escape the URL.
             connectURL = connectURL.replace("&amp;", "&");
-            Command c = new Command("-Dcommit.tx=false " +
-                                    "org.apache.olio.workload.loader.LoadController " +
-                                    driver + ' ' + connectURL + ' ' + scale);
+            ArrayList<String> cmdList = new ArrayList<String>();
+            cmdList.add("-Dcommit.tx=false");
+            cmdList.add("org.apache.olio.workload.loader.LoadController");
+            cmdList.add(driver);
+            cmdList.add(connectURL);
+            cmdList.add(String.valueOf(scale));
+            Command c = new Command(cmdList);
+
             c.setSynchronous(false);
-            dbHandle = java(dbHost, c);
+            dbHandle = java(dbhost, c);
         }
 
         if (reloadMedia) {
+            logger.info("Reloading images/media for " + scale + " users!");
             String mediaHost = params.getParameter(
                                         "dataStorage/fa:hostConfig/fa:host");
-            Command c = new Command("loader.pl -d sfbay.sun.com -s " + scale);
+            String mediaDir = params.getParameter("dataStorage/mediaDir");
+            Command c = new Command("org.apache.olio.workload.fsloader.FileLoader",
+                        getBenchmarkDir() + "resources", mediaDir,
+                        String.valueOf(scale));
             c.setSynchronous(false);
-            c.setStreamHandling(Command.STDOUT, Command.TRICKLE_LOG);
-            c.setStreamHandling(Command.STDERR, Command.TRICKLE_LOG);            
-            mediaHandle = exec(mediaHost, c);
+            mediaHandle = java(mediaHost, c);
         }
         
         if (dbHandle != null) {
@@ -213,70 +175,53 @@ public class OlioBenchmark extends DefaultFabanBenchmark {
 		}
 
         //start the memcache servers
-        /*int index = 0;
-        String memServers[] = new String[hostsPorts.size()];
-        int ports[] = new int[hostsPorts.size()];
-        for (NameValuePair<Integer> thisCacheServer : hostsPorts) {
+        /************
+        memcacheServers =
+                 params.getHostPorts("cacheServers/fa:hostConfig/fa:hostPorts");
+
+         // Assign the default port.
+         for (NameValuePair<Integer> hostPort : memcacheServers) {
+             if (hostPort.value == null)
+                 hostPort.value = 11211;
+         }
+
+        int index = 0;
+        String memServers[] = new String[memcacheServers.size()];
+        int ports[] = new int[memcacheServers.size()];
+        for (NameValuePair<Integer> thisCacheServer : memcacheServers) {
             memServers[index] = thisCacheServer.name;
             ports[index++] = thisCacheServer.value;
-        } 
+        }
         memcachedService.setup(memServers, ports, "-u mysql -m 256",
                 cacheBinPath);
         if ( !memcachedService.restartServers())
             throw (new Exception("Memcached server(s) restart failed"));
-        
+
+        *********/
         
         // Now start the web servers
-        String ahosts[] = new String[1];
-        ahosts[0] = webhost;
-        webServerService.setup(ahosts, webServerBinPath, webServerLogPath, 
-                webServerConfPath, webServerPidPath);
-        if ( !webServerService.restartServers())
-            throw (new Exception("Webserver(s) restart failed"));
-        */
+        if (webServerService != null) {
+            webServerService.setup(webhosts, webServerBinPath, webServerLogPath,
+                                    webServerConfPath, webServerPidPath);
+            if (!webServerService.restartServers())
+                throw (new Exception("Webserver(s) restart failed"));
+        }
+
+        //calculate total running time, including rampUp, steadyState,
+        // and rampDown
+        String rampUp = params.getParameter(
+                               "fa:runConfig/fa:runControl/fa:rampUp");
+        String steadyState = params.getParameter(
+                               "fa:runConfig/fa:runControl/fa:steadyState");
+        String rampDown = params.getParameter(
+                               "fa:runConfig/fa:runControl/fa:rampDown");
+
+        this.totalRunningTimeInSecs = Integer.parseInt(rampUp) +
+                Integer.parseInt(steadyState) + Integer.parseInt(rampDown);
+
         super.configure();
     }
 
-     /**
-      * override DefaultBenchmark's start method so memcache stats can be
-      * collected via the Web20benchmark harness class
-      */
-    public void start() throws Exception {
-
-         //get the server list
-         String cacheServers = params.getParameter("cacheServers/serverList");
-         String[] cacheHosts = params.getTokenizedValue(
-                                        "cacheServers/fa:hostConfig/fa:host");
-         String rampUp = params.getParameter(
-                                "fa:runConfig/fa:runControl/fa:rampUp");
-         String steadyState = params.getParameter(
-                                "fa:runConfig/fa:runControl/fa:steadyState");
-         String rampDown = params.getParameter(
-                                "fa:runConfig/fa:runControl/fa:rampDown");
-         String interval = params.getParameter("fa:runConfig/" +
-                 "fd:driverConfig[@name='UIDriver']/fd:stats/fd:interval");
-
-
-         //calculate total running time, including rampUp, steadyState,
-         // and rampDown
-         this.totalRunningTimeInSecs = Integer.parseInt(rampUp) +
-                 Integer.parseInt(steadyState) + Integer.parseInt(rampDown);
-
-//         Command statsCommand = new Command(
-//                 "com.sun.web20.util.MemCacheUtility " + cacheServers + " -s "
-//                 + rampUp + " -e " + steadyState + " -i " + interval);
-//         statsCommand.setSynchronous(false);
-//         statsCommand.setStreamHandling(Command.STDOUT, Command.CAPTURE);
-//         statsCommand.setOutputFile(Command.STDOUT,  RunContext.getOutDir() +
-//                 "memcachestats.log." + getHostName(cacheHosts[0]));
-         // Use the real name of the first host.
-
-         super.start();
-
-//         logger.info("Launching memcache stats collection with " +
-//                        "interval time of " + interval);
-//         RunContext.java(statsCommand);
-     }
     
     /* override DefaultBenchmark's end method to collect apache log file
      * via the OlioBenchmark harness class
@@ -290,13 +235,23 @@ public class OlioBenchmark extends DefaultFabanBenchmark {
         //logger.info("Stopping Memcached servers");
         //memcachedService.stopServers();
         
-        // xfer apache logs
-        //logger.info("Transferring Apache error logs");
-        //webServerService.xferLogs(totalRunningTimeInSecs);
-   
-        // stop apache servers
-        //logger.info("Stopping Apache servers");
-        //webServerService.stopServers();
+        if (webServerService != null) {
+            // xfer logs
+            logger.info("Transferring webserver error logs");
+            webServerService.xferLogs(totalRunningTimeInSecs);
+
+            // stop web servers
+            logger.info("Stopping web servers");
+            webServerService.stopServers();
+        }
     }
     
+    /* Override DefaultBenchmark's kill method to stop the servers.
+     */
+    public void kill() throws Exception {
+        // memcachedService.stopServers();
+        if (webServerService != null)
+            webServerService.kill();
+        super.kill();
+    }
 }

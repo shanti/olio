@@ -52,8 +52,7 @@
             <runtimeStats target="9988"/>
 	    
             <properties>
-                <property name="serverType">php</property>
-                <property name="resourcePath">/apps/faban/benchmarks/olio/resources/</property>
+                <property name="serverType">html</property>
             </properties>            
         </driverConfig>
     </fa:runConfig>
@@ -63,28 +62,28 @@
             <fa:hostPorts>webserverHost:8080</fa:hostPorts>
             <enabled>true</enabled>
             <cpus>0</cpus>
-            <tools>vmstat 10; mpstat 10; netsum -a -i 10</tools>           
+            <tools>vmstat 10; mpstat 10; iostat -xn 10; nicstat 10</tools>           
             <userCommands/>            
         </fa:hostConfig>
-        <type>apache</type>
-        <hostBinPath>/opt/coolstack/apache2/bin</hostBinPath>
-        <hostLogPath>/opt/coolstack/apache2/logs</hostLogPath>
-        <hostConfPath>/opt/coolstack/apache2/conf</hostConfPath>
-        <phpIniPath>/opt/coolstack/php5/lib</phpIniPath>
+        <type></type>
+        <hostBinPath></hostBinPath>
+        <hostLogPath></hostLogPath>
+        <hostConfPath></hostConfPath>
+        <phpIniPath></phpIniPath>
     </webServer>
     <dbServer>
         <fa:hostConfig xmlns="http://faban.sunsource.net/ns/fabanharness" xmlns:fa="http://faban.sunsource.net/ns/faban">
             <fa:host>dbHost</fa:host>
             <enabled>true</enabled>
             <cpus>0</cpus>
-            <tools>vmstat 10; mpstat 10; netsum -a -i 10</tools>
+            <tools>vmstat 10; mpstat 10; nicstat 10; iostat -xn 10</tools>
             <userCommands/>
         </fa:hostConfig>
         <dbDriver>com.mysql.jdbc.Driver</dbDriver>
-        <connectURL>jdbc:mysql://dbHost/web20ror?user=web20&amp;password=web20&amp;relaxAutoCommit=true&amp;sessionVariables=FOREIGN_KEY_CHECKS=0</connectURL>
+        <connectURL>jdbc:mysql://dbHost/olio?user=olio&amp;password=olio&amp;relaxAutoCommit=true&amp;sessionVariables=FOREIGN_KEY_CHECKS=0</connectURL>
         <reloadDB>true</reloadDB>
         <scale>50</scale>
-        <dbHomePath>/opt/coolstack/mysql_32bit</dbHomePath>
+        <dbHomePath>/opt/coolstack/mysql</dbHomePath>
         <dbConfPath>/etc</dbConfPath>
     </dbServer>
     <dataStorage>
@@ -97,17 +96,17 @@
             <userCommands></userCommands>
         </fa:hostConfig>
         <reloadMedia>false</reloadMedia>        
+		<mediaDir>/filestore</mediaDir>
     </dataStorage>
     <cacheServers>
         <fa:hostConfig xmlns="http://faban.sunsource.net/ns/fabanharness" xmlns:fa="http://faban.sunsource.net/ns/faban">
-            <fa:host></fa:host>
+		    <fa:hostPorts>cacheHost:11211</fa:hostPorts>
             <enabled>true</enabled>
             <cpus>0</cpus>
             <tools>NONE</tools>
             <userCommands/>
         </fa:hostConfig>
-        <cacheBinPath>/opt/coolstack/bin</cacheBinPath>
-        <serverList>cacheHost:11212 cacheHost:11211</serverList>
+        <cacheBinPath></cacheBinPath>
     </cacheServers>
     <!-- Shanti - commenting as not used
     <otherServers>
