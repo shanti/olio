@@ -1,0 +1,11 @@
+<div id="posted">
+  <% unless @posted.empty? -%>
+    <h1>Your Posted Events</h1>
+    <ol id="posted_events_list">
+      <% @posted.each do |e| -%>
+        <li><%= link_to h(e.title), event_path(e) %></li>
+      <% end -%>
+    </ol>
+  <% end -%>
+	<%= will_paginate @posted %>
+</div>

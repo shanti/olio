@@ -1,0 +1,6 @@
+page << "if($('user_search_results')) {"
+  page[:user_search_results].reload
+page << "} else {"
+  page.insert_html :after, :search_results_separator, :partial => 'user_search_results'
+page << "}"
+page[:search_header].replace_html search_results_header

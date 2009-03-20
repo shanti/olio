@@ -1,0 +1,8 @@
+<% form_tag login_users_path do -%>  
+  <%= error_messages_for 'users' %>
+  <label for="users_username">Username</label>
+  <%= text_field 'users', 'username', :size => 12  %>
+  <label for="users_password">Password</label>
+  <%= password_field 'users', 'password', :size => 12 %>
+  <%= submit_tag "Login" %>
+<% end -%>

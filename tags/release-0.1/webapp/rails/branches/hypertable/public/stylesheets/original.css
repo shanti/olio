@@ -1,0 +1,95 @@
+/* main layout */
+#header {
+    padding: 10px;
+    background-color: #999;
+    color: inherit;
+}
+#mainNav {
+    padding: 10px;
+    width: 200px;
+    background-color: #999;
+    color: inherit;
+    float: left;   
+    
+}
+#main {
+    margin-left: 20px;
+    padding: 0;
+}
+#content {
+    background: #ddd;
+    margin-left: 220px;
+    padding: 15px;
+    border-top: 1px solid #000;
+    border-bottom: 1px solid #000;    
+    border-left: 1px solid #000;
+}
+#footer {
+    padding: 30px;
+    text-align: center;
+    background-color: #999;
+    color: white;
+    clear: both;
+}
+
+/* general button_to helper */
+form.button-to, 
+form.button-to div, 
+form.button_to input {
+    display: inline;
+}
+
+/* events/show */
+#event_details, #event_attendees {
+    margin: 0 10px;
+    width: 50%;
+    float: left;
+}
+.event_float_wrapper {
+    width: 600px;
+    background-color: #CCC;
+    color: black;
+    vertical-align: top;
+    border-bottom: 3px solid black;
+}
+.event_float_wrapper h2.event_detail_heading {
+    margin: 0;
+    padding: 0;
+}
+.event_float_wrapper div {
+    margin-top: 10px;
+    padding-top: 5px;
+}
+
+#event_description {
+    font-style: italic;
+}
+
+/* events/list */
+#selected_order {
+    font-weight: bold;
+}
+#event_header {
+    margin: 0;
+    padding: 10px;
+    background-color: #CCC;
+    color: black;
+}
+
+body {
+  background: #999;
+  margin: 0;
+}
+
+#header h1 {
+  text-align: center;
+}
+
+.clr {
+  clear: both;
+}
+/*
+.smallNav {
+  float: right;
+}
+*/

@@ -1,0 +1,2 @@
+servlet.lib.path=/usr/local/apache-tomcat-6.0.13/lib
+war.name=geocoder.war

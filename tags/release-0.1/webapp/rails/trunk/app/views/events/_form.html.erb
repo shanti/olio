@@ -1,0 +1,38 @@
+<!--[form:event]-->
+<div id="basic_event_form">
+  <p><label for="event_title">Title</label><br/>
+  <%= f.text_field 'title' %></p>
+
+	<p><label for="event_summary">Summary</label><br />
+	<%= f.text_area 'summary' %></p>
+
+  <p><label for="event_description">Description</label><br/>
+  <%= f.text_area 'description' %></p>
+</div>
+
+<div id="misc_event_form">
+  <p><label for="event_event_timestamp">Event date and time</label><br/>
+  <%= datetime_select 'event', 'event_timestamp'  %>
+  </p>
+
+  <p><label for="event_telephone">Telephone</label><br/>
+  <%= f.text_field 'telephone'  %></p>
+  
+  <br /><hr /><br />
+  
+  <p><label for="event_image">Image</label><br/>
+  <%= file_field_tag 'event_image' %></p>
+
+  <p>
+  	<label for="event_document">
+  		Document <sup><em>(only PDF, Word, and plain text documents)</em></sup>
+   	</label><br/>
+  	<%= file_field_tag 'event_document' %>
+  </p>
+
+  <p><label for="tag_list">Tags</label><br/>
+  <%= text_field_tag 'tag_list', params[:tag_list], :size => 40 %>
+  </p>
+</div>
+
+<!--[eoform:event]-->

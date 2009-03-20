@@ -1,0 +1,9 @@
+<h2 class="event_detail_heading">Comments</h2>
+
+<% if @comments.nil? or @comments.empty? -%>
+  <span class="subliminal">There are no comments for this event.</span>
+<% else -%>
+  <ol id="comment_list">
+    <%= render :partial => 'comments/comment', :collection => @comments %>
+  </ol>
+<% end -%>

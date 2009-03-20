@@ -1,0 +1,552 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- $Id: config.xhtml,v 1.1.1.1 2008/09/29 22:33:07 sp208304 Exp $ -->
+<html xmlns:chiba="http://chiba.sourceforge.net/2003/08/xforms"
+    xmlns:xforms="http://www.w3.org/2002/xforms"
+    xmlns:fa="http://faban.sunsource.net/ns/faban"
+    xmlns:fh="http://faban.sunsource.net/ns/fabanharness"
+    xmlns:fd="http://faban.sunsource.net/ns/fabandriver"
+
+    chiba:stylesheet="faban.xsl">
+    <head>
+        <xforms:model id="benchmark-model">
+            <xforms:instance id="benchmark-instance" src="{benchmark.template}"/>
+            <xforms:submission xforms:action="schedule-run.jsp" xforms:replace="all" id="submission-debug" xforms:method="post"/>
+            <xforms:bind id="bind-olio" xforms:nodeset="/olio">
+                <xforms:bind id="bind-jvmConfig" xforms:nodeset="fh:jvmConfig">
+                    <xforms:bind id="bind-javaHome" xforms:nodeset="fh:javaHome"/>
+                    <xforms:bind id="bind-jvmOptions" xforms:nodeset="fh:jvmOptions"/>
+                </xforms:bind>
+                <xforms:bind id="bind-runConfig" xforms:nodeset="fa:runConfig">
+                    <xforms:bind id="bind-description" xforms:nodeset="fh:description"/>
+                    <xforms:bind id="bind-runConfig-hostConfig" xforms:nodeset="fa:hostConfig">
+                        <xforms:bind id="bind-agent-host" xforms:nodeset="fa:host"/>
+                        <xforms:bind id="bind-agent-tools" xforms:nodeset="fh:tools"/>
+                        <xforms:bind id="bind-agent-userCommands" xforms:nodeset="fh:userCommands"/>
+                    </xforms:bind>
+                    <xforms:bind id="bind-scale" xforms:nodeset="fa:scale" xforms:type="positiveInteger"/>
+                    <xforms:bind id="bind-runControl" xforms:nodeset="fa:runControl">
+                        <xforms:bind id="bind-unit" xforms:nodeset="@unit"/>
+                        <xforms:bind id="bind-rampUp" xforms:nodeset="fa:rampUp" xforms:type="positiveInteger"/>
+                        <xforms:bind id="bind-steadyState" xforms:nodeset="fa:steadyState" xforms:type="positiveInteger"/>
+                        <xforms:bind id="bind-rampDown" xforms:nodeset="fa:rampDown" xforms:type="positiveInteger"/>
+                    </xforms:bind>
+                    <xforms:bind id="bind-threadStart" xforms:nodeset="fd:threadStart">
+                        <xforms:bind id="bind-delay" xforms:nodeset="fd:delay" xforms:type="positiveInteger"/>
+                        <xforms:bind id="bind-simultaneous" xforms:nodeset="fd:simultaneous"/>
+                        <xforms:bind id="bind-parallel" xforms:nodeset="fd:parallel"/>
+                    </xforms:bind>
+                    <xforms:bind id="bind-webServer" xforms:nodeset="fd:driverConfig[@name='UIDriver']">
+                        <xforms:bind id="bind-driver-agents" xforms:nodeset="fd:agents" xforms:type="positiveInteger"/>
+                        <xforms:bind id="bind-driver-statsInterval" xforms:nodeset="fd:stats/fd:interval" xforms:type="positiveInteger"/>
+                        <xforms:bind id="bind-driver-properties" xforms:nodeset="fd:properties">
+                            <xforms:bind id="bind-driver-serverType" xforms:nodeset="fd:property[@name='serverType']"/>
+                        </xforms:bind>
+                    </xforms:bind>
+                </xforms:bind>
+
+                <xforms:bind id="bind-webServer" xforms:nodeset="webServer">
+                    <xforms:bind id="bind-webServer-hostConfig" xforms:nodeset="fa:hostConfig">
+                        <xforms:bind id="bind-webServer-hostPorts" xforms:nodeset="fa:hostPorts"/>
+                        <xforms:bind id="bind-webServer-tools" xforms:nodeset="fh:tools"/>
+                        <xforms:bind id="bind-webServer-userCommands" xforms:nodeset="fh:userCommands"/>
+                    </xforms:bind>
+                    <!-- addition here -->
+                    <xforms:bind id="bind-webServer-type" xforms:nodeset="type"/>
+                    <xforms:bind id="bind-webServer-binPath" xforms:nodeset="hostBinPath"/>
+                    <xforms:bind id="bind-webServer-logPath" xforms:nodeset="hostLogPath"/>
+                    <xforms:bind id="bind-webServer-confPath" xforms:nodeset="hostConfPath"/>                    
+                    <xforms:bind id="bind-webServer-phpIniPath" xforms:nodeset="phpIniPath"/>
+                </xforms:bind>
+                 
+                                  
+                <xforms:bind id="bind-dbServer" xforms:nodeset="dbServer">
+                    <xforms:bind id="bind-dbServer-hostConfig" xforms:nodeset="fa:hostConfig">
+                        <xforms:bind id="bind-dbServer-host" xforms:nodeset="fa:host"/>
+                        <xforms:bind id="bind-dbServer-tools" xforms:nodeset="fh:tools"/>
+                        <xforms:bind id="bind-dbServer-userCommands" xforms:nodeset="fh:userCommands"/>
+                    </xforms:bind>
+                    <xforms:bind id="bind-dbDriver" xforms:nodeset="dbDriver"/>
+                    <xforms:bind id="bind-connectURL" xforms:nodeset="connectURL"/>
+                    <xforms:bind id="bind-reloadDB" xforms:nodeset="reloadDB" xforms:type="boolean"/>
+                    <xforms:bind id="bind-autoCommit" xforms:nodeset="autoCommit" xforms:type="boolean"/>
+                    <xforms:bind id="bind-load-scale" xforms:nodeset="scale" xforms:type="positiveInteger"/>
+                    <!-- addition here -->
+                    <xforms:bind id="bind-db-homePath" xforms:nodeset="dbHomePath" />
+                    <xforms:bind id="bind-db-confPath" xforms:nodeset="dbConfPath" />
+                </xforms:bind>
+                <xforms:bind id="bind-dataStorage" xforms:nodeset="dataStorage">
+                    <xforms:bind id="bind-dataStorage-hostConfig" xforms:nodeset="fa:hostConfig">
+                        <xforms:bind id="bind-dataStorage-host" xforms:nodeset="fa:host"/>
+                        <xforms:bind id="bind-dataStorage-tools" xforms:nodeset="fh:tools"/>
+                        <xforms:bind id="bind-dataStorage-userCommands" xforms:nodeset="fh:userCommands"/>
+                    </xforms:bind>
+                    <xforms:bind id="bind-reloadMedia" xforms:nodeset="reloadMedia" xforms:type="boolean"/>
+                    <xforms:bind id="bind-mediaDir" xforms:nodeset="mediaDir"/>
+                </xforms:bind>
+<!-- change here -->
+                <xforms:bind id="bind-cacheServers" xforms:nodeset="cacheServers">
+                    <xforms:bind id="bind-cacheServers-hostConfig" xforms:nodeset="fa:hostConfig">
+                        <xforms:bind id="bind-cacheServers-hostPorts" xforms:nodeset="fa:hostPorts"/>
+                        <xforms:bind id="bind-cacheServers-tools" xforms:nodeset="fh:tools"/>
+                        <xforms:bind id="bind-cacheServers-userCommands" xforms:nodeset="fh:userCommands"/>
+                    </xforms:bind>
+                    <xforms:bind id="bind-cache-binPath" xforms:nodeset="cacheBinPath"/>
+                </xforms:bind>
+                <!-- Shanti - comenting for now, as not used
+                <xforms:bind id="bind-otherServers" xforms:nodeset="otherServers">
+                    <xforms:bind id="bind-otherServers-hostConfig" xforms:nodeset="fa:hostConfig">
+                        <xforms:bind id="bind-otherServers-host" xforms:nodeset="fa:host"/>
+                        <xforms:bind id="bind-otherServers-tools" xforms:nodeset="fh:tools"/>
+                    </xforms:bind>
+                </xforms:bind>
+                -->
+            </xforms:bind>
+        </xforms:model>
+        <xforms:model id="benchmark-labels">
+            <xforms:instance id="benchmark-label-names">
+                <labels>
+                    <benchmark>Social Calendar Benchmark</benchmark>
+                    <jvmConfig>Java</jvmConfig>
+                    <javaHome>JAVA HOME</javaHome>
+                    <jvmOptions>JVM Options</jvmOptions>
+                    <runConfig>Driver</runConfig>
+                    <description>Description</description>
+                    <scale>Concurrent Users</scale>
+                    <loadScale>Loaded for Concurrent Users</loadScale>
+                    <autoCommit>AutoCommit</autoCommit>
+                    <runControl>Run Control</runControl>
+                    <unit>Unit</unit>
+                    <time>Time (sec)</time>
+                    <cycles>Cycles</cycles>
+                    <rampUp>Ramp Up</rampUp>
+                    <steadyState>Steady State</steadyState>
+                    <rampDown>Ramp Down</rampDown>
+                    <yes>Yes</yes>
+                    <no>No</no>
+                    <threadStart>Client Startup</threadStart>
+                    <delay>Time between starts (ms)</delay>
+                    <simultaneous>Start simultaneously</simultaneous>
+                    <parallel>Start agents in parallel</parallel>
+                    <webServer>Web&#160;Server</webServer>
+                    <dbServer>Database Server</dbServer>
+                    <dataStorage>Data Storage Server</dataStorage>
+                    <cacheServers>Memcached Servers</cacheServers>
+                    <servers>Data&#160;Servers</servers>
+                    <serverType>Server type</serverType>
+                    <dbDriver>JDBC driver class name</dbDriver>
+                    <connectURL>JDBC connection URL</connectURL>
+                    <reloadDB>Reload Database</reloadDB>
+                    <reloadMedia>Reload Images</reloadMedia>
+                    <dbHomePath>Path for Database Home</dbHomePath>
+                    <webserverType>Web Server</webserverType>
+                    <webserverBinPath>Webserver bin Directory</webserverBinPath>
+                    <webserverLogPath>Webserver logs Directory</webserverLogPath>
+                    <webserverConfPath>Webserver config files Directory</webserverConfPath>
+                    <mediaDir>Media Directory</mediaDir>
+                    <phpIniPath>php.ini Directory</phpIniPath>
+                    <dbConfPath>DB config file Directory</dbConfPath>
+                    <otherServers>Cache, Storage, or Other Servers</otherServers>
+                    <agents>Agents</agents>
+                    <statsInterval>Stats Collection Interval</statsInterval>
+                    <serverConfig>Server Information</serverConfig>
+                    <connectURL>Database Connection URL</connectURL>
+                    <host>Host</host>
+                    <hosts>Hosts</hosts>
+                    <hostPorts>Host:Port Pairs</hostPorts>
+                    <port>Port</port>
+                    <cacheHostPorts>Memcached Hosts:Ports</cacheHostPorts>
+                    <cacheBinPath>Memcached bin Directory</cacheBinPath>
+                    <pathConfig>URL Path Configurations</pathConfig>
+                    <java>Java</java>
+                    <php>PHP</php>
+                    <apache>Apache</apache>
+                    <lighttpd>lighttpd</lighttpd>
+                    <glassfish>GlassFish</glassfish>
+                    <tools>Tools</tools>
+                    <userCommands>User Commands</userCommands>
+                    <ok>Ok</ok>
+                    <cancel>Cancel</cancel>
+                </labels>
+            </xforms:instance>
+        </xforms:model>
+    </head>
+    <body>
+        <xforms:group id="group-tabsheet">
+            <xforms:trigger id="trigger-jvmConfig">
+                <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/jvmConfig"/>
+                <xforms:action id="action-jvmConfig">
+                    <xforms:revalidate xforms:model="benchmark-model" id="revalidate-jvmConfig"/>
+                    <xforms:toggle id="toggle-jvmConfig" xforms:case="case-jvmConfig"/>
+                </xforms:action>
+            </xforms:trigger>
+            <xforms:trigger id="trigger-runConfig">
+                <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/runConfig"/>
+                <xforms:action id="action-runConfig">
+                    <xforms:revalidate xforms:model="benchmark-model" id="revalidate-runConfig"/>
+                    <xforms:toggle id="toggle-runConfig" xforms:case="case-runConfig"/>
+                </xforms:action>
+            </xforms:trigger>
+            <xforms:trigger id="trigger-webServer">
+                <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/webServer"/>
+                <xforms:action id="action-webServer">
+                    <xforms:revalidate xforms:model="benchmark-model" id="revalidate-webServer"/>
+                    <xforms:toggle id="toggle-webServer" xforms:case="case-webServer"/>
+                </xforms:action>
+            </xforms:trigger>
+            <xforms:trigger id="trigger-servers">
+                <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/servers"/>
+                <xforms:action id="action-servers">
+                    <xforms:revalidate xforms:model="benchmark-model" id="revalidate-servers"/>
+                    <xforms:toggle id="toggle-servers" xforms:case="case-servers"/>
+                </xforms:action>
+            </xforms:trigger>
+            <xforms:switch id="switch">
+                <xforms:case id="case-jvmConfig" xforms:selected="true">
+                    <xforms:group id="group-nogroup">
+                        <xforms:input id="input-javaHome" xforms:bind="bind-javaHome">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/javaHome"/>
+                        </xforms:input>
+                        <xforms:input id="input-jvmOptions" xforms:bind="bind-jvmOptions">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/jvmOptions"/>
+                        </xforms:input>
+                    </xforms:group>
+                </xforms:case>
+                <xforms:case id="case-runConfig">
+                    <xforms:group id="group-nogroup">
+                        <xforms:textarea id="input-description" xforms:bind="bind-description">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/description"/>
+                            <xforms:hint>Enter description of this run</xforms:hint>
+                        </xforms:textarea>
+                        <xforms:input id="input-agent-host" xforms:bind="bind-agent-host">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/hosts"/>
+                            <xforms:hint>Enter machine names separated by space</xforms:hint>
+                            <xforms:help>Enter names of driver machines, separated by space</xforms:help>
+                        </xforms:input>
+                        <xforms:input id="input-scale" xforms:bind="bind-scale">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/scale"/>
+                            <xforms:hint>Enter Transaction rate</xforms:hint>
+                            <xforms:help>Enter Transaction rate (Default 1)</xforms:help>
+                            <xforms:alert>Not a valid number</xforms:alert>
+                        </xforms:input>
+                        <xforms:input id="input-agent-tools" xforms:bind="bind-agent-tools">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/tools"/>
+                            <xforms:hint>Enter tool commands to collect statistics, separated by semi-colon</xforms:hint>
+                            <xforms:help>Enter tool commands to collect statistics, separated by semi-colon</xforms:help>
+                        </xforms:input>
+                        <xforms:input id="input-agent-userCommands" xforms:bind="bind-agent-userCommands">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/userCommands"/>
+                            <xforms:hint>Enter any extra command or script to execute</xforms:hint>
+                            <xforms:help>Enter any extra command or script to execute</xforms:help>
+                        </xforms:input>
+                    </xforms:group>
+                    <xforms:group id="group-runControl">
+                        <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/runControl"/>
+                        <xforms:output xforms:bind="bind-unit"/>
+                        <xforms:input id="input-rampUp" xforms:bind="bind-rampUp">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/rampUp"/>
+                        </xforms:input>
+                        <xforms:input id="input-steadyState" xforms:bind="bind-steadyState">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/steadyState"/>
+                        </xforms:input>
+                        <xforms:input id="input-rampDown" xforms:bind="bind-rampDown">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/rampDown"/>
+                        </xforms:input>
+                    </xforms:group>
+                    <xforms:group id="group-threadStart">
+                        <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/threadStart"/>
+                        <xforms:input id="input-delay" xforms:bind="bind-delay">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/delay"/>
+                        </xforms:input>
+                        <xforms:select1 id="select1-simultaneous" xforms:bind="bind-simultaneous">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/simultaneous"/>
+                            <xforms:choices>
+                                <xforms:item>
+                                    <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/yes"/>
+                                    <xforms:value>true</xforms:value>
+                                </xforms:item>
+                                <xforms:item>
+                                    <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/no"/>
+                                    <xforms:value>false</xforms:value>
+                                </xforms:item>
+                                <xforms:hint>Yes to wait and simultaneously start the load, no to gradually increase load.</xforms:hint>
+                                <xforms:help>Yes to wait and simultaneously start the load, no to gradually increase load.</xforms:help>
+                            </xforms:choices>
+                        </xforms:select1>
+                        <xforms:select1 id="select1-parallel" xforms:bind="bind-parallel">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/parallel"/>
+                            <xforms:choices>
+                                <xforms:item>
+                                    <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/yes"/>
+                                    <xforms:value>true</xforms:value>
+                                </xforms:item>
+                                <xforms:item>
+                                    <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/no"/>
+                                    <xforms:value>false</xforms:value>
+                                </xforms:item>
+                                <xforms:hint>Yes to start load in parallel on all agents, no to wait for each agent to finish.</xforms:hint>
+                                <xforms:help>Yes to start load in parallel on all agents, no to wait for each agent to finish.</xforms:help>
+                            </xforms:choices>
+                        </xforms:select1>
+                    </xforms:group>
+                    <xforms:group id="group-nogroup">
+                        <xforms:input id="input-driver-agents" xforms:bind="bind-driver-agents">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/agents"/>
+                            <xforms:hint>The number of driver agents to run</xforms:hint>
+                            <xforms:help>Enter the number of agents, to be divided across driverHosts</xforms:help>
+                            <xforms:alert>Not a valid number</xforms:alert>
+                        </xforms:input>
+                        <xforms:input id="input-driver-statsInterval" xforms:bind="bind-driver-statsInterval">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/statsInterval"/>
+                            <xforms:hint>The interval, in seconds, to collect detailed statistics</xforms:hint>
+                            <xforms:help>Enter the interval, in seconds, to collect detailed statistics</xforms:help>
+                            <xforms:alert>Not a valid number</xforms:alert>
+                        </xforms:input>
+                    </xforms:group>
+                </xforms:case>
+                <xforms:case id="case-webServer"> 
+                    <xforms:group id="group-serverConfig">
+                        <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/serverConfig"/>
+                        <xforms:input id="input-webServer-hostPorts" xforms:bind="bind-webServer-hostPorts">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/hostPorts"/>
+                            <xforms:hint>The server host names or IP addresses and ports in the form host:port, space separated</xforms:hint>
+                            <xforms:help>Enter the server host names or IP addresses and ports in the form host:port, space separated</xforms:help>
+                        </xforms:input>
+                        <xforms:select1 id="select1-webServer-type" xforms:bind="bind-webServer-type">
+                             <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/webserverType"/>
+                             <xforms:choices>
+                                 <xforms:item>
+                                     <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/apache"/>
+                                     <xforms:value>apache</xforms:value>
+                                 </xforms:item>
+                                 <xforms:item>
+                                     <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/lighttpd"/>
+                                     <xforms:value>lighttpd</xforms:value>
+                                 </xforms:item>
+                                 <xforms:item>
+                                     <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/glassfish"/>
+                                     <xforms:value>glassfish</xforms:value>
+                                 </xforms:item>
+                                 <xforms:hint>Choose the web server type.</xforms:hint>
+                                 <xforms:help>Choose the web server type.</xforms:help>
+                             </xforms:choices>
+                         </xforms:select1>
+                        <xforms:input id="input-webServer-binPath" xforms:bind="bind-webServer-binPath">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/webserverBinPath"/>
+                            <xforms:hint>Enter the path to the webserver bin directory</xforms:hint>
+                            <xforms:help>Enter the path to the webserver bin directory</xforms:help>
+                        </xforms:input>
+                        <xforms:input id="input-webServer-logPath" xforms:bind="bind-webServer-logPath">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/webserverLogPath"/>
+                            <xforms:hint>Enter the path to the webserver logs directory</xforms:hint>
+                            <xforms:help>Enter the path to the webserver logs directory</xforms:help>
+                        </xforms:input>
+                        <xforms:input id="input-webServer-confPath" xforms:bind="bind-webServer-confPath">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/webserverConfPath"/>
+                            <xforms:hint>Enter the path to the webserver config files directory</xforms:hint>
+                            <xforms:help>Enter the path to the webserver config files directory</xforms:help>
+                        </xforms:input>
+                        <xforms:input id="input-webServer-phpIniPath" xforms:bind="bind-webServer-phpIniPath">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/phpIniPath"/>
+                            <xforms:hint>Enter the path to the directory containing php.ini</xforms:hint>
+                            <xforms:help>Enter the path to the directory containing php.ini</xforms:help>
+                        </xforms:input>
+
+                       <xforms:select1 id="select1-serverType" xforms:bind="bind-driver-serverType">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/serverType"/>
+                            <xforms:choices>
+                                <xforms:item>
+                                    <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/java"/>
+                                    <xforms:value>jsp</xforms:value>
+                                </xforms:item>
+                                <xforms:item>
+                                    <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/php"/>
+                                    <xforms:value>php</xforms:value>
+                                </xforms:item>
+                                <xforms:hint>Choose the server architecture type.</xforms:hint>
+                                <xforms:help>Choose the server architecture type.</xforms:help>
+                            </xforms:choices>
+                        </xforms:select1>
+                       <xforms:input id="input-webServer-tools" xforms:bind="bind-webServer-tools">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/tools"/>
+                            <xforms:hint>Enter tool commands to collect statistics, separated by semi-colon</xforms:hint>
+                            <xforms:help>Enter tool commands to collect statistics, separated by semi-colon</xforms:help>
+                        </xforms:input>
+                        <xforms:input id="input-webServer-userCommands" xforms:bind="bind-webServer-userCommands">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/userCommands"/>
+                            <xforms:hint>Enter any extra command or script to execute</xforms:hint>
+                            <xforms:help>Enter any extra command or script to execute</xforms:help>
+                        </xforms:input>
+                    </xforms:group>
+                </xforms:case>
+                <xforms:case id="case-servers">
+                    <xforms:group id="group-dbServer">
+                        <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/dbServer"/>
+                        <xforms:input id="input-dbServer-host" xforms:bind="bind-dbServer-host">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/host"/>
+                            <xforms:hint>The Database server host name or IP address. For multiple servers, enter the master first then the slaves</xforms:hint>
+                            <xforms:help>Enter the server host name or IP address</xforms:help>
+                        </xforms:input>
+                        <xforms:input id="input-dbDriver" xforms:bind="bind-dbDriver">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/dbDriver"/>
+                            <xforms:hint>The JDBC driver class name</xforms:hint>
+                            <xforms:help>Enter the JDBC driver class name</xforms:help>
+                        </xforms:input>
+                        <xforms:input id="input-connectURL" xforms:bind="bind-connectURL">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/connectURL"/>
+                            <xforms:hint>The JDBC connection URL</xforms:hint>
+                            <xforms:help>Enter the JDBC connection URL</xforms:help>
+                        </xforms:input>
+                        <xforms:select1 id="select1-reloadDB" xforms:bind="bind-reloadDB">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/reloadDB"/>
+                            <xforms:choices>
+                                <xforms:item>
+                                    <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/yes"/>
+                                    <xforms:value>true</xforms:value>
+                                </xforms:item>
+                                <xforms:item>
+                                    <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/no"/>
+                                    <xforms:value>false</xforms:value>
+                                </xforms:item>
+                                <xforms:hint>Yes to reload the database, otherwise database not reloaded.</xforms:hint>
+                                <xforms:help>Yes to reload the database, otherwise database not reloaded.</xforms:help>
+                            </xforms:choices>
+                        </xforms:select1>
+                        <xforms:select1 id="select1-autoCommit" xforms:bind="bind-autoCommit">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/autoCommit"/>
+                            <xforms:choices>
+                                <xforms:item>
+                                    <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/yes"/>
+                                    <xforms:value>true</xforms:value>
+                                </xforms:item>
+                                <xforms:item>
+                                    <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/no"/>
+                                    <xforms:value>false</xforms:value>
+                                </xforms:item>
+                                <xforms:hint>Yes if the database autocommits, otherwise loader commits.</xforms:hint>
+                                <xforms:help>Yes if the database autocommits, otherwise loader commits.</xforms:help>
+                            </xforms:choices>
+                        </xforms:select1>
+                        <xforms:input id="input-load-scale" xforms:bind="bind-load-scale">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/loadScale"/>
+                            <xforms:hint>Enter the number of concurrent users data is loaded for</xforms:hint>
+                            <xforms:help>Enter the number of concurrent users data is loaded for</xforms:help>
+                        </xforms:input>
+                        <xforms:input id="input-dbServer-tools" xforms:bind="bind-dbServer-tools">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/tools"/>
+                            <xforms:hint>Enter tool commands to collect statistics, separated by semi-colon</xforms:hint>
+                            <xforms:help>Enter tool commands to collect statistics, separated by semi-colon</xforms:help>
+                        </xforms:input>
+                        <xforms:input id="input-dbServer-userCommands" xforms:bind="bind-dbServer-userCommands">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/userCommands"/>
+                            <xforms:hint>Enter any extra command or script to execute</xforms:hint>
+                            <xforms:help>Enter any extra command or script to execute</xforms:help>
+                        </xforms:input>
+                         <xforms:input id="input-db-homePath" xforms:bind="bind-db-homePath">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/dbHomePath"/>
+                            <xforms:hint>Enter the path to $DATABASE_HOME</xforms:hint>
+                            <xforms:help>Enter the path to $DATABASE_HOME</xforms:help>
+                        </xforms:input>
+                         <xforms:input id="input-db-confPath" xforms:bind="bind-db-confPath">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/dbConfPath"/>
+                            <xforms:hint>Enter DB conf file directory</xforms:hint>
+                            <xforms:help>Enter DB conf file directory (e.g /etc)</xforms:help>
+                        </xforms:input>
+                    </xforms:group>
+                    <xforms:group id="group-dataStorage">
+                        <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/dataStorage"/>
+                        <xforms:input id="input-dataStorage-host" xforms:bind="bind-dataStorage-host">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/host"/>
+                            <xforms:hint>The server host name or IP address</xforms:hint>
+                            <xforms:help>Enter the server host name or IP address</xforms:help>
+                        </xforms:input>
+                        <xforms:select1 id="select1-reloadMedia" xforms:bind="bind-reloadMedia">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/reloadMedia"/>
+                            <xforms:choices>
+                                <xforms:item>
+                                    <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/yes"/>
+                                    <xforms:value>true</xforms:value>
+                                </xforms:item>
+                                <xforms:item>
+                                    <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/no"/>
+                                    <xforms:value>false</xforms:value>
+                                </xforms:item>
+                                <xforms:hint>Yes to reload the images, otherwise images not reloaded.</xforms:hint>
+                                <xforms:help>Yes to reload the images, otherwise images not reloaded.</xforms:help>
+                            </xforms:choices>
+                        </xforms:select1>
+                        <xforms:input id="input-mediaDir" xforms:bind="bind-mediaDir">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/mediaDir"/>
+                            <xforms:hint>The directory where images are stored</xforms:hint>
+                            <xforms:help>Enter the directory where the images are stored</xforms:help>
+                        </xforms:input>
+                        <xforms:input id="input-dataStorage-tools" xforms:bind="bind-dataStorage-tools">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/tools"/>
+                            <xforms:hint>Enter tool commands to collect statistics, separated by semi-colon</xforms:hint>
+                            <xforms:help>Enter tool commands to collect statistics, separated by semi-colon</xforms:help>
+                        </xforms:input>
+                        <xforms:input id="input-dataStorage-userCommands" xforms:bind="bind-dataStorage-userCommands">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/userCommands"/>
+                            <xforms:hint>Enter any extra command or script to execute</xforms:hint>
+                            <xforms:help>Enter any extra command or script to execute</xforms:help>
+                        </xforms:input>
+                    </xforms:group>
+                    <xforms:group id="group-cacheServers">
+                        <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/cacheServers"/>
+                        <xforms:input id="input-cacheServers-hostPorts" xforms:bind="bind-cacheServers-hostPorts">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/cacheHostPorts"/>
+                            <xforms:hint>The memcached servers' [host:port] pairs, space separated</xforms:hint>
+                            <xforms:help>Enter the memcached servers' [host:port] pairs, space separated</xforms:help>
+                        </xforms:input>
+                        <xforms:input id="input-cacheServers-tools" xforms:bind="bind-cacheServers-tools">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/tools"/>
+                            <xforms:hint>Enter tool commands to collect statistics, separated by semi-colon</xforms:hint>
+                            <xforms:help>Enter tool commands to collect statistics, separated by semi-colon</xforms:help>
+                        </xforms:input>
+                        <xforms:input id="input-cacheServers-userCommands" xforms:bind="bind-cacheServers-userCommands">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/userCommands"/>
+                            <xforms:hint>Enter any extra command or script to execute</xforms:hint>
+                            <xforms:help>Enter any extra command or script to execute</xforms:help>
+                        </xforms:input>
+                        <xforms:input id="input-cacheServers-binPath" xforms:bind="bind-cache-binPath">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/cacheBinPath"/>
+                            <xforms:hint>Enter the path to the cache server bin directory</xforms:hint>
+                            <xforms:help>Enter the path to the cache server bin directory</xforms:help>
+                        </xforms:input>
+                    </xforms:group>
+                    <!-- Shanti - commenting for now, as not used
+                    <xforms:group id="group-otherServers">
+                        <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/otherServers"/>
+                        <xforms:input id="input-otherServers-host" xforms:bind="bind-otherServers-host">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/hosts"/>
+                            <xforms:hint>The servers' host names or IP addresses, space separated</xforms:hint>
+                            <xforms:help>Enter the servers' host names or IP addresses, space separated</xforms:help>
+                        </xforms:input>
+                        <xforms:input id="input-otherServers-tools" xforms:bind="bind-otherServers-tools">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/tools"/>
+                            <xforms:hint>Enter tool commands to collect statistics, separated by semi-colon</xforms:hint>
+                            <xforms:help>Enter tool commands to collect statistics, separated by semi-colon</xforms:help>
+                        </xforms:input>
+                    </xforms:group>
+                    -->
+                </xforms:case>
+            </xforms:switch>
+        </xforms:group>
+       
+       
+        <xforms:group id="group-buttons">
+            <xforms:trigger id="trigger-ok">
+                <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/ok"/>
+                <xforms:action id="action-ok">
+                    <xforms:send id="send-debug" xforms:submission="submission-debug"/>
+                </xforms:action>
+            </xforms:trigger>
+            <xforms:trigger id="trigger-cancel">
+                <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/cancel"/>
+                <xforms:action id="action-cancel">
+                    <xforms:reset id="reset-cancel" xforms:model="benchmark-model"/>
+                    <xforms:toggle id="toggle-cancel" xforms:case="case-jvmConfig"/>
+                </xforms:action>
+            </xforms:trigger>
+        </xforms:group>
+    </body>
+</html>

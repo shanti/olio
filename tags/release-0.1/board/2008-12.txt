@@ -1,0 +1,18 @@
+2008-December Olio Incubator status report
+
+Olio has been incubating since September 2008.
+
+Olio is a web 2.0 toolkit to help developers evaluate the suitability, 
+functionality and performance of various web technologies by implementing 
+a reasonably complex application in several different technologies.
+
+The project web page has now been created at http://incubator.apache.org/olio
+An Overview presentation has been posted at
+ http://incubator.apache.org/olio/index.data/Olio_Overview_long.pdf
+Initial committers' accounts are all setup now.
+Two external users (i.e not belonging to the original committers organizations) 
+have started running Olio.
+
+Olio Rails code has been committed to repository.
+Several bugs have been filed and are being actively worked on.
+

@@ -1,0 +1,45 @@
+<%= error_messages_for 'user' %>
+<%= error_messages_for 'address' %>
+
+<!--[form:users]-->
+<label for="user_username">Username</label>
+<%= text_field 'user', 'username' %>
+<%= observe_field "user_username", :frequency => 3, :url => { :action => :check_name }, :update => :name_validity, :with => "'name='+escape(value)" %><span id="name_validity"></span>
+<br />
+
+<label for="user_password">Password</label>
+<%= password_field 'user', 'password'  %>
+<br />
+
+<label for="user_password_confirmation">Confirm Password</label>
+<%= password_field 'user', 'password_confirmation' %>
+<br />
+
+<label for="user_firstname">Firstname</label>
+<%= text_field 'user', 'firstname'  %>
+<br />
+
+<label for="user_lastname">Lastname</label>
+<%= text_field 'user', 'lastname'  %>
+<br />
+
+<label for="user_email">Email</label>
+<%= text_field 'user', 'email'  %>
+<br />
+
+<label for="user_telephone">Telephone</label>
+<%= text_field 'user', 'telephone'  %>
+<br />
+
+<label for="event_image">Image</label>
+<%= file_field_tag 'user_image' %>
+<br />
+
+<label for="user_summary">Summary</label>
+<%= text_area 'user', 'summary'  %>
+<br />
+
+<label for="user_timezone">Timezone</label>
+<%= time_zone_select('user', 'timezone', nil, {}, {:selected => "Eastern Time (US & Canada)"}) %>
+<!--[eoform:users]-->
+

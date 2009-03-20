@@ -1,0 +1,13 @@
+<%= error_messages_for :event, :address %>
+
+<fieldset id="event_form">
+  <legend>Event Details</legend>
+  <%= render :partial => 'form', :locals => {:f => f} %>
+</fieldset>
+
+<fieldset id="address_form">
+  <legend>Address</legend>
+	<%= render :partial => 'addresses/form' %>
+</fieldset>
+
+<div class="clr"></div>

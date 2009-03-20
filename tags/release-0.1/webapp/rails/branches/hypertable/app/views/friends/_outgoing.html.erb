@@ -1,0 +1,15 @@
+<div id="outgoing">
+<% unless @outgoing.empty? -%>
+  <fieldset id="outgoing_requests">
+    <legend>Outgoing friendship invitations</legend>
+    <ol>
+      <% @outgoing.each do |i| -%>
+        <li id="outgoing_friend_request_<%= i.user_target.id %>">
+          <%= link_to full_name(i.user_target), user_path(i.user_target) %>
+          <%= render :partial => 'friends/revoke_link', :locals => {:user => @user, :target => i.user_target} %>
+        </li>
+      <% end -%>
+    </ol>
+  </fieldset>
+<% end -%>
+</div>

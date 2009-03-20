@@ -1,0 +1,10 @@
+
+open '/selenium/setup?clear_tables=users,addresses,events,documents,images,invites&fixtures=events'
+delete_cookie ' _perf_session_id', '/'
+open '/'
+10.times do |i|
+  verify_text_present "Event #{i}"
+end
+4.times do |i|
+  verify_text_present "event_#{i}"
+end

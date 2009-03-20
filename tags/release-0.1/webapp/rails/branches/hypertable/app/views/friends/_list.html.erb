@@ -1,0 +1,11 @@
+<% if @friends.empty? -%>
+	<p>No friends.</p>
+<% else -%>
+	<ol id="friends_list">
+     <% @friends.each do |f| -%>
+     		<li><%= link_to thumbnail(f.image), user_path(f) %> <%= display_name(f) %></li>
+     <% end -%>
+	</ol>
+	
+	<%= will_paginate @friends %>
+<% end -%>
