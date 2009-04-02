@@ -14,6 +14,9 @@ You can also browse the document at
 The instructions for setting up Olio from the source kit are contained in
 rails_setup.html which is located in the 'docs' directory.
 
+This release is known to work on ruby 1.8.6, ruby 1.8.7 and a
+combination of rake 0.8.1/rails 2.1.2 or rake 0.8.4/rails 2.3.2.
+
 Known Issues
 =============
 . Due to the way logging works in apache common HttpClient, you will see a
