@@ -22,12 +22,13 @@
     <head>
       <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
       <title>Web2.0 Php Application: index</title>    
+<!--
       <script src="js/tiny_mce/tiny_mce.js" type="text/javascript"></script>
+-->
       <script src="js/prototype.js" type="text/javascript"></script>
       <script src="js/effects.js" type="text/javascript"></script>
       <script src="js/dragdrop.js" type="text/javascript"></script>
       <script src="js/controls.js" type="text/javascript"></script>
-      <script src="js/application.js" type="text/javascript"></script>
       <link href="css/scaffold.css" media="screen" rel="stylesheet" type="text/css" />
       <link href="css/site.css" media="screen" rel="stylesheet" type="text/css" />
     </head>
