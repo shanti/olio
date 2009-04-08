@@ -72,12 +72,10 @@ import java.util.logging.Logger;
 public class UIDriver {
 
     public static final String[] HOME_STATICS = {
-        "/js/tiny_mce/tiny_mce.js",
         "/js/prototype.js",
         "/js/effects.js",
         "/js/dragdrop.js",
         "/js/controls.js",
-        "/js/application.js",
         "/css/scaffold.css",
         "/css/site.css",
         "/images/bg_main.png",
@@ -96,12 +94,10 @@ public class UIDriver {
 
     public static final String[] EVENTDETAIL_STATICS = {
         "/images/php_main_nav_hover_bg.gif",
-        "/js/tiny_mce/tiny_mce.js",
         "/js/prototype.js",
         "/js/effects.js",
         "/js/dragdrop.js",
         "/js/controls.js",
-        "/js/application.js",
         "/css/scaffold.css",
         "/css/site.css",
         "/images/bg_main.png",
@@ -121,12 +117,10 @@ public class UIDriver {
     };
 
     public static final String[] ADDPERSON_STATICS = {
-        "/js/tiny_mce/tiny_mce.js",
         "/js/prototype.js",
         "/js/effects.js",
         "/js/dragdrop.js",
         "/js/controls.js",
-        "/js/application.js",
         "/css/scaffold.css",
         "/css/site.css",
         "/images/bg_main.png",
@@ -136,33 +130,18 @@ public class UIDriver {
         "/js/validateform.js",
         "/images/php_corner_top_right.gif",
         "/images/php_corner_top_left.gif",
-        "/js/tiny_mce/themes/simple/editor_template.js",
-        "/js/tiny_mce/langs/en.js",
-        "/js/tiny_mce/themes/simple/css/editor_ui.css",
         "/images/php_corner_bottom_right.gif",
         "/images/php_corner_bottom_left.gif",
         "/images/php_reflec_tile.gif",
         "/images/php_reflec_right.gif",
-        "/images/php_reflec_left.gif",
-        "/js/tiny_mce/themes/simple/images/bold.gif",
-        "/js/tiny_mce/themes/simple/images/italic.gif",
-        "/js/tiny_mce/themes/simple/images/underline.gif",
-        "/js/tiny_mce/themes/simple/images/strikethrough.gif",
-        "/js/tiny_mce/themes/simple/images/separator.gif",
-        "/js/tiny_mce/themes/simple/images/undo.gif",
-        "/js/tiny_mce/themes/simple/images/redo.gif",
-        "/js/tiny_mce/themes/simple/images/cleanup.gif",
-        "/js/tiny_mce/themes/simple/images/bullist.gif",
-        "/js/tiny_mce/themes/simple/images/numlist.gif"
+        "/images/php_reflec_left.gif"
     };
 
     public static final String[] ADDEVENT_STATICS = {
-        "/js/tiny_mce/tiny_mce.js",
         "/js/prototype.js",
         "/js/effects.js",
         "/js/dragdrop.js",
         "/js/controls.js",
-        "/js/application.js",
         "/css/scaffold.css",
         "/css/site.css",
         "/images/bg_main.png",
@@ -171,35 +150,20 @@ public class UIDriver {
         "/images/php_main_nav_link_bg.gif",
         "/images/php_corner_top_right.gif",
         "/images/php_corner_top_left.gif",
-        "/js/tiny_mce/themes/simple/editor_template.js",
-        "/js/tiny_mce/langs/en.js",
-        "/js/tiny_mce/themes/simple/css/editor_ui.css",
         "/js/validateform.js",
         "/images/php_corner_bottom_right.gif",
         "/images/php_corner_bottom_left.gif",
         "/images/php_reflec_tile.gif",
         "/images/php_reflec_right.gif",
-        "/images/php_reflec_left.gif",
-        "/js/tiny_mce/themes/simple/images/bold.gif",
-        "/js/tiny_mce/themes/simple/images/italic.gif",
-        "/js/tiny_mce/themes/simple/images/underline.gif",
-        "/js/tiny_mce/themes/simple/images/strikethrough.gif",
-        "/js/tiny_mce/themes/simple/images/separator.gif",
-        "/js/tiny_mce/themes/simple/images/undo.gif",
-        "/js/tiny_mce/themes/simple/images/redo.gif",
-        "/js/tiny_mce/themes/simple/images/cleanup.gif",
-        "/js/tiny_mce/themes/simple/images/bullist.gif",
-        "/js/tiny_mce/themes/simple/images/numlist.gif"
+        "/images/php_reflec_left.gif"
     };
 
 
     public static final String[] PERSON_STATICS = {
-        "/js/tiny_mce/tiny_mce.js",
         "/js/prototype.js",
         "/js/effects.js",
         "/js/dragdrop.js",
         "/js/controls.js",
-        "/js/application.js",
         "/css/scaffold.css",
         "/css/site.css",
         "/images/bg_main.png",
@@ -218,12 +182,10 @@ public class UIDriver {
     
 
     public static final String[] TAGSEARCH_STATICS = {
-        "/js/tiny_mce/tiny_mce.js",
         "/js/prototype.js",
         "/js/effects.js",
         "/js/dragdrop.js",
         "/js/controls.js",
-        "/js/application.js",
         "/css/scaffold.css",
         "/css/site.css",
         "/images/bg_main.png",

@@ -1,16 +1,12 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
 <HEAD>
-	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
-	<TITLE>Olio/Rails Install and Setup Guide</TITLE>
-	<META NAME="GENERATOR" CONTENT="NeoOffice 2.2  (Unix)">
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-1">
+	<TITLE>Olio/Rails Install and Setup Guide from Tarball</TITLE>
+	<META NAME="GENERATOR" CONTENT="StarOffice 8  (Solaris Sparc)">
 	<META NAME="AUTHOR" CONTENT="Akara Sucharitakul">
 	<META NAME="CREATED" CONTENT="20070926;10111500">
-<<<<<<< .mine
-	<META NAME="CHANGED" CONTENT="20090331;16134100">
-=======
 	<META NAME="CHANGED" CONTENT="20090331;14212900">
->>>>>>> .r760723
 	<!-- Licensed to the Apache Software Foundation (ASF) under one
     or more contributor license agreements.  See the NOTICE file
     distributed with this work for additional information
@@ -35,6 +31,7 @@
 		P { color: #000000 }
 		PRE { color: #000000 }
 		H2 { color: #000000 }
+		H3 { color: #000000 }
 	-->
 	</STYLE>
 </HEAD>
@@ -109,14 +106,14 @@ configure each component :</P>
 Contents</H2>
 <P>The Olio/Rails kit is packaged as a gzipped tar file. The first
 task is to unzip the file and untar it to extract it's contents.
-Because of the long pathnames, please use gtar to extract. This can
-be done as follows:</P>
+Because of the long pathnames, please use GNU tar to extract. This
+can be done as follows:</P>
 <P><FONT FACE="Courier New, monospace"><FONT SIZE=2 STYLE="font-size: 11pt">#
-gzcat <I>olio-rails-&lt;version&gt;</I>.tar.gz | gtar xvf -</FONT></FONT></P>
+gzcat apache-<I>olio-rails-&lt;version&gt;</I>.tar.gz | gtar xvf -</FONT></FONT></P>
 <P>This will cause a directory named olio-rails-<I>&lt;version&gt; </I><SPAN STYLE="font-style: normal">to
 be created whose contents should look like:</SPAN></P>
 <P STYLE="margin-bottom: 0.04in; font-style: normal"><FONT FACE="Courier New, monospace"><FONT SIZE=2 STYLE="font-size: 11pt">#
-ls olio-rails-0.1*</FONT></FONT></P>
+ls apache-olio-rails-0.1*</FONT></FONT></P>
 <P STYLE="margin-bottom: 0.04in; font-style: normal"><FONT FACE="Courier New, monospace"><FONT SIZE=2 STYLE="font-size: 11pt">LICENSE
 OlioDriver.jar geocoder.war rails_setup_kit.html</FONT></FONT></P>
 <P STYLE="margin-bottom: 0.04in; font-style: normal"><FONT FACE="Courier New, monospace"><FONT SIZE=2 STYLE="font-size: 11pt">NOTICE
@@ -133,7 +130,7 @@ description of the contents follows :</P>
 	<LI><P><I>OlioDriver.jar</I> contains the load generator/driver
 	(which we typically refer to simply as <I>driver</I>). The driver is
 	implemented using <A HREF="http://faban.sunsource.net/"><I>Faban</I></A>
-	– an open source benchmarking toolkit.</P>
+	&ndash; an open source benchmarking toolkit.</P>
 	<LI><P><I>geocoder.war</I> contains the simple servlet used to
 	emulate the geocoder.</P>
 	<LI><P><I>rails_setup_kit.html</I> is this document.</P>
@@ -152,11 +149,11 @@ as the web application.</P>
 	<LI><P STYLE="margin-bottom: 0in">See
 	<A HREF="http://faban.sunsource.net/docs/guide/harness/install.html">http://faban.sunsource.net/docs/guide/harness/install.html</A>
 	for Faban installation instructions. Note that faban needs to be
-	installed on all the machines used for the test. Please also read
-	the <I>Getting Started Guide</I> to get a high-level understanding
-	of Faban terminology and how it works. From now on, we will refer to
-	the faban install directory as <CODE>$FABAN_HOME</CODE>. 
-	</P>
+	installed in the same location on all the machines used for the
+	test. Please also read the <I>Getting Started Guide</I> to get a
+	high-level understanding of Faban terminology and how it works. From
+	now on, we will refer to the faban install directory as <CODE>$FABAN_HOME</CODE>.
+		</P>
 	<LI><P STYLE="margin-bottom: 0in">Copy <CODE>$OLIO_HOME/OlioDriver.jar</CODE>
 	to the <CODE>$FABAN_HOME/benchmarks</CODE> directory. Also copy the
 	OlioDriver.jar file to the $FABAN_HOME/benchmarks directory on the
@@ -177,6 +174,7 @@ as the web application.</P>
 	</P>
 </OL>
 <H2><A NAME="installWebApp"></A>Installing the Web Application</H2>
+<H3>Required Software</H3>
 <P>The web application is a Rails application. It requires the
 following components:</P>
 <OL>
@@ -186,7 +184,7 @@ following components:</P>
 	following gems and their dependencies :</P>
 	<UL>
 		<LI><P STYLE="margin-bottom: 0in">rails</P>
-		<LI><P STYLE="margin-bottom: 0in">rake
+		<LI><P STYLE="margin-bottom: 0in">rake 
 		</P>
 		<LI><P STYLE="margin-bottom: 0in">thin (mongrel can be used if
 		desired) 
@@ -201,8 +199,10 @@ following components:</P>
 <P STYLE="margin-left: 0.79in; margin-bottom: 0in"><BR>
 </P>
 <OL START=3>
+	<LI><P>FreeImage (which needs to be downloaded and built)</P>
 	<LI><P>MySQL 5 (5.1 recommended)</P>
 </OL>
+<H3>Additional Installation Steps</H3>
 <P>For Linux (debian or ubuntu), the following command can be used:</P>
 <PRE STYLE="margin-bottom: 0.2in">     aptitude install build-essential subversion ruby1.8 ruby1.8-dev nginx libmysqlclient-dev rubygems libgems-ruby1.8</PRE><P STYLE="margin-bottom: 0in">
 For OpenSolaris 2008.11:</P>
@@ -238,18 +238,10 @@ For OpenSolaris 2008.11:</P>
 <P STYLE="margin-bottom: 0in"><BR>
 </P>
 <UL>
-	<LI><P STYLE="margin-bottom: 0in">Now install these gems: 
-	</P>
-</UL>
-<P STYLE="margin-bottom: 0in">     <FONT FACE="Courier New, monospace"><FONT SIZE=2 STYLE="font-size: 11pt">gem
-install rake rails thin rcov will_paginate image_science</FONT></FONT></P>
-<P STYLE="margin-bottom: 0in"><BR>
-</P>
-<UL>
 	<LI><P STYLE="margin-bottom: 0in">To install the mysql gem, run: 
 	</P>
 </UL>
-<P STYLE="margin-bottom: 0in">      <FONT FACE="Courier New, monospace"><FONT SIZE=2>gem
+<P STYLE="margin-bottom: 0in"><FONT FACE="Courier New, monospace"><FONT SIZE=2>gem
 install mysql --with-mysql-lib=/usr/mysql/5.0/lib/mysql
 --with-mysql-include=/usr/mysql/5.0/include</FONT></FONT>.</P>
 <P STYLE="margin-bottom: 0in"><BR>
@@ -269,8 +261,13 @@ install mysql --with-mysql-lib=/usr/mysql/5.0/lib/mysql
 </UL>
 <P STYLE="margin-bottom: 0in"><BR>
 </P>
-<P STYLE="margin-bottom: 0in"><BR>
-</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">Now install these gems: 
+	</P>
+</UL>
+<P STYLE="margin-bottom: 0in"><FONT FACE="Courier New, monospace"><FONT SIZE=2 STYLE="font-size: 11pt">gem
+install rake rails thin rcov will_paginate image_science</FONT></FONT></P>
+<H3>Nginx Configuration</H3>
 <P>Once you have the application stack installed, follow the steps
 below to set up the application.</P>
 <OL>
@@ -283,17 +280,25 @@ $ cd /var/app</PRE>
 	We will use <CODE>$APP_DIR</CODE> to refer to the location:
 	<CODE>/var/app/olio</CODE> 
 	</P>
-	<LI><P>Now edit nginx.conf. There is an example in the $APP_DIR/etc
-	directory. If you're using a single machine and you're using root as
-	the user, you can copy the file to the nginx 'conf' directory. For
-	OpenSolaris, comment out the <FONT FACE="Courier New, monospace">error_log</FONT>
-	and <FONT FACE="Courier New, monospace">pid</FONT> entries. The
-	default location for these files is in /var/nginx/logs.</P>
+	<LI><P>Now edit <FONT FACE="Cumberland, monospace">nginx.conf</FONT>.
+	There is an example in the $APP_DIR/etc directory. If you're using a
+	single machine and you're using root as the user, you can copy the
+	file to the nginx 'conf' directory. For OpenSolaris, comment out the
+	<FONT FACE="Courier New, monospace">error_log</FONT> and <FONT FACE="Courier New, monospace">pid</FONT>
+	entries. The default location for these files is in /var/nginx/logs.</P>
 	<P>To change user to another user, modify the first line and change
 	<CODE>user root;</CODE> to your preferred user. On OpenSolaris, the
-	default user is usually webservd. If you have more than one machine
-	hosting your thins, modify the upstream thin and add the addresses
-	of your application servers.</P>
+	default user is usually webservd. 
+	</P>
+</OL>
+<P STYLE="text-indent: 0.51in">The nginx.conf has a section named
+<FONT FACE="Cumberland, monospace">upstream thin</FONT> that contains
+a list of the server and port numbers of the rails application
+servers that will host the application. If you have more than one
+machine hosting your thins or if the applications are located on a
+different machine to Nginx, modify this section and add the addresses
+and port numbers of your application servers.</P>
+<OL START=3>
 	<P STYLE="margin-bottom: 0.04in">To change the location of the
 	application static content :</P>
 </OL>
@@ -301,10 +306,12 @@ $ cd /var/app</PRE>
 path to your rails app's public directory: </CODE>
 </P>
 <PRE STYLE="margin-bottom: 0.2in"><CODE>       root /var/www/virtual/example.com/rails/railsapp/public;</CODE></PRE><P STYLE="margin-bottom: 0.04in">
-to <CODE>root $APP_DIR/public;</CODE> 
+to <CODE>root $APP_DIR/public;</CODE> <I># replace $APP_DIR with
+whatever value you used for $APP_DIR throughput the installation</I></P>
+<P STYLE="margin-bottom: 0.04in"><BR><BR>
 </P>
 <OL START=3>
-	<P STYLE="margin-bottom: 0.14in">Do not start nginx yet.</P>
+	<P STYLE="margin-bottom: 0.14in">Do NOT start nginx yet.</P>
 </OL>
 <H2><A NAME="setupDB"></A>Setting up the database</H2>
 <OL>
@@ -323,16 +330,27 @@ to <CODE>root $APP_DIR/public;</CODE>
 	<PRE># su - mysql
 $ cd bin
 $ ./mysql_install_db</PRE>
-	<LI><P>Start the mysql server. Substitute your own password for <I>pwd</I>
+	<LI><P>A sample <FONT FACE="Cumberland, monospace">my.cnf </FONT>file
+	is included in $APP_DIR/etc/my.cnf. This will work with both MySQL
+	5.0 and 5.1. Copy it to /etc/my.cnf and edit it to add the location
+	of <FONT FACE="Cumberland, monospace">innodb_data_home_dir</FONT>
+	and <FONT FACE="Cumberland, monospace">innodb_log_group_home_dir</FONT>.
+	The default  values for these parameters is the MySQL data
+	directory. Start the mysql server. 
+	</P>
+	<PRE>$ ./mysqld_safe &ndash;defaults-file=/etc/my.cnf &amp;</PRE>
+</OL>
+<PRE></PRE>
+<OL START=5>
+	<LI><P>Set the root password. Substitute your own password for <I>pwd</I>
 	(we typically use <I>adminadmin</I>) 
 	</P>
-	<PRE>$ ./mysqld_safe &amp;
-$ ./mysqladmin -u root password <I>pwd</I></PRE>
+	<PRE STYLE="margin-bottom: 0.2in">$ ./mysqladmin -u root password <I>pwd</I></PRE>
 	<LI><P>Create the olio user and grant privileges: 
 	</P>
 	<PRE> $ ./mysql -u root -p <I>pwd</I>
  mysql&gt; create user 'olio'@'%' identified by 'olio';
- mysql&gt; grant all privileges on *.* to 'olio'@'%' identified by 'olio' with grant option;</PRE><P STYLE="margin-bottom: 0in">
+ mysql&gt; grant all privileges on *.* to 'olio'@'%' identified by 'olio';</PRE><P STYLE="margin-bottom: 0in">
 	In some cases the wildcard '%' does not work reliably as a
 	substitution for all hosts. You need to grant the privileges to
 	'olio'@'&lt;hostname&gt;' individually, where hostname is localhost,
@@ -400,13 +418,13 @@ but needs to be exported and mounted on the web application.</P>
 <OL START=2>
 	<PRE># $FABAN_HOME/benchmarks/olio/bin/fileloader.sh &lt;load_scale&gt; $FILESTORE
 <FONT FACE="Times New Roman, serif"><FONT SIZE=3>This loads files for use for up to </FONT></FONT><CODE><FONT FACE="Times New Roman, serif"><FONT SIZE=3><I>load_scale</I></FONT></FONT></CODE> <FONT FACE="Times New Roman, serif"><FONT SIZE=3>number of concurrent users. </FONT></FONT></PRE>
-	<LI><P>Edit $APP_DIR/config/environment.rb and modify the values of
-	<CODE>IMAGE_STORE_PATH</CODE> and <CODE>DOCUMENT_STORE_PATH </CODE><CODE><FONT FACE="Times New Roman, serif">to
-	point to $FILESTORE. Note that $FILESTORE is relative to $APP_DIR.
-	Alternatively, create a symbolic link from the default
-	IMAGE_STORE_PATH to $FILESTORE. </FONT></CODE>
+	<LI><P><CODE><FONT FACE="Times New Roman, serif">In
+	$APP_DIR/public/, create a symbolic link from </FONT></CODE><CODE><FONT FACE="Cumberland, monospace">uploaded_files</FONT></CODE><CODE><FONT FACE="Times New Roman, serif">
+	to $FILESTORE. </FONT></CODE>
 	</P>
 </OL>
+<P><CODE>            </CODE><CODE><FONT FACE="Cumberland, monospace"><FONT SIZE=2>#
+ln -s $FILESTORE uploaded_files</FONT></FONT></CODE></P>
 <H2><A NAME="setupEmulator"></A>Setting up the Geocoder Emulator</H2>
 <P>The Geocoder Emulator is a simple servlet deployed on Tomcat. It
 is typically run on a driver machine. The following steps describe
@@ -446,7 +464,7 @@ how to install it :</P>
 	</P>
 </UL>
 <PRE STYLE="margin-top: 0.02in; margin-bottom: 0.2in">      $ cd $APP_DIR
-      $ thin -d -p 3000 -e production -l /var/log/thin.log –-pid /var/run/thin.pid -s 4 start</PRE>
+      $ thin -d -p 3000 -e production -l /var/log/thin.log &ndash;-pid /var/run/thin.pid -s 4 start</PRE>
 <UL>
 	<LI><P>This will start four thin servers on ports 3000, 3001, 3002,
 	and 3004. You can change the port and number of servers if you want,
@@ -472,21 +490,36 @@ how to install it :</P>
 	on a tag in the tag cloud. Choose a big tag and check that we have
 	good results and images get loaded OK. 
 	</P>
+</UL>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<UL>
 	<LI><P STYLE="margin-bottom: 0in">Click on the sign up tab. Fill in
 	the form and create a user. Make sure you find some jpeg images to
 	upload. If not, take them from
 	$FABAN_HOME/benchmarks/web20/resources. Submit the form. Make sure
 	the form goes through. This completes the AddPerson transaction. 
 	</P>
+</UL>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<UL>
 	<LI><P STYLE="margin-bottom: 0in">Login using your new login name
-	you just created. The top right of the screen should show that
-	you're logged on. 
+	you just created. The top left of the screen should show that you're
+	logged on. 
 	</P>
+</UL>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<UL>
 	<LI><P STYLE="margin-bottom: 0in">Select an event, go back to the
 	EventDetail page but this time as a logged on user. Add yourself as
 	an attendee. This is the EventDetail transaction with attendee added
-	(about 8-9% of all EventDetail views). 
-	</P>
+	(about 8-9% of all EventDetail views).</P>
+</UL>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<UL>
 	<LI><P>Click on the add event tab and add an event. Make sure to
 	include an image and some literature. You can also use the files
 	from <CODE>$FABAN_HOME/benchmarks/web20/resources</CODE>. Fill in
@@ -552,7 +585,7 @@ harness is up, it is time to kick off a test.</P>
 	driver machines; we start with 1. The Host:Port Pairs field takes
 	the host port pairs where the web applications are running. The host
 	and port is separated by a colon. Each pair is separated by space.
-	For the Webserver type field, enter either “apache” or
+	For the Webserver type field, enter either &ldquo;apache&rdquo; or
 	&quot;lighttpd&quot; or leave the field blank if you're using nginx
 	or other servers. Only these two servers are supported by faban at
 	this time. Then provide the webserver's bin, log, and config
