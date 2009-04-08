@@ -19,3 +19,6 @@ of system infrastructure, software application stack etc.
 . Work is underway to create the first release. The artificats are tested; the
   major work is in fixing the source headers, licenses etc.
 
+. Olio has been presented to some Apache and Rails Meetups to get attention.
+. We're encouraging users to become active in contributing to the code.
+
