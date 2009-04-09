@@ -38,3 +38,8 @@ This software bundles the JSON library :
 Copyright (c) 2002 JSON.org
 
 This product includes PHP software, freely available from <http://www.php.net/software/>
+
+This product includes the Whalin memcached client:
+* Copyright (c) 2007, Greg Whain
+* All rights reserved.
+

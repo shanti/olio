@@ -65,3 +65,7 @@ Copyright (c) 2005, 2006 Thomas Fuchs (http://script.aculo.us, http://mir.aculo.
     Rahul Bhargava
     Rob Wills
 ====================================================================
+This product includes the Whalin memcached client:
+* Copyright (c) 2007, Greg Whain
+* All rights reserved.
+
