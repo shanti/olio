@@ -166,14 +166,14 @@ public class OlioBenchmark extends DefaultFabanBenchmark {
             dbHandle.waitFor();
 			int exitValue = dbHandle.exitValue();
 			if (exitValue != 0)
-				logger.severe("DB load error, exited with value " + exitValue);
+				throw (new Exception("DB load error, exited with value " + exitValue));
 		}
         
         if (mediaHandle != null) {
             mediaHandle.waitFor();
 			int exitValue = mediaHandle.exitValue();
 			if (exitValue != 0)
-				logger.severe("File load error, exited with value " + exitValue);
+				throw (new Exception("File load error, exited with value " + exitValue));
 		}
         
         //start the memcache servers

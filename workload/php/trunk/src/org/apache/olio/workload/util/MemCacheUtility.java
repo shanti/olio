@@ -66,7 +66,7 @@ public class MemCacheUtility {
             pool.initialize();
 
             cache = new MemCachedClient();
-            cache.setPoolName("livePool");
+            //cache.setPoolName("livePool");
         }               
     }
 
@@ -82,7 +82,7 @@ public class MemCacheUtility {
             pool.initialize();
 
             cache = new MemCachedClient();
-            cache.setPoolName("livePool");
+            //cache.setPoolName("livePool");
         }
     }
 
