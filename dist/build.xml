@@ -149,14 +149,13 @@
 			  tofile="stage/NOTICE" overwrite="true" verbose="true"/>
         <tar destfile="${kit.dir}/${php.src.name}.tar.gz"
             longfile="gnu" compression="gzip">
+            <tarfileset dir="stage" prefix="${php.src.name}" includes="release,LICENSE,NOTICE"/>
             <tarfileset dir="${base.dir}" prefix="${php.src.name}">
                 <include name="dist/*"/>
                 <include name="dist/*"/>
 				<include name="dist/releasenotes/${php.relnotes}"/>
                 <include name="docs/**"/>
                 <include name="geocoder/**"/>
-                <include name="stage/LICENSE"/>
-                <include name="stage/NOTICE"/>
                 <include name="webapp/php/trunk/**"/>
                 <include name="workload/php/trunk/**"/>
                 <exclude name="dist/nightly/**"/>
@@ -168,14 +167,13 @@
             </tarfileset>
         </tar>
         <zip destfile="${kit.dir}/${php.src.name}.zip">
+            <zipfileset dir="stage" prefix="${php.src.name}" includes="release,LICENSE,NOTICE"/>
             <zipfileset dir="${base.dir}" prefix="${php.src.name}">
                 <include name="dist/*"/>
                 <include name="dist/*"/>
 				<include name="dist/releasenotes/${php.relnotes}"/>
                 <include name="docs/**"/>
                 <include name="geocoder/**"/>
-                <include name="stage/LICENSE"/>
-                <include name="stage/NOTICE"/>
                 <include name="webapp/php/trunk/**"/>
                 <include name="workload/php/trunk/**"/>
                 <exclude name="dist/nightly/**"/>
@@ -195,13 +193,12 @@
 			  tofile="stage/NOTICE" overwrite="true" verbose="true"/>
         <tar destfile="${kit.dir}/${rails.src.name}.tar.gz"
             longfile="gnu" compression="gzip">
+            <tarfileset dir="stage" prefix="${rails.src.name}" includes="release,LICENSE,NOTICE"/>
             <tarfileset dir="${base.dir}" prefix="${rails.src.name}">
                 <include name="dist/*"/>
 				<include name="dist/releasenotes/${rails.relnotes}"/>
                 <include name="docs/**"/>
                 <include name="geocoder/**"/>
-                <include name="stage/LICENSE"/>
-                <include name="stage/NOTICE"/>
                 <include name="webapp/rails/trunk/**"/>
                 <include name="workload/rails/trunk/**"/>
                 <exclude name="dist/nightly/**"/>
@@ -213,13 +210,12 @@
             </tarfileset>
         </tar>
         <zip destfile="${kit.dir}/${rails.src.name}.zip">
+            <zipfileset dir="stage" prefix="${rails.src.name}" includes="release,LICENSE,NOTICE"/>
             <zipfileset dir="${base.dir}" prefix="${rails.src.name}">
                 <include name="dist/*"/>
 				<include name="dist/releasenotes/${rails.relnotes}"/>
                 <include name="docs/**"/>
                 <include name="geocoder/**"/>
-                <include name="stage/LICENSE"/>
-                <include name="stage/NOTICE"/>
                 <include name="webapp/rails/trunk/**"/>
                 <include name="workload/rails/trunk/**"/>
                 <exclude name="dist/nightly/**"/>
@@ -248,6 +244,16 @@
      </target>
 
     <target name="php-rat" depends="-taskdef"
+       description="runs the rat task over the php binary tarball">
+       <rat:report xmlns:rat="antlib:rat.anttasks">
+         <tarfileset>
+           <gzipresource>
+             <file file="${kit.dir}/${php.pkg.name}.tar.gz"/>
+           </gzipresource>
+         </tarfileset>
+       </rat:report>
+     </target>
+    <target name="php-rat-src" depends="-taskdef"
        description="runs the rat task over the php src tarball">
        <rat:report xmlns:rat="antlib:rat.anttasks">
          <tarfileset>
@@ -259,6 +265,16 @@
      </target>
 
     <target name="rails-rat" depends="-taskdef"
+       description="runs the rat task over the rails binary tarball">
+       <rat:report xmlns:rat="antlib:rat.anttasks">
+         <tarfileset>
+           <gzipresource>
+             <file file="${kit.dir}/${rails.pkg.name}.tar.gz"/>
+           </gzipresource>
+         </tarfileset>
+       </rat:report>
+     </target>
+    <target name="rails-rat-src" depends="-taskdef"
        description="runs the rat task over the rails src tarball">
        <rat:report xmlns:rat="antlib:rat.anttasks">
          <tarfileset>
