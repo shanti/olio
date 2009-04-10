@@ -27,6 +27,12 @@ notices are included below.
 Plugin 'acts_as_network' :
 Copyright (c) 2007 Zetetic LLC
 
+Plugin 'acts_as_taggable' :
+Copyright (c) 2006 Jonathan Viney
+
+Plugin 'attachment_fu' :
+Copyright (c) 2005 Rick Olson
+
 Plugin 'calendar-helper':
 Copyright (c) 2006 Jeremy Voorhis and Geoffrey Grosenbach
 
@@ -42,18 +48,19 @@ Copyright (c) 2006 Coda Hale
 Plugin 'rspec' :
 Copyright (c) 2005-2008 The RSpec Development Team
 
+Plugin 'white-list':
+Copyright (c) 2005 Rick Olson
+
 Plugin 'rspec-rails':
 == RSpec
 Copyright (c) 2005-2007 The RSpec Development Team
-====================================================================
 == ARTS
 Copyright (c) 2006 Kevin Clark, Jake Howerton
-====================================================================
 == ZenTest
 Copyright (c) 2001-2006 Ryan Davis, Eric Hodel, Zen Spider Software
-====================================================================
 == AssertSelect
 Copyright (c) 2006 Assaf Arkin
+
 ====================================================================
 
 Javascript library script.aculo.us:

@@ -202,8 +202,9 @@
    limitations under the License.
 
 ============================================
-The third-party plugins acts_as_network, calendar_helper, country_select,
-fixture_replacement2, rspec, rspec-rails, rails_rcov and the Javascript 
+The third-party plugins acts_as_network, acts_as_taggable, attachment_fu,
+calendar_helper, country_select, fixture_replacement2,
+rspec, rspec-rails, rails_rcov, white_list and the Javascript 
 libraries script.aculo.us and prototype are distributed under a MIT license :
 
 The MIT License
