@@ -57,8 +57,32 @@ $prevMonthDay++;
 }
 $prev_year= $year-1;
 $next_year= $year+1;
+//$prev_month = $month-1;
+//$next_month = $month+1;
+
+//$prev_month = $month==1?12:$month-1;
+//$next_month = $month==12?1:$month+1;
+
+switch($month)
+ {
+     case 1:
+           //this is the first month of the year
+           $prev_month = 12;
+           $next_month = $month+1;
+           break;
+
+     case 12:
+           //this is the last month of the year
+          $prev_month = $month -1;
+          $next_month = 1;
+         break;
+
+     default:
+         //all other cases
 $prev_month = $month-1;
 $next_month = $month+1;
+        break;
+ }
 
 ob_start();
 require("../views/calendar.php");
