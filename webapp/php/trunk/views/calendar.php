@@ -46,9 +46,9 @@ var updateMYLink = "calendar.php?mon=";
     <caption class="monthName"></caption><thead>
 <tr><th id="calheader" colspan="7">
       <a href="#prev_year" class="prev_year" onclick="updateCalendar(<?echo $month;?>,<? echo $prev_year;?>)"><</a>
-      <a href="#prev_month" class="prev_month" onclick="updateCalendar(<? echo $prev_month;?>,<? echo $year;?>)"><</a>
+      <a href="#prev_month" class="prev_month" onclick="updateCalendar(<? echo $prev_month;?>,<? echo ($prev_month==12?($year-1):$year);?>)"><</a>
       <?=$monthName." ".$year?>
-      <a href="#next_month" class="next_month" onclick="updateCalendar(<?echo $next_month;?>,<? echo $year;?>)">></a>
+      <a href="#next_month" class="next_month" onclick="updateCalendar(<?echo $next_month;?>,<? echo ($next_month==1?($year+1):$year);?>)">></a>
       <a href="#next_year" class="next_year" onclick="updateCalendar(<?echo $month;?>,<? echo $next_year;?>)">></a>
       </th></tr>
 
