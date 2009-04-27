@@ -1,2 +1,0 @@
-page[:calendar].reload
-#page[:calendar].visual_effect :highlight

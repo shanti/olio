@@ -1,3 +1,0 @@
-#!/bin/sh
-
-thin -p 3000 -d -s $1 -e production start

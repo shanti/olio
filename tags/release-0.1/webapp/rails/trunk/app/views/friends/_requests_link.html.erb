@@ -1,5 +1,0 @@
-<div id="requests_link">
-  <% if session[:friend_requests].to_i > 0 -%>
-    <%= link_to "friendship requests (#{session[:friend_requests]})", user_path(session[:user_id], :anchor => 'incoming_requests') %>
-  <% end -%>
-</div>

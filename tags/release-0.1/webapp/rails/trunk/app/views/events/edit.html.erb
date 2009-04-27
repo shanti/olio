@@ -1,8 +1,0 @@
-<h1>Editing <%=h @event.title %></h1>
-
-<% form_for :event, @event, :url => event_path(@event), 
-    :html => {:method => :put, :multipart => true} do |f| -%>
-  <%= render :partial => 'change', :locals => {:f => f} %>
-  <%= submit_tag 'Submit' %>
-  <input type='reset' value='Reset' />
-<% end %>

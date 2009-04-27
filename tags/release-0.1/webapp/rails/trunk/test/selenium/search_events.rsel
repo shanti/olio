@@ -1,8 +1,0 @@
-
-open '/selenium/setup?clear_tables=users,addresses,events,documents,images,invites&fixtures=events'
-delete_cookie ' _perf_session_id', '/'
-open '/'
-
-type 'zipcode', '10004'
-wait_for_text '//ol[@id="event_list"]//li[1]//h2/a', 'Event 4'
-

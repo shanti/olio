@@ -1,6 +1,0 @@
-. To  build the geocoder emulator, you will need an installation of tomcat.
-. Copy build.properties.template to build.properties.
-. Edit build.properties and set tomcat.home to point to your tomcat installation.
-. 'ant all' will create the emulator war file in the dist directory.
-. Copy the war file to your tomcat 'webapps' directory on the system that will run
-  the emulator. We typically run the emulator on the same system as the faban driver.

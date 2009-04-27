@@ -1,3 +1,0 @@
-page["add_friend_#{@target.id}".to_sym].replace :partial => 'friends/revoke_link', :locals => {:user => @user, :target => @target}
-
-page.refresh_messages

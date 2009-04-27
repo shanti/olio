@@ -1,6 +1,0 @@
-edited = "comment_#{@comment.id}".to_sym
-page[edited].replace :partial => "comment", :locals => { :comment => @comment }
-page[edited].visual_effect :highlight
-
-page.refresh_messages
-page[:comment_add_link].show

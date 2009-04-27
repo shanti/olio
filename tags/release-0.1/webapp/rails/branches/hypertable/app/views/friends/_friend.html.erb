@@ -1,4 +1,0 @@
-<li class="my_friend" id="friend_<%= friend.id %>">
-  <%= link_to full_name(friend), user_path(friend) %>
-  <%= render :partial => 'friends/remove_link', :locals => {:user => user, :target => friend} if logged_in? %>
-</li>

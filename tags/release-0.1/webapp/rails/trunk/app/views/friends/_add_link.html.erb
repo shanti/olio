@@ -1,5 +1,0 @@
-<div id="add_friend_<%= user.id %>">
-  <% form_remote_tag :url => user_friends_path(user), :method => :post, :html => {:method => :post} do -%>
-    <%= submit_tag 'Add Friend' %>
-  <% end -%>
-</div>
