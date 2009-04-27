@@ -1,0 +1,20 @@
+2008-October Olio Incubator status report
+
+Olio has been incubating since September 2008.
+
+Olio is a web 2.0 toolkit to help developers evaluate the suitability, 
+functionality and performance of various web technologies by implementing 
+a reasonably complex application in several different technologies.
+
+Mailing lists have been created. 
+http://issues.apache.org/jira/browse/INFRA-1741
+
+The svn repository was created at 
+https://svn.apache.org/repos/asf/incubator/olio
+
+Initial committers' accounts are in process. Mentors have
+been given access to the svn repo.
+
+The JIRA project has been created.
+https://issues.apache.org/jira/secure/admin/ViewProject.jspa?pid=12310839
+

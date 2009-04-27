@@ -1,0 +1,80 @@
+<!--
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+-->
+<div id="user_header">
+  <div id="user_thumbnail"><%= thumbnail(@image) %></div>
+  <div id="main_user_details">
+    <h1 class="inline"><%=h @user.username %></h1>
+      <% if logged_in? and @user.id == session[:user_id] -%>
+        ( <%= link_to 'Edit', edit_user_url(@user) %> )
+      <% end -%>
+    <br />
+    <h2 class="inline"><%= full_name(@user) %></h2>
+    <hr />
+    <%=h @user.timezone %>
+  	<br />
+  	
+    <div id="user_address">
+      <%=h @address.street1 %><br />
+      <% unless @address.street2.nil? or @address.street2.empty? -%>
+        <%=h @address.street2 %><br />
+      <% end -%>
+      <%=h @address.city %>, <%=h @address.state %> <%=h @address.zip %><br />
+      <%=h @address.country %>
+    </div>
+    <br />
+    <span id="user_telephone"><%=h @user.telephone %></span><br />
+    <span id="user_email"><%=h @user.email %></span><br />
+  </div>
+
+  <% if logged_in? -%>
+    <div id="profile_friendship_link"><%= friendship_action @you, @user %></div>
+  <% end -%>
+  <div class="clr"></div>
+</div>
+
+<div id="user_summary">
+  <%= @user.summary %>
+</div>
+
+<hr class="clr" />
+
+
+<div id="posted">
+  <% unless @posted.empty? -%>
+    <h1><%= display_name(@user) %> Recently Posted Events</h1>
+    <ol id="posted_events_list">
+      <% @posted.each do |e| -%>
+        <li><%= link_to h(e.title), event_path(e) %></li>
+      <% end -%>
+    </ol>
+  <% end -%>
+	<%= link_to "more...", posted_events_user_path(@user) %>
+	
+</div>
+
+<h2><%= display_name(@user) %> Friends</h2>
+<%= render :partial => "friends/friend_cloud" %>
+<%= link_to "more...", user_friends_path(@user) %>
+
+<% if logged_in? and @user.id == session[:user_id] -%>
+  <a name="incoming_requests"></a><%= render :partial => "friends/incoming" %>
+  <a name="outgoing_requests"></a><%= render :partial => "friends/outgoing" %>
+<% end -%>
+
+<hr />

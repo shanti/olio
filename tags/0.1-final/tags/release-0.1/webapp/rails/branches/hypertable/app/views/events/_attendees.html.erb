@@ -1,0 +1,16 @@
+<div id="attendees">
+  <h2 class="smaller_heading"><%= pluralize @attendees.size, 'Attendee' %>:</h2><br/>
+  
+  <%= attendance_links(@event) %> 
+
+  <% if @attendees.nil? or @attendees.empty? -%>
+    <br />
+  <% else -%>
+    <ol>
+    <% for attendee in @attendees.reverse -%>
+      <li><%= link_to attendee.username, user_path(attendee) %></li>
+    <% end -%>
+    </ol>
+  <% end -%>
+
+</div>

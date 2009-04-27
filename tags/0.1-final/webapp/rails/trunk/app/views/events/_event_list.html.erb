@@ -1,0 +1,82 @@
+<!--
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+-->
+<div id="event_list_wrapper">
+  <div id="event_filtering">
+    
+    <%
+      if @date 
+        month = @date.mon
+        day = @date.mday
+        year = @date.year 
+      end 
+    -%>
+    
+    <div style="float: right; margin-right: 10px;">
+      <% form_tag events_path, :method => :get, :id => 'filter_event_list' do -%>
+        Zipcode: 
+        <%= zipcode_filter(@zipcode) %>
+        <br />
+        
+        <% unless @events.empty? -%>
+          <% unless @date -%>
+						Sort: 
+           	<%= created_at_radio_button %>
+            Created Date
+            
+            <%= event_date_radio_button %>
+            Event Date
+          <% end -%>
+        <% end -%>
+        <% if @date -%>
+          <input type="hidden" name="month" value="<%= month %>" />
+          <input type="hidden" name="day" value="<%= day %>" />
+          <input type="hidden" name="year" value="<%= year %>" />
+        <% end -%>
+        <%= submit_tag 'Filter' %>
+      <% end -%>
+      
+      <%= observe_form 'filter_event_list', :url => events_path, :method => :get %>
+    </div>
+        
+    <div>
+      <h1 class="tight_heading"><%= @date.nil? ? "All Events" : "#{simple_date(@date)} events" %></h1>
+      <h2 id="which_timezone" class="tight_heading"><%= (@zipcode and !@zipcode.nil? and !@zipcode.empty?) ? "for #{@zipcode}" : "for all locations" %>
+  		</h2>
+		</div>
+      
+  </div>
+
+  <hr class="clr" />
+  
+  <%= render :partial => 'events/filtered_events' %>
+  <div class="clr"></div>
+  
+  <br />
+</div>
+
+<br />
+
+<div id="tag_cloud">
+  <h2 class="tight_heading">Tag Cloud</h2>
+  <div>
+    <% tag_cloud_items(@tags).each do |link| -%>
+    	<%= link %>
+    <% end -%>
+  </div>
+</div>

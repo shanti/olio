@@ -1,0 +1,1 @@
+page[:tag_list].replace_html :partial => "tag_list"

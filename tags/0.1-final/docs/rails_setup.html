@@ -1,0 +1,630 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-1">
+	<TITLE>Olio/Rails Install and Setup Guide from Source</TITLE>
+	<META NAME="GENERATOR" CONTENT="StarOffice 8  (Solaris Sparc)">
+	<META NAME="AUTHOR" CONTENT="Akara Sucharitakul">
+	<META NAME="CREATED" CONTENT="20070926;10111500">
+	<META NAME="CHANGED" CONTENT="20090331;14203900">
+	<!-- Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+     with the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing,
+     software distributed under the License is distributed on an
+     "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+     specific language governing permissions and limitations
+     under the License.
+ -->
+	<STYLE TYPE="text/css">
+	<!--
+		H1 { color: #000000; text-align: center }
+		P { color: #000000 }
+		PRE { color: #000000 }
+		H2 { color: #000000 }
+		H3 { color: #000000 }
+	-->
+	</STYLE>
+</HEAD>
+<BODY LANG="en-US" TEXT="#000000" DIR="LTR">
+<H1>Olio/Rails<BR>Install and Setup Guide from Source Tree</H1>
+<P>Note: The application currently does not use memcached. Please
+ignore the memcached related setup instructions.</P>
+<P>This document assumes some familiarity with setting up Ruby on
+Rails. If you have never set up rails before, you may need to do some
+web searching if you get stuck in any of the steps.</P>
+<H2>Overview</H2>
+<P>Olio is a macro-level toolkit consisting of the following
+components:</P>
+<OL>
+	<LI><P STYLE="margin-bottom: 0in">The web application 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">The main database 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">Distributed storage servers (NFS) 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">Geocoder emulator 
+	</P>
+	<LI><P>Workload driver 
+	</P>
+</OL>
+<P>If your primary interest is in setting up the application alone,
+you need items 1-3 above and they can all be setup on a single
+system. If on the other hand, you would like to drive load against
+the application, you will need at least 2 systems. At higher loads,
+you may need multiple systems. At a minimum, we need to separate the
+SUT (System Under Test) components and the non-SUT components to get
+valid results. The non-SUT components are the Geocoder emulator and
+the workload driver. It is best to connect the driver machine to the
+SUT machine on a local private network. This ensures that latencies
+measured do not include arbitrary delays.</P>
+<P>For a horizontally scaled workload, or to measure the performance
+of the individual components, you can deploy the SUT components on
+separate physical or virtual machines. Keep in mind though that the
+bulk of the CPU is consumed in the web application tier
+(nginx/rails).</P>
+<P>In the following sections, we will go over the steps needed to
+configure each component :</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in"><A HREF="#downloading">Downloading
+	the source</A> 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in"><A HREF="#setupDriver">Setting up
+	the driver</A> 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in"><A HREF="#installWebApp">Installing
+	the Web Application</A> 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in"><A HREF="#setupDB">Setting up the
+	database</A> 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in"><A HREF="#loadDB">Loading the
+	database</A> 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in"><A HREF="#setupFileStore">Setting
+	up the filestore</A> 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in"><A HREF="#setupEmulator">Setting
+	up the Geocoder Emulator</A> 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in"><A HREF="#testWebApp">Testing the
+	web application</A> 
+	</P>
+	<LI><P><A HREF="#startRun">Starting a performance test</A> 
+	</P>
+</UL>
+<H2><A NAME="downloading"></A>Downloading The Source</H2>
+<P>The Olio source is available via SVN at
+<A HREF="https://svn.apache.org/repos/asf/incubator/olio/">https://svn.apache.org/repos/asf/incubator/olio/</A>.
+Please see the <A HREF="http://www.apache.org/dev/version-control.html#anon-svn">instructions</A>
+for downloading the source. We will use $OLIO_HOME to designate the
+directory where the source is downloaded. The source is organized as
+follows :</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">The <I>webapp</I> directory
+	contains the web application. The rails/trunk sub-directory contains
+	the web application for the Rails implementation. We will refer to
+	webapp/rails/trunk as $WEBAPP in this document.</P>
+</UL>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<UL>
+	<LI><P>The <I>workload</I> directory contains the code for the load
+	generator/driver (which we typically refer to simply as <I>driver</I>).
+	The driver is implemented using <A HREF="http://faban.sunsource.net/"><I>Faban,</I></A>
+	an open source benchmarking toolkit. The rails/trunk sub-directory
+	has the faban driver code to drive the rails application. In future,
+	we plan to integrate the driver source for all implementations of
+	the application. The <I>workload/rails/trunk</I> directory is
+	referred to as $WORKLOAD in this document.</P>
+</UL>
+<UL>
+	<LI><P>The <I>geocoder</I> directory contains the code for the
+	geocoder emulator. This code is shared across all implementations of
+	Olio.</P>
+</UL>
+<H2><A NAME="setupDriver"></A>Setting up the driver</H2>
+<P>Even if you don't plan to drive load against the application, this
+setup is required as the database and file loaders are part of the
+workload driver - feel free to install the driver on the same system
+as the web application.</P>
+<OL>
+	<LI><P STYLE="margin-bottom: 0in">See
+	<A HREF="http://faban.sunsource.net/docs/guide/harness/install.html">http://faban.sunsource.net/docs/guide/harness/install.html</A>
+	for Faban installation instructions. Note that faban needs to be
+	installed in the same location on all the machines used for the
+	test. Please also read the <I>Getting Started Guide</I> to get a
+	high-level understanding of Faban terminology and how it works. From
+	now on, we will refer to the faban install directory as <CODE>$FABAN_HOME</CODE>.
+		</P>
+	<LI><P STYLE="margin-bottom: 0in">To build the driver, do the
+	following: 
+	</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0in"><CODE>cd $WORKLOAD; cp
+		build.properties.template build.properties</CODE> 
+		</P>
+		<LI><P STYLE="margin-bottom: 0in">Edit build.properties and set
+		faban.home to <CODE>$FABAN_HOME</CODE>, faban.url to
+		http://<I>driver_host</I>:9980 where <I>driver_host</I> is the name
+		of the machine where the Faban master will run. This is usually the
+		driver system. 
+		</P>
+		<LI><P STYLE="margin-bottom: 0in">Set the environment variable
+		<CODE>JAVA_HOME</CODE> to point to your JDK1.6 installation. 
+		</P>
+		<LI><P STYLE="margin-bottom: 0in">Build the driver using the
+		command: <I>ant deploy.jar.</I> If successful, you should see the
+		file Olio<I>Driver.jar</I> in the <I>build </I>sub-directory. 
+		</P>
+	</UL>
+	<LI><P STYLE="margin-bottom: 0in">Copy
+	<CODE>$WORKLOAD/build/OlioDriver.jar</CODE> to the
+	<CODE>$FABAN_HOME/benchmarks</CODE> directory. Also copy the
+	OlioDriver.jar file to the $FABAN_HOME/benchmarks directory on the
+	system that will run the rails application. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">For the driver to work, you will
+	need JDK 1.6. Set <CODE>JAVA_HOME</CODE> to the path of the JDK in
+	the faban user's environment. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">Start the faban master on the
+	master driver machine : <CODE>$FABAN_HOME/master/bin/startup.sh</CODE>
+		</P>
+	<LI><P>Test that you can connect to the master by pointing your
+	browser at <CODE>http://</CODE><CODE><I>&lt;driver_machine&gt;</I></CODE><CODE>:9980.</CODE></P>
+	<LI><P><CODE><FONT FACE="Times New Roman, serif"><A HREF="http://dev.mysql.com/downloads/connector/j/5.0.html">Download</A>
+	MySQL Connector/J (JDBC Driver for MySQL) and install the jar in
+	$FABAN_HOME/benchmarks/OlioDriver/lib.</FONT></CODE></P>
+</OL>
+<H2><A NAME="installWebApp"></A>Installing the Web Application</H2>
+<P>The web application is a Rails application. It requires the
+following components:</P>
+<OL>
+	<LI><P STYLE="margin-bottom: 0in">A web server such as Nginx,
+	Lighttpd or Apache (the instructions below focus on nginx)</P>
+	<LI><P STYLE="margin-bottom: 0in">Ruby 1.8.6 or higher with the
+	following gems: 
+	</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0in">rails</P>
+		<LI><P STYLE="margin-bottom: 0in">rake 
+		</P>
+		<LI><P STYLE="margin-bottom: 0in">thin (mongrel can be used if
+		desired) 
+		</P>
+		<LI><P STYLE="margin-bottom: 0in">mysql</P>
+		<LI><P STYLE="margin-bottom: 0in">image_science (uses FreeImage
+		which needs to be downloaded and built)</P>
+		<LI><P STYLE="margin-bottom: 0in">rcov</P>
+		<LI><P STYLE="margin-bottom: 0in">will_paginate</P>
+	</UL>
+</OL>
+<P STYLE="margin-left: 0.79in; margin-bottom: 0in"><BR>
+</P>
+<OL START=3>
+	<LI><P>FreeImage (which needs to be downloaded and built)</P>
+	<LI><P>MySQL 5 (5.1 recommended)</P>
+</OL>
+<H3>Additional Installation Steps</H3>
+<P>For Linux (debian or ubuntu), the following command can be used :</P>
+<PRE STYLE="margin-bottom: 0.2in">     aptitude install build-essential subversion ruby1.8 ruby1.8-dev nginx libmysqlclient-dev rubygems libgems-ruby1.8</PRE><P STYLE="margin-bottom: 0in">
+For OpenSolaris 2008.11:</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">Upgrade your Ruby version to the
+	latest in the pkg.opensolaris.org/dev repository. This will give you
+	Rubygems 1.3.1 and Ruby 1.8.7p72. 
+	</P>
+</UL>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">You may need to set the
+	environment variable CXX to /usr/sfw/bin/gcc to build eventmachine
+	(a thin dependency). See
+	<A HREF="http://blogs.sun.com/mandy/entry/building_eventmachine_on_opensolaris_and">http://blogs.sun.com/mandy/entry/building_eventmachine_on_opensolaris_and</A>
+	for details.</P>
+</UL>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">Edit
+	<FONT FACE="Cumberland, monospace">/usr/ruby/1.8/lib/ruby/1.8/i386-solaris2.11/rbconfig.rb</FONT>
+	as follows :</P>
+</UL>
+<P STYLE="margin-left: 0.79in; margin-bottom: 0in">CONFIG[&quot;LDSHARED&quot;]
+= &quot;/usr/sfw/bin/gcc -G&quot;</P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">Download and build FreeImage. See
+	<A HREF="http://blogs.sun.com/shanti/entry/freeimage_and_imagescience_on_opensolaris">instructions</A>.</P>
+</UL>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">To install the mysql gem, run:</P>
+</UL>
+<P STYLE="margin-bottom: 0in">      <FONT FACE="Courier New, monospace"><FONT SIZE=2>gem
+install mysql --with-mysql-lib=/usr/mysql/5.0/lib/mysql
+--with-mysql-include=/usr/mysql/5.0/include</FONT></FONT>.</P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">Install nginx. You can build nginx
+	from source by using the Makefile in
+	<A HREF="http://hg.opensolaris.org/sc/src/webstack/nginx/">http://hg.opensolaris.org/sc/src/webstack/nginx/</A>.
+	Alternatively, you can install a pre-build binary following the
+	instructions in 
+	</P>
+</UL>
+<UL>
+	<P STYLE="margin-bottom: 0in"><A HREF="http://blogs.sun.com/jyrivirkki/entry/nginx_package_updates">http://blogs.sun.com/jyrivirkki/entry/nginx_package_updates</A><A HREF="http://blogs.sun.com/jyrivirkki/entry/nginx_package_updates">.</A><A HREF="http://blogs.sun.com/jyrivirkki/entry/nginx_package_updates"><SPAN STYLE="text-decoration: none">
+	</SPAN></A>
+	</P>
+</UL>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">Now install these gems: 
+	</P>
+</UL>
+<P STYLE="margin-bottom: 0in">     <FONT FACE="Courier New, monospace"><FONT SIZE=2 STYLE="font-size: 11pt">gem
+install rake rails thin rcov will_paginate image_science</FONT></FONT></P>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<H3>Nginx Configuration</H3>
+<P>Once you have the application stack installed, follow the steps
+below to set up the application.</P>
+<OL>
+	<LI><P>Decide where you want to install the web application. For
+	this example we will use /var/app: 
+	</P>
+	<PRE>$ mkdir /var/app
+$ cd /var/app</PRE>
+	<LI><P>Copy the contents of $WEBAPP to /var/app/olio. We will use
+	<CODE>$APP_DIR</CODE> to refer to the location: <CODE>/var/app/olio</CODE>
+		</P>
+	<LI><P>Now edit nginx.conf. There is an example in the $APP_DIR/etc
+	directory. If you're using a single machine and you're using root as
+	the user, you can copy the file to the nginx 'conf' directory. For
+	OpenSolaris, comment out the <FONT FACE="Courier New, monospace">error_log</FONT>
+	and <FONT FACE="Courier New, monospace">pid</FONT> entries. The
+	default location for these files is in /var/nginx/logs.</P>
+</OL>
+<OL>
+	<P>To change user to another user, modify the first line and change
+	<CODE>user root;</CODE> to your preferred user. On OpenSolaris, the
+	default user is usually webservd. 
+	</P>
+</OL>
+<P>            The nginx.conf has a section named <FONT FACE="Cumberland, monospace">upstream
+thin</FONT> that contains a list of the server and port numbers of
+the rails application servers that will host the application. If you
+have more than one machine hosting your thins or if the applications
+are located on a different machine to Nginx, modify this section and
+add the addresses and port numbers of your application servers.</P>
+<OL START=3>
+	<P STYLE="margin-bottom: 0.04in">To change the location of the
+	application static content :</P>
+</OL>
+<P STYLE="margin-bottom: 0.04in"><CODE>#### Replace with the full
+path to your rails app's public directory: </CODE>
+</P>
+<PRE STYLE="margin-bottom: 0.2in"><CODE>       root /var/www/virtual/example.com/rails/railsapp/public;</CODE></PRE><P STYLE="margin-bottom: 0.04in">
+to <CODE>root $APP_DIR;</CODE> <I># replace $APP_DIR with whatever
+value you used for $APP_DIR throughput the installation</I></P>
+<P STYLE="margin-bottom: 0.04in"><BR><BR>
+</P>
+<OL START=3>
+	<P STYLE="margin-bottom: 0.14in">Do NOT start nginx yet.</P>
+</OL>
+<H2><A NAME="setupDB"></A>Setting up the database</H2>
+<OL>
+	<LI><P STYLE="margin-bottom: 0in">If you plan to run MySQL on a
+	separate machine, install MySQL on that system. We will refer to the
+	MySQL installation directory as MYSQL_HOME. 
+	</P>
+	<LI><P>Setup the mysql user/group and permissions for it's
+	directories: 
+	</P>
+	<PRE># groupadd mysql
+# useradd -d $MYSQL_HOME -g mysql -s /usr/bin/bash mysql
+# chown -R mysql:mysql $MYSQL_HOME</PRE>
+	<LI><P>Create the database : 
+	</P>
+	<PRE># su - mysql
+$ cd bin
+$ ./mysql_install_db</PRE>
+	<LI><P>A sample <FONT FACE="Cumberland, monospace">my.cnf </FONT>file
+	is included in $APP_DIR/etc/my.cnf. This will work with both MySQL
+	5.0 and 5.1. Copy it to /etc/my.cnf and edit it to add the location
+	of <FONT FACE="Cumberland, monospace">innodb_data_home_dir</FONT>
+	and <FONT FACE="Cumberland, monospace">innodb_log_group_home_dir</FONT>.
+	The default  values for these parameters is the MySQL data
+	directory. Start the mysql server. 
+	</P>
+	<PRE>$ ./mysqld_safe &amp;</PRE>
+</OL>
+<PRE></PRE>
+<OL START=5>
+	<LI><P>Substitute your own password for <I>pwd</I> (we typically use
+	<I>adminadmin</I>) 
+	</P>
+	<PRE STYLE="margin-bottom: 0.2in">$ ./mysqladmin -u root password <I>pwd</I></PRE>
+	<LI><P>Create the olio user and grant privileges: 
+	</P>
+	<PRE> $ ./mysql -u root -p <I>pwd</I>
+ mysql&gt; create user 'olio'@'%' identified by 'olio';
+ mysql&gt; grant all privileges on *.* to 'olio'@'%' identified by 'olio';</PRE><P STYLE="margin-bottom: 0in">
+	In some cases the wildcard '%' does not work reliably as a
+	substitution for all hosts. You need to grant the privileges to
+	'olio'@'&lt;hostname&gt;' individually, where hostname is localhost,
+	the name of the database system and any other names that are used to
+	access the database system.</P>
+</OL>
+<P STYLE="margin-bottom: 0in">. 
+</P>
+<OL START=6>
+	<LI><P>Create database: 
+	</P>
+	<PRE STYLE="margin-bottom: 0.2in">mysql&gt; create database olio;</PRE>
+</OL>
+<OL START=6>
+	<LI><PRE STYLE="margin-bottom: 0.2in"><FONT FACE="Times New Roman, serif"><FONT SIZE=3>In the web application directory, go to the config directory. Copy database.yml.template to database.yml and edit it to set the hostname running the database.</FONT></FONT></PRE>
+</OL>
+<OL START=6>
+	<LI><PRE STYLE="margin-bottom: 0.2in"><FONT FACE="Times New Roman, serif"><FONT SIZE=3>Create database schema from the rails application :</FONT></FONT></PRE>
+</OL>
+<P>      <FONT FACE="Cumberland, monospace"><FONT SIZE=2>cd $APP_DIR;
+rake db:migrate</FONT></FONT></P>
+<H2><A NAME="loadDB"></A>Loading the database</H2>
+<P>It is best to load the database manually the first time so that we
+can test the web application. However, while doing performance tests,
+the load driver can be configured to automatically re-load the
+database before the run.</P>
+<OL>
+	<LI><P STYLE="margin-bottom: 0in">Login to the machine running the
+	Faban master driver. Only this machine has the loader at this time.</P>
+</OL>
+<OL START=2>
+	<LI><P>Go to the directory containing the loader script: 
+	</P>
+	<PRE STYLE="margin-bottom: 0.2in"># cd <I>$FABAN_HOME</I>/benchmarks/OlioDriver/bin</PRE>
+	<LI><P>Ensure the script has execute permissions. Faban takes care
+	of this for the runs, but since we have not yet started the first
+	run, we will need to change that ourselves: 
+	</P>
+	<PRE STYLE="margin-bottom: 0.2in"># chmod +x dbloader.sh</PRE>
+	<LI><P>Run the loader script: 
+	</P>
+	<PRE># ./dbloader.sh <I>&lt;dbserver&gt; &lt;load_scale&gt;</I>
+<FONT FACE="Times New Roman, serif"><FONT SIZE=3>You can start small with a SCALE of 50 for initial testing. </FONT></FONT></PRE>
+</OL>
+<H2><A NAME="setupFileStore"></A>Setting up the filestore</H2>
+<P>Olio can be configured to use a local filesystem or network file
+systems such as NFS. You will need about 50GB of space for the data,
+as the data does grow over runs. Using a single spindle does work but
+may create performance bottlenecks. We recommend striping the
+filesystem across at least 3 spindles to avoid such bottlenecks. A
+local file system needs to be setup on the same machine as the web
+application. A network file system can reside on a separate server
+but needs to be exported and mounted on the web application.</P>
+<OL>
+	<LI><P>Create a directory (or mount a filesystem) designated for
+	storing the image and binary files. This directory is referred to as
+	$FILESTORE. Any valid name for the OS should be fine. Ensure that
+	everyone has read and write access to it: 
+	</P>
+	<PRE># mkdir -p $FILESTORE
+# chmod a+rwx $FILESTORE</PRE>
+	<LI><P>Now load the filestore. You should have the
+	$FABAN_HOME/benchmarks/OlioDriver.jar file on this system.</P>
+	<PRE STYLE="margin-bottom: 0.2in"># JAVA_HOME=&lt;java_install_dir&gt;; export $JAVA_HOME</PRE>
+</OL>
+<PRE>      # cd $FABAN_HOME/benchmarks; mkdir olio
+      # cd olio; jar xvf ../OlioDriver.jar; chmod a+x bin/*</PRE>
+<OL START=2>
+	<PRE># $FABAN_HOME/benchmarks/olio/bin/fileloader.sh &lt;load_scale&gt; $FILESTORE
+<FONT FACE="Times New Roman, serif"><FONT SIZE=3>This loads files for use for up to </FONT></FONT><CODE><FONT FACE="Times New Roman, serif"><FONT SIZE=3><I>load_scale</I></FONT></FONT></CODE> <FONT FACE="Times New Roman, serif"><FONT SIZE=3>number of concurrent users. </FONT></FONT></PRE>
+</OL>
+<OL START=2>
+	<LI><P><CODE><FONT FACE="Times New Roman, serif">In
+	$APP_DIR/public/, create a symbolic link from </FONT></CODE><CODE><FONT FACE="Cumberland, monospace">uploaded_files</FONT></CODE><CODE><FONT FACE="Times New Roman, serif">
+	to $FILESTORE. </FONT></CODE>
+	</P>
+</OL>
+<P><CODE>          </CODE><CODE><FONT FACE="Cumberland, monospace"><FONT SIZE=2>#
+ln -s $FILESTORE uploaded_files</FONT></FONT></CODE></P>
+<H2><A NAME="setupEmulator"></A>Setting up the Geocoder Emulator</H2>
+<P>The Geocoder Emulator is a simple servlet deployed on Tomcat. It
+is typically run on a driver machine. The following steps describe
+how to install it :</P>
+<OL>
+	<LI><P STYLE="margin-bottom: 0in">Donwload and install Tomcat (from
+	<A HREF="http://tomcat.nginx.org/">http://tomcat.nginx.org</A>) on
+	the driver machine. The install directory doesn't matter - we will
+	refer to it as <CODE>$TOMCAT_HOME</CODE>. 
+	</P>
+</OL>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<OL START=2>
+	<LI><P STYLE="margin-bottom: 0in">Build the <I>geocoder.war</I> file
+	by going to the 'geocoder' directory and following the instructions
+	in the README file. 
+	</P>
+</OL>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<OL START=3>
+	<LI><P STYLE="margin-bottom: 0in">Copy the geocoder.war file from
+	the geocoder/dist directory to $TOMCAT_HOME/webapps. 
+	</P>
+</OL>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<OL START=4>
+	<LI><P>Start Tomcat using $TOMCAT_HOME/bin/startup.sh. 
+	</P>
+	<LI><P>Go to <CODE>$APP_DIR/config</CODE>. Edit the file
+	<CODE>environment.rb</CODE> and change 'localhost' in
+	<CODE>Geolocation.url = '...'</CODE> to the actual hostname where
+	the geocoder emulator is running.</P>
+</OL>
+<H2><A NAME="testWebApp"></A>Testing the web application</H2>
+<UL>
+	<LI><P STYLE="margin-bottom: 0.04in">Start thin: 
+	</P>
+</UL>
+<PRE STYLE="margin-top: 0.02in; margin-bottom: 0.2in">      $ cd $APP_DIR
+      $ thin -d -p 3000 -e production -l /var/log/thin.log &ndash;-pid /var/run/thin.pid -s 4 start</PRE>
+<UL>
+	<LI><P>This will start four thin servers on ports 3000, 3001, 3002,
+	and 3004. You can change the port and number of servers if you want,
+	the <CODE>nginx.conf</CODE> file will need to be modified as well.
+	You can also change to unix domain sockets by using the --socket
+	option and <CODE>server unix:/tmp/projects.0.sock;</CODE> for each
+	of the sockets. 
+	</P>
+	<LI><P>Start nginx. Check that you can connect to it from your
+	browser (<A HREF="http://host:80/">http://<I>host</I>:80</A>). Check
+	the home page (HomePage). If there are no error messages and all
+	images get loaded, that's a great start! If not, check the rails
+	application log (in $APP_DIR/log), thin and nginx error logs to
+	debug. 
+	</P>
+	<LI><P>Click on an event (EventDetail). Make sure the whole page
+	looks OK. 
+	</P>
+	<LI><P>Click on an attendee (PersonDetail) to see a person's
+	profile. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">Go back to the home page and click
+	on a tag in the tag cloud. Choose a big tag and check that we have
+	good results and images get loaded OK.</P>
+</UL>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">Click on the sign up tab. Fill in
+	the form and create a user. Make sure you find some jpeg images to
+	upload. If not, take them from
+	$FABAN_HOME/benchmarks/web20/resources. Submit the form. Make sure
+	the form goes through. This completes the AddPerson transaction. 
+	</P>
+</UL>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">Login using your new login name
+	you just created. The top left of the screen should show that you're
+	logged on.</P>
+</UL>
+<P STYLE="margin-bottom: 0in"> 
+</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">Select an event, go back to the
+	EventDetail page but this time as a logged on user. Add yourself as
+	an attendee. This is the EventDetail transaction with attendee added
+	(about 8-9% of all EventDetail views).</P>
+</UL>
+<P STYLE="margin-bottom: 0in"> 
+</P>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in">Click on the add event tab and add
+	an event. Make sure to include an image and some literature. You can
+	also use the files from <CODE>$FABAN_HOME/benchmarks/web20/resources</CODE>.
+	Fill in the form and submit. This is the AddEvent transaction. 
+	</P>
+</UL>
+<H2><A NAME="startRun"></A>Starting a performance test</H2>
+<P>Now that we know that the web application is running and the faban
+harness is up, it is time to kick off a test.</P>
+<OL>
+	<LI><P STYLE="margin-bottom: 0in">Point your browser at
+	http://<I>&lt;driver_machine&gt;</I>:9980 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">Click on the <B>Schedule Run</B>
+	link. 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">Under the JAVA tab, set the
+	JAVA_HOME. You can accept the default value for JVM options. <B>DO
+	NOT</B> click on the OK button yet! 
+	</P>
+	<LI><P STYLE="margin-bottom: 0in">Select the Driver tab. 
+	</P>
+</OL>
+<UL>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0in">Enter a Description for the run
+		(say 'First test run' for this case). In general, the Description
+		field is very useful to get a quick idea of what a particular run
+		is testing. 
+		</P>
+		<LI><P STYLE="margin-bottom: 0in">Enter the name of your driver(s)
+		machine for Host (when using more than one machine, simply separate
+		them by a space). 
+		</P>
+		<LI><P STYLE="margin-bottom: 0in">Enter 10 for 'Concurrent Users'
+		(we want to start small). 
+		</P>
+		<LI><P STYLE="margin-bottom: 0in">Enter 'vmstat 10' for Tools. This
+		indicates the measurement tools that will be run on the driver
+		machine. It's a good idea to keep an eye on the driver cpu
+		utilization. 
+		</P>
+		<LI><P STYLE="margin-bottom: 0in">Now enter 30, 30, 30 for the Ramp
+		up, Steady State and Ramp down times. This is a very short test
+		run. For normal runs, you may need a ramp up of 200 seconds and a
+		steady state of at least 600 seconds during which measurements are
+		made. 
+		</P>
+		<LI><P STYLE="margin-bottom: 0in">For current systems, the time
+		between client startup of 200 milliseconds is good enough. Some web
+		servers or slower systems may not be able to accept connections
+		very frequently. In that case we may want to increase this value to
+		1000 milliseconds. 
+		</P>
+	</UL>
+</UL>
+<P STYLE="margin-bottom: 0in"><BR>
+</P>
+<OL START=5>
+	<LI><P>Select the Web Server tab. 
+	</P>
+	<P>The number of Agents is best the same or multiple the number of
+	driver machines; we start with 1. The Host:Port Pairs field takes
+	the host port pairs where the web applications are running. The host
+	and port is separated by a colon. Each pair is separated by space.
+	For the Webserver type field, enter either &ldquo;apache&rdquo; or
+	&quot;lighttpd&quot; or leave the field blank if you're using nginx
+	or other servers. Only these two servers are supported by faban at
+	this time. Then provide the webserver's bin, log, and config
+	directories in the respective fields. Then, in the tools box, type
+	the tools you want to run. Here are the tools we typically run :
+	vmstat 10; mpstat 10; iostat -x 10</P>
+	<LI><P>Select the Data Servers tab. 
+	</P>
+	<P>For the database server, enter the Host name. Edit the hostname
+	part along of the JDBC Connection URL. This is used by the loader
+	program to reload the database before a run. Set the 'Load for
+	Concurrent Users' to 25 (this is the minimum number of users we can
+	load for and is good for up to 25 concurrent users). You can set the
+	loader to run a larger number so that you don't have to edit this
+	field every time. However, you must reload the database before every
+	run .</P>
+	<P>Set the Data Storage server. For local storage this is the same
+	host as the web server.</P>
+	<LI><P>That's it. Click OK and the run should be scheduled. You can
+	click on the View Results link on the left to monitor the run. 
+	</P>
+</OL>
+</BODY>
+</HTML>

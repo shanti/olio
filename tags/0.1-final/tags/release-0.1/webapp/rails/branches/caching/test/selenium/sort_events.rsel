@@ -1,0 +1,10 @@
+
+open '/selenium/setup?clear_tables=users,addresses,events,documents,images,invites&fixtures=events'
+delete_cookie ' _perf_session_id', '/'
+open '/'
+
+verify_text '//ol[@id="event_list"]//li[1]//h2/a', 'Event 0'
+click 'order_created_at'
+wait_for_text '//ol[@id="event_list"]//li[1]//h2/a', 'Event 19'
+click 'order_event_date'
+wait_for_text '//ol[@id="event_list"]//li[1]//h2/a', 'Event 0'

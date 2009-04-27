@@ -1,0 +1,12 @@
+<div id="upcoming_events">
+  <% unless @upcoming.empty? -%>
+    <h1>Your Upcoming Events</h1>
+    <ol id="upcoming_events_list">
+      <% @upcoming.each do |e| -%>
+        <li><%= link_to h(e.title), event_path(e) %></li>
+      <% end -%>
+    </ol>
+  <% end -%>
+
+	<%= will_paginate @upcoming %>
+</div>

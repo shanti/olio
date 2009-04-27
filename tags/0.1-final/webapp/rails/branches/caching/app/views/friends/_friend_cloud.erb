@@ -1,0 +1,21 @@
+<div id="friend_cloud">
+<h2>Friend Cloud</h2>
+	<% if @friendcloud.nil? or @friendcloud.empty? -%>
+		<p>This person has no friends.</p>
+	<% else -%>
+		<% 3.times do |i| -%>
+			<div class="friend_cloud_item">
+				<%= thumbnail(@friendcloud[i].image, @friendcloud[i]) unless @friendcloud[i].nil? %><br />
+				<%= link_to full_name(@friendcloud[i]), @friendcloud[i] unless @friendcloud[i].nil? %>
+			</div>
+		<% end -%>
+		<p class="clr" />
+		<% 3.times do |i| -%>
+			<div class="friend_cloud_item">
+				<%= thumbnail(@friendcloud[i+3].image, @friendcloud[i+3]) unless @friendcloud[i+3].nil? %><br />
+				<%= link_to full_name(@friendcloud[i+3]), @friendcloud[i+3] unless @friendcloud[i+3].nil? %>
+			</div>
+		<% end -%>
+		<p class="clr" />
+	<% end -%>
+</div>

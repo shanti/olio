@@ -1,0 +1,21 @@
+# == Schema Information
+# Schema version: 17
+#
+# Table name: addresses
+#
+#  id        :integer(11)     not null, primary key
+#  street1   :string(55)      
+#  street2   :string(55)      
+#  city      :string(55)      
+#  state     :string(25)      
+#  zip       :string(12)      
+#  country   :string(55)      
+#  latitude  :decimal(14, 10) 
+#  longitude :decimal(14, 10) 
+#
+
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+one:
+  id: 1
+two:
+  id: 2

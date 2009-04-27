@@ -1,0 +1,44 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# 
+# == Schema Information
+# Schema version: 17
+#
+# Table name: events
+#
+#  id              :integer(11)     not null, primary key
+#  title           :string(100)     
+#  description     :string(500)     
+#  telephone       :string(20)      
+#  user_id         :integer(11)     
+#  address_id      :integer(11)     
+#  image_id        :integer(11)     
+#  document_id     :integer(11)     
+#  timezone        :string(255)     
+#  event_timestamp :datetime        
+#  event_date      :date            
+#  created_at      :datetime        
+#  total_score     :integer(11)     
+#  num_votes       :integer(11)     
+#  disabled        :boolean(1)      
+#
+
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+one:
+  id: 1
+two:
+  id: 2

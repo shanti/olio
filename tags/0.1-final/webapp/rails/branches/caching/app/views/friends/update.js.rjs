@@ -1,0 +1,22 @@
+approve_link = "approve_friend_#{@target.id}"
+reject_link = "reject_invite_friend_#{@target.id}"
+incoming_request = "incoming_friend_request_#{@target.id}" # only from logged in users profile page
+
+page << "if($('my_friends_list')) {" # only from logged in users profile page
+  page << "if($('my_friends_list').getElementsBySelector('li').length == 0) {"
+    page[:my_friends_list].replace_html :partial => 'friend', :locals => {:friend => @target, :user => @user}
+  page << "} else {"
+    page.insert_html :bottom, :my_friends_list, :partial => 'friend', :locals => {:friend => @target, :user => @user}
+  page << "}"
+  page[incoming_request].remove
+  page.refresh_invites('incoming')
+page << "} else if($('profile_friendship_link')) {"
+  page['profile_friendship_link'].replace_html :partial => "friends/remove_link", :locals => {:user => @user, :target => @target}
+page << "} else {"
+  page[approve_link].replace :partial => 'friends/remove_link', :locals => {:user => @user, :target => @target}
+  page[reject_link].remove
+page << "}"
+
+page[:requests_link].reload
+page['friend_cloud'].reload
+page.refresh_messages

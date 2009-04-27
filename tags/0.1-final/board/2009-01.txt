@@ -1,0 +1,14 @@
+2009-January Olio Incubator status report
+
+Olio has been incubating since September 2008.
+
+Olio is a web 2.0 toolkit to help developers evaluate the suitability, 
+functionality and performance of various web technologies by implementing 
+a reasonably complex application in several different technologies.
+
+. Olio is now being run actively by several organizations.
+. One user has modified Olio to replace the MySQL database with another.
+. There are multiple deployments attempting to scale Olio to test performance
+of system infrastructure, software application stack etc.
+. With increased deployment, more bugs are being found and JIRA's filed.
+. Work is under-way to add a caching tier using memcached.

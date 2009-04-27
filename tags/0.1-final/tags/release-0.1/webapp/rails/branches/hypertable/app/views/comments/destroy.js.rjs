@@ -1,0 +1,2 @@
+page["comment_#{@comment.id}".to_sym].visual_effect :blind_up
+page.refresh_messages

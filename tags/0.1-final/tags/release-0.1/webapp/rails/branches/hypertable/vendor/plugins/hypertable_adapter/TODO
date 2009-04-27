@@ -1,0 +1,10 @@
+- test gem builds, remove plugins from zvents rails tree and freeze gems
+- ability to specific timeout in config/database.yml
+- documentation
+  - rewrite README for new config
+  - how to support hypertable fixtures in tests/specs in regular rails tests
+  - add INSTALL file
+  - :row_keys, :start_inclusive, :end_inclusive finder options
+  - Hash conditions not supported (explain why)
+  - update internal docs re: can't specify select list
+  - futures (efficient lookup outside of row key)

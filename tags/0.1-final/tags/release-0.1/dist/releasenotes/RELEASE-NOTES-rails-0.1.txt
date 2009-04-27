@@ -1,0 +1,30 @@
+This is the first release of the rails implementation of Olio.
+There are two tarballs for this release: 
+apache-olio-rails-0.1.tar.gz is the binary kit.
+apache-olio-rails-src-0.1.tar.gz is the source that corresponds to the binary kit.
+
+Please use gtar to extract the contents as there are some very long filenames:
+% gzcat apache-olio-rails-0.1.tar.gz | gtar -xvf - 
+
+The instructions for setting up Olio from the binary kit are contained in 
+rails_setup_kit.html which is located in the top-level directory.
+You can also browse the document at 
+  https://svn.apache.org/repos/asf/incubator/olio/docs/rails_setup_kit.html
+
+The instructions for setting up Olio from the source kit are contained in
+rails_setup.html which is located in the 'docs' directory.
+
+Known Issues
+=============
+. Due to the way logging works in apache common HttpClient, you will see a
+  lot of messages of the form "Redirect requested but followRedirects is disabled"
+  in the faban run log. To turn off these annoying messages, add the following to
+  ~faban/config/logging.properties:
+	org.apache.commons.httpclient.level=SEVERE
+
+. OLIO-76: Some times, the addition of an attendee fails resulting in the 
+  following message in the run log:
+     Add attendee failed, possible race condition
+  
+. OLIO-81: The cycle/think time requirements may fail for the AddPerson 
+  and AddEvent operations. You can safely ignore this failure for now.

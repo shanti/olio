@@ -1,0 +1,491 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ */
+body {
+  margin: 0;
+  padding: 0;
+  background: #fff url(../images/bg_main.png) repeat-x top left;
+  color: black;
+}
+
+/* liquid layout //////////////////////////////////////////////////////////////////// */
+#outer_wrapper {
+  width: 85%;
+  min-width: 720px; /* ignored by IE 6, worth improving */
+  max-width: 1300px; /* ignored by IE 6, NOT worth imporving */
+  margin: 0 auto;
+  padding: 0;
+  background-color: rgb(67, 69, 102);
+  color: black;
+}
+#header {
+  margin-bottom: 5px;
+  padding: 0;
+  height: 130px; /* for bg image */
+  background: rgb(119, 123, 180) url(../images/php_bg_header.gif) repeat-x top left;
+  color: inherit;
+  text-align: center;
+}
+#login {
+  margin: 0;
+  padding-right: 10px;
+  background-color: transparent;
+  color: #CCC;
+  font-size: 0.8em;
+  text-align: right;
+}
+#inner_wrapper {
+  margin: 0;
+  padding-bottom: 2%;
+  background-color: rgb(67, 69, 102);
+  color: inherit;
+  /* begin: better method than a non-semantic clear:both div */
+  overflow: hidden;
+  width: 100%;
+  /* end: better method than a non-semantic clear:both div */
+  border-bottom: 1px solid black;
+
+  /* DEBUG: */
+  /*border: 1px dotted black;*/
+}
+#sidebar {
+  width: 23%;
+  background-color: #fff;
+  color: inherit;
+  float: left;
+  overflow: hidden; /* for IE 5-6 (Win) extend-to-fit */
+
+  /* DEBUG: */
+  /*border: 1px solid purple;*/
+}
+#calendar a {
+  text-decoration: none;
+}
+#calendar .day {
+  margin: 0;
+  padding: 1px;
+  border: 1px solid #ccc;
+}
+#calendar td.day:hover {
+  border: 1px solid red;
+}
+#calendar .prev_month, #calendar .next_month {
+  font-size: 1.2em;
+}
+#calendar .prev_year, #calendar .next_year {
+  font-size: 0.8em;
+}
+/* Hide from IE 5 (Mac). Show only to IE 5-6 (Win) for extend-to-fit \*/
+* html .inside {
+  position: relative;
+}
+/* End hide from IE 5 (Mac) */
+#content {
+  width: 75%;
+  background-color: #fff;
+  color: inherit;
+  float: right;
+
+  /* DEBUG: */
+  /*border: 1px solid green;*/
+}
+#footer {
+  margin: 0;
+  padding: 2%;
+  background-color: inherit;
+  color: #999;
+  text-align: center;
+  clear: both;
+}
+
+
+/* main navigation //////////////////////////////////////////////////////////////////// */
+#nav_wrapper {
+  height: 40px;
+  background: transparent url(../images/php_main_nav_link_bg.gif) repeat-x;
+  color: #ccc;
+}
+ul#main_nav {
+  margin: 0;
+  padding: 0;
+  background: transparent url(../images/php_main_nav_link_bg.gif) repeat-x;
+  color: #ccc;
+  list-style: none;
+  float: left;
+  /*width: 94%;*/ /* remaining % is from floated RSS icon */
+}
+ul#main_nav li {
+  float: left;
+  border-right: 2px solid maroon;
+}
+ul#main_nav li a {
+  display: block;
+  width: 100px;
+  height: 40px;
+  line-height: 40px;
+  background-color: inherit;
+  color: #fff;
+  text-decoration: none;
+}
+ul#main_nav li a:hover {
+  background: transparent url(../images/php_main_nav_hover_bg.gif) repeat-x;
+  color: #fb9d39;
+  border-bottom: 1px solid #ccc;
+}
+#rss_icon {
+  display: block;
+  margin: 0;
+  padding-top: 5px;
+  width: 6%; /* remaining % is from floated main navigation */ 
+  height: 40px;
+  background: transparent url(../images/php_main_nav_link_bg.gif) repeat-x;
+  color: transparent;
+  float: right;
+}
+#inline_login {
+  display: block;
+  margin: 0;
+  padding-top: 9px;
+  
+  height: 40px;
+  background: transparent url(../images/php_main_nav_link_bg.gif) repeat-x;
+  color: #CCC;
+  float: right;
+  
+  font-size: 0.8em;
+  text-align: right;
+}
+
+
+/* rounded corners //////////////////////////////////////////////////////////////////// */
+.rounded_corner {
+  width: 12px;
+  height: 12px;
+  background-repeat: no-repeat;
+  background-color: #fff;
+  color: none;
+}
+.top_left {
+  background-image: url(../images/php_corner_top_left.gif);
+  background-position: top left;
+}
+.top_right {
+  background-image: url(../images/php_corner_top_right.gif);
+  background-position: top right;    
+  float: right; /* of top left corner */
+}
+.bottom_left {
+  background-image: url(../images/php_corner_bottom_left.gif);
+  background-position: bottom left;
+}
+.bottom_right {
+  background-image: url(../images/php_corner_bottom_right.gif);
+  background-position: bottom right;
+  float: right; /* of bottom left corner */
+}
+
+
+/* liquid reflection //////////////////////////////////////////////////////////////////// */
+#outer_reflection_wrapper {    
+  height: 94px; /* for bg image */
+  background: #fff url(../images/php_reflec_tile.gif) repeat-x top left;
+  color: inherit;
+}
+#inner_reflection_wrapper {
+  width: 90%;
+  position: relative;
+  top: 0;
+  right: -102px;
+  float: right;
+}
+#reflec_left {
+  margin-left: 0;
+  padding: 0;
+  width: 102px; /*put 9.5%; in IE 6 conditional comment */ 
+  height: 94px;
+  background: #fff url(../images/php_reflec_left.gif) no-repeat top right;
+  color: inherit;
+  position: relative;
+  top: 0;
+  left: -102px; /*put -9.5%; in IE 6 conditional comment */
+
+  /* DEBUG: */
+  /*border: 3px solid green;*/
+}
+/* Hide from IE 5 (Mac). Show only to IE 5-6 (Win) \*/
+* html #reflec_left { 
+  width: 9.5%;
+  position: relative;
+  top: 0;
+  left: -9.5%;
+}
+/* End hide from IE 5 (Mac) */
+#reflection {
+  margin: 0;
+  padding: 1%;
+  clear: both;
+  float: left; /* of reflec_right */
+
+  /* DEBUG: */
+  /*border: 1px solid yellow;*/
+}
+#reflec_right {
+  width: 102px;
+  height: 94px;
+  background: #fff url(../images/php_reflec_right.gif) no-repeat top left;
+  color: inherit;
+  float: right; /* of reflection */
+
+  /* DEBUG: */
+  /*border: 3px solid blue;*/
+}
+
+
+/* events //////////////////////////////////////////////////////////////////// */
+
+#event_list {
+  margin-left: 5px;
+  padding: 0;
+}
+
+#event_list li {
+  width: 300px;
+  /*height: 150px;*/
+  overflow: hidden;
+  border: 1px solid transparent;
+}
+#event_list li:hover {
+  border: 1px solid maroon;
+}
+#event_list li.even_event,
+#event_list li.odd_event {
+  float: left;
+}
+.thumbnail_for_list {
+  margin-right: 5px;
+  padding: 0;
+  width: 100px; 
+  float: left; 
+}
+
+/* events/ */
+#which_timezone {
+  background-color: inherit;
+  color: #702114;
+  font-style: italic;
+}
+
+/* events/show + users/show */
+#event_header, 
+#user_header {
+  margin-bottom: 10px;
+  padding-bottom: 5px;
+  background-color: #eee;
+  color: black;
+}
+#main_event_details, #event_description {
+  margin-right: 160px; /* from event_thumbnail or event_attendees width */
+  padding-bottom: 5px;
+}
+#main_user_details, #user_summary {
+  margin-left: 160px; /* from user_thumbnail width */
+  padding: 3px 0 5px 10px;
+}
+#event_contact,
+#user_telephone {
+  background-color: transparent;
+  color: #702114;
+  font-weight: bold;
+}
+#event_thumbnail, #event_attendees {
+  margin: 0 10px 0 0;
+  padding: 0;
+  float: right;
+  width: 150px; /* from Image model thumbnail width */
+}
+#user_thumbnail {
+  margin: 0 0 0 10px;
+  padding: 0;
+  float: left;
+  width: 150px; /* from Image model thumbnail width */
+}
+#event_attendees {
+  margin-bottom: 5px;
+  padding: 0 10px 25px 0;
+  width: 135px;
+  height: 150px;
+  overflow: auto;
+  text-align: right;
+  border-right: 5px double #CCC;
+  border-top: 1px solid #CCC;
+}
+#event_attendees ol {
+  list-style-type: none;
+}
+#event_map {
+  margin-bottom: 5px;
+  padding: 0;
+}
+#event_tags {
+  margin: 3px 0;
+  padding: 5px 2px;
+  background-color: #702114;
+  color: white;
+}
+#event_tags h1 {
+  margin: 0 0 10px 0;
+  padding: 0;
+  float: left;
+  width: 150px;    
+  color: #fb9d39;
+  font-size: 1.25em;
+  text-align: right;
+  letter-spacing: 0.25em;
+}
+#event_tags a {
+  margin: 0;
+  padding: 0 3px;
+  font-size: 1.5em;
+  color: white;
+  text-decoration: none;
+}
+#incoming_requests, #outgoing_requests {
+  background-color: #eee;
+  color: #444;
+}
+
+/* events/new or events/edit/1 */
+#basic_event_form {
+  float: left;
+  width: 50%;
+}
+#address_form label,
+#user_form label {
+  margin: 0;
+  padding-right: 10px;
+  float: left;
+  width: 250px;
+  text-align: right;
+}
+
+/* events/tagged or events/tag_search */
+#tagged_list {
+  list-style-type: none;
+}
+#tagged_list li {
+  margin: 0;
+  padding: 5px 0;
+  border-bottom: 1px solid #CCC;
+}
+#tagged_list li .thumbnail_for_list {
+  margin-right: 10px;
+  padding: 0;
+  width: 100px;
+  float: left; 
+}
+
+/* tag cloud */
+#tag_cloud {
+  margin: 15px 0; 
+  padding: 0; 
+  border: 1px solid #702114;
+}
+#tag_cloud h2 {
+  background-color: #eee; 
+  color: #702114;
+  text-indent: 0.2em; 
+}
+#tag_cloud div {
+  margin: 0;
+  padding: 2px;
+}
+
+/* misc //////////////////////////////////////////////////////////////////// */
+#header h1 {
+  margin: 0;
+  /*padding: 72px 72px 40px 72px;*/
+  padding: 25px 72px 25px 72px;
+  background: inherit;
+  color: white;
+  font-size: 1.75em;
+}
+
+/* sets padding inside any element that might have rounded corners */
+.inside {
+  margin: 0;
+  padding: 0 15px 15px 15px;
+}
+
+a img { 
+  border: none; 
+}
+
+.odd {
+  background-color: #eee;
+  color: black;
+  border-bottom: 3px dotted #ccc;
+}
+
+/* general button_to helper */
+form.button-to, 
+form.button-to div, 
+form.button_to input {
+  display: inline;
+}
+
+/* the div that renders flash messages */
+#messages {
+  margin: 0;
+  padding: 3px;
+}
+#messages p {
+  margin: 0;
+  padding: 0;
+  font-size: 1.1em;
+}
+
+
+/* utility //////////////////////////////////////////////////////////////////// */
+.clr {
+  clear: both;
+}
+.noborder {
+  border: none;
+}
+.inline {
+  display: inline;
+}
+.subliminal {
+  background-color: inherit;
+  color: #666;
+}
+.smaller_heading {
+  margin: 0 0 -2px 0;
+  padding: 0;
+  font-size: 1.1em;
+}
+.tight_heading {
+  margin: 0;
+  padding: 0;
+}
+
+/* friend_cloud ///////////////////////////////////////////// */
+.friend_cloud_item {
+	float: left;
+}
+

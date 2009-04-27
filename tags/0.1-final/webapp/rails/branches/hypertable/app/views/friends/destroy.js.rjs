@@ -1,0 +1,33 @@
+# on deletes, rejects, and revokes
+rm_link = "#{@friend_action}_friend_#{@target.id}" 
+
+# only on rejects
+approve_link = "approve_friend_#{@target.id}" 
+incoming_request = "incoming_friend_request_#{@target.id}"
+
+# only on revokes
+outgoing_request = "outgoing_friend_request_#{@target.id}" 
+
+page << "if($('#{outgoing_request}')) {"
+  page[outgoing_request].remove
+  page.refresh_invites('outgoing')
+page << "} else if($('#{incoming_request}')) {"
+  page[incoming_request].remove
+  page.refresh_invites('incoming')
+page << "} else if($('my_friends_list')) {"
+  page["friend_#{@target.id}"].remove
+  page << "if($('my_friends_list').getElementsBySelector('li').length == 0) {"
+    page[:my_friends_list].replace_html "<p>No friends.</p>"
+  page << "}"
+page << "} else if($('profile_friendship_link')) {"
+  page['profile_friendship_link'].replace_html :partial => "friends/add_link", :locals => {:user => @target}
+page << "} else {"
+  page[rm_link].replace :partial => "friends/add_link", :locals => {:user => @target}
+  page << "if($('#{approve_link}')) {"
+    page[approve_link].remove
+  page << "}"
+page << "}"
+
+page[:requests_link].reload
+page['friend_cloud'].reload
+page.refresh_messages

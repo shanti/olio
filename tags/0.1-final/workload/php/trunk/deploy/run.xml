@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+-->
+
+<olio>
+    <jvmConfig xmlns="http://faban.sunsource.net/ns/fabanharness">
+        <javaHome>/apps/JVMs/jdk1.6.0_03</javaHome>
+        <jvmOptions>-Xmx1g -Xms256m -XX:+DisableExplicitGC</jvmOptions>
+    </jvmConfig>
+    
+    <fa:runConfig definition="org.apache.olio.workload.driver.UIDriver" xmlns="http://faban.sunsource.net/ns/fabandriver" xmlns:fa="http://faban.sunsource.net/ns/faban" xmlns:fh="http://faban.sunsource.net/ns/fabanharness">
+        <fh:description>Enter description for this run here</fh:description>
+        
+        <fa:hostConfig>
+            <fa:host>dewberry</fa:host>
+            <fh:enabled>true</fh:enabled>
+            <fh:cpus>0</fh:cpus>
+            <fh:tools>vmstat 10</fh:tools>
+            <fh:userCommands/>
+        </fa:hostConfig>
+        
+        <fa:scale>50</fa:scale>
+        
+        <fa:runControl>
+            <fa:rampUp>30</fa:rampUp>
+            <fa:steadyState>300</fa:steadyState>
+            <fa:rampDown>10</fa:rampDown>
+        </fa:runControl>
+
+        <outputDir>/tmp</outputDir>
+        
+        <audit>false</audit>
+        <threadStart>            
+            <delay>10</delay>            
+            <simultaneous>false</simultaneous>            
+            <parallel>false</parallel>
+        </threadStart>
+        
+        <stats>
+            <maxRunTime>6</maxRunTime>
+            <interval>30</interval>
+        </stats>
+        
+        <runtimeStats enabled="false">
+            <interval>5</interval>
+        </runtimeStats>
+        
+        <driverConfig name="UIDriver">            
+            <agents>2</agents>            
+            <stats>
+                <interval>30</interval>
+            </stats>            
+            <runtimeStats target="9988"/>
+            <properties>
+                <property name="serverType">php</property>
+            </properties>
+        </driverConfig>
+    </fa:runConfig>
+    
+    <webServer>
+        <fa:hostConfig xmlns="http://faban.sunsource.net/ns/fabanharness" xmlns:fa="http://faban.sunsource.net/ns/faban">
+            <fa:hostPorts>abhi:8080</fa:hostPorts>
+            <enabled>true</enabled>
+            <cpus>0</cpus>
+            <tools>vmstat 10; mpstat 10; netsum -a -i 10; nicstat 10; statit 10; dladm show-aggr -s -i 5; ps -eo "pid pcpu time vsz rss nlwp args"; iostat -xn 10; cpustat</tools>           
+            <userCommands/>            
+        </fa:hostConfig>
+        <type>apache</type>
+        <hostBinPath>/opt/coolstack/apache2/bin</hostBinPath>
+        <hostLogPath>/opt/coolstack/apache2/logs</hostLogPath>
+        <hostConfPath>/opt/coolstack/apache2/conf</hostConfPath>
+        <phpIniPath>/opt/coolstack/php5/lib</phpIniPath>
+    </webServer>
+    <dbServer>
+        <fa:hostConfig xmlns="http://faban.sunsource.net/ns/fabanharness" xmlns:fa="http://faban.sunsource.net/ns/faban">
+            <fa:host>abhi</fa:host>
+            <enabled>true</enabled>
+            <cpus>0</cpus>
+            <tools>vmstat 10; mpstat 10; netsum -a -i 10; nicstat 10; statit 10; dladm show-aggr -s -i 5; ps -eo "pid pcpu time vsz rss nlwp args"; iostat -xn 10; cpustat</tools>
+            <userCommands/>
+        </fa:hostConfig>
+        <dbDriver>com.mysql.jdbc.Driver</dbDriver>
+        <connectURL>jdbc:mysql://localhost/olio?user=olio&amp;password=olio&amp;relaxAutoCommit=true&amp;sessionVariables=FOREIGN_KEY_CHECKS=0</connectURL>
+        <autoCommit>true</autoCommit>
+        <reloadDB>true</reloadDB>
+        <scale>2000</scale>
+        <dbHomePath>/opt/coolstack/mysql_32bit</dbHomePath>
+        <dbConfPath>/etc</dbConfPath>
+    </dbServer>
+    <dataStorage>
+        <fa:hostConfig xmlns:fa="http://faban.sunsource.net/ns/faban"
+                       xmlns="http://faban.sunsource.net/ns/fabanharness">
+            <fa:host>abhi</fa:host>
+            <enabled>true</enabled>
+            <cpus>0</cpus>
+            <tools>NONE</tools>
+            <userCommands></userCommands>
+        </fa:hostConfig>
+        <reloadMedia>false</reloadMedia>
+        <mediaDir>/filestore</mediaDir>
+    </dataStorage>
+    <cacheServers>
+        <fa:hostConfig xmlns="http://faban.sunsource.net/ns/fabanharness" xmlns:fa="http://faban.sunsource.net/ns/faban">
+            <fa:hostPorts>cacheHost:11212 cacheHost:11211</fa:hostPorts>
+            <enabled>true</enabled>
+            <cpus>0</cpus>
+            <tools>NONE</tools>
+            <userCommands/>
+        </fa:hostConfig>
+        <cacheBinPath>/opt/coolstack/bin</cacheBinPath>
+    </cacheServers>
+    <!-- Shanti - commenting as not used
+    <otherServers>
+        <fa:hostConfig xmlns="http://faban.sunsource.net/ns/fabanharness" xmlns:fa="http://faban.sunsource.net/ns/faban">
+            <fa:host></fa:host>
+            <enabled>true</enabled>
+            <cpus>0</cpus>
+            <tools>NONE</tools>
+            <userCommands/>
+        </fa:hostConfig>
+        <serverList></serverList>
+    </otherServers>
+    -->
+</olio>

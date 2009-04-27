@@ -1,0 +1,8 @@
+
+open '/selenium/setup?clear_tables=users,addresses,events,documents,images,invites&fixtures=events'
+delete_cookie ' _perf_session_id', '/'
+open '/'
+click_and_wait "link=Event 0"
+verify_text '//div[@id="main_event_details"]//h1', "Event 0"
+verify_text_present "0"
+verify_text_present "event_0"

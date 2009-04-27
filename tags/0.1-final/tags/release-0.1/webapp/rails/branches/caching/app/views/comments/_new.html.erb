@@ -1,0 +1,7 @@
+<% remote_form_for :comment, @comment, :url => event_comments_path(params[:id]), :method => :post, 
+  :html => { :method => :post }, :before => "tinyMCE.triggerSave()" do |f| -%>
+  
+  <%= render :partial => "comments/form", :locals => { :f => f, :comment => @comment } %>
+  
+  <p><%= f.submit "Comment" %></p>
+<% end -%>
