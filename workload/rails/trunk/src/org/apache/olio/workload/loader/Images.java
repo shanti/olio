@@ -42,7 +42,7 @@ public abstract class Images extends Loadable {
 
     static Logger logger = Logger.getLogger(Comments.class.getName());
 
-    int imageId;
+    int imageKey, imageId;
     String prefix;
 
     public String getClearStatement() {
@@ -62,7 +62,7 @@ public abstract class Images extends Loadable {
             s.setInt(4, 1280);
             s.setInt(5, 960);
             s.setString(6, prefix + imageId + "t.jpg");
-            s.setInt(7, this.imageId);
+            s.setInt(7, this.imageKey);
             c.addBatch();
         } catch (SQLException e) {
             logger.log(Level.SEVERE, e.getMessage(), e);

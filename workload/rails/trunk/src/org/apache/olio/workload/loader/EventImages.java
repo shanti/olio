@@ -22,6 +22,7 @@ public class EventImages extends Images {
     public void prepare() {
      imageId = getSequence();
      ++imageId;
+	 imageKey = imageId;
      prefix = "e";
     }
 }

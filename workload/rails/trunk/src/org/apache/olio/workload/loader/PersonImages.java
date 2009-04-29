@@ -25,7 +25,8 @@ public class PersonImages extends Images {
     public void prepare() {
      int i = getSequence();
      ++i;
-     imageId = ScaleFactors.events + i;
+	 imageId = i;
+     imageKey = ScaleFactors.events + i;
      prefix = "p";
     }
 }
