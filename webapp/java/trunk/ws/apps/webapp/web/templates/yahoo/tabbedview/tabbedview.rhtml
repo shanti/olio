@@ -1,0 +1,9 @@
+<%= jmaki_widget 'yahoo.tabbedview',
+    :value => {
+      :items => [
+        { :label => 'My Tab', :content => 'Some Content' },
+        { :label => 'My Tab 2', :include => 'test.html', :lazyLoad => true },
+        { :label => 'My Tab 3', :content => 'Tab 3 Content', :selected => true}
+      ]
+    }
+-%>

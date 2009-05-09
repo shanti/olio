@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+-->
+
+<!-- war-ant.xml: contains targets for projects that produce war files. 
+     This file is not meant to be included in a project directly.
+     This file should only be included if this project is defining 
+     is.war.module property.
+     @Author: Inderjeet Singh -->
+<project name="war-ant" default="dummy-default">
+
+  <property name="app.module" value="${build.dir}/${module.name}.war"/>
+  <property name="web.docbase.dir" value="${home.dir}/web"/>
+  <!-- src.web is deprecated, use web.docbase.dir instead -->
+  <property name="src.web" value="${web.docbase.dir}"/>
+  <property name="war.build.dir" value="${build.dir}/war"/>
+  <property name="build.web.dir" value="${build.dir}/web"/>
+
+  <!-- DEPRECATED: defined for backward compatibility -->
+  <property name="web.build.dir" value="${build.web.dir}"/>
+
+  <target name="-pre-clean">
+  </target>
+
+  <target name="package" depends="-post-compile"
+    description="packages the archive">
+    <mkdir dir="${war.build.dir}"/>
+
+    <antcall target="bp-copy-classes"/>
+
+    <!-- Copy in the content -->
+    <mkdir dir="${build.web.dir}"/>
+    <copy todir="${build.web.dir}">
+     <fileset dir="${src.web}"/>
+    </copy>
+    <copy todir="${war.build.dir}">
+     <fileset dir="${build.web.dir}"/>
+    </copy>
+
+    <antcall target="-post-compile"/>
+
+
+    <antcall target="package-persistence-unit">
+      <param name="pu.build.dir" value="${build.web.dir}"/>
+    </antcall>
+
+    <delete file="${app.module}"/>
+    <jar jarfile="${app.module}" basedir="${war.build.dir}"/>
+    <delete dir="${war.build.dir}"/>
+  </target>
+
+  <available property="has-classes" file="${build.classes.dir}"/>
+  <target name="bp-copy-classes" if="has-classes">
+    <!-- Copy in the compiled classes -->
+    <mkdir dir="${war.build.dir}/WEB-INF/classes"/>
+    <copy todir="${war.build.dir}/WEB-INF/classes">
+     <fileset dir="${build.classes.dir}"/>
+    </copy>    
+    <!-- Copy in the xsds-->
+    <copy todir="${war.build.dir}/WEB-INF/classes" failonerror="false">
+        <fileset dir="${src.dir}">
+           <include name="**/*.xsd"/>
+        </fileset>
+    </copy>    
+  </target>
+
+  <target name="dummy-default"/>
+
+</project>

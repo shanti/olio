@@ -1,0 +1,1 @@
+<a:widget name="yahoo.weather" />

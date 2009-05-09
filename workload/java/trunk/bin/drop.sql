@@ -1,0 +1,11 @@
+drop table PERSON;
+drop table PERSON_PERSON;
+drop table PERSON_SOCIALEVENT;
+drop table PERSON_INVITATION;
+drop table INVITATION;
+drop table ADDRESS;
+drop table ID_GEN;
+drop table SOCIALEVENT;
+drop table SOCIALEVENTTAG
+drop table SOCIALEVENTTAG_SOCIALEVENT;
+drop table COMMENTS_RATING;

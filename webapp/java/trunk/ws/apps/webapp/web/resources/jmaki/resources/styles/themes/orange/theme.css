@@ -1,0 +1,538 @@
+/* accordion widget */
+
+.jmk-accordion {
+    overflow : hidden; 
+    font-family:"Myriad Pro",Myriad,Arial,Helvetica,clean,sans-serif;
+    margin: 0;
+    padding: 0;
+    border: 1px solid #fc5d0a;
+}
+
+.jmk-accordion-border{
+    background: #fdd7c3;
+    border: 1px solid #fc5d0a;
+    padding: 4px;
+    overflow: hidden;
+}
+
+.jmk-accordion-pane {
+    border :0px;
+    padding : 0px;
+    overflow : hidden;
+}
+
+.jmk-accordion-label {
+    padding-top : 5px;  
+}
+
+.jmk-accordion-content {
+    border :0;
+    padding : 0;
+    background: #FFF;
+    overflow : hidden;
+}
+
+.jmk-accordion-row {
+    border :0;
+    padding: 0;
+    height: 30px;
+    margin: 0;
+    text-align: center;  
+    cursor: pointer;
+    font-size: 20px;
+    color: #FFF;  
+    
+}
+
+.jmk-accordion-menuitem-spacer{
+    margin: 0;
+    padding: 0;
+}
+
+.jmk-accordion-link {
+    cursor: pointer;
+    color: #FFF;
+    text-decoration: none;
+}
+
+.jmk-accordion-link:hover {
+    text-decoration: underline;
+    color: #FFF;
+}
+
+.jmk-accordion-link:visited {
+    color : #FFF;
+}
+
+.jmk-accordion-row,
+.jmk-accordion-menuitem {
+    text-align: left;
+    margin: 0;
+    padding: 0;
+    padding-left: 15px;
+}
+
+.jmk-accordion-menuitem {
+    font-size:1em;
+    background:#FFF;
+    line-height: 26px;
+}
+.jmk-accordion-menuitem .jmk-accordion-link,
+.jmk-accordion-menuitem .jmk-accordion-link:hover {
+    color: #04469D;
+    font-size: 0.75em;
+    font-family: "Lucida Grande",Arial,Helvetica,clean,sans-serif;
+}
+
+.jmk-accordion-menuitem .jmk-accordion-link:hover {
+    text-decoration: none;
+    border-bottom: 2px solid #c6d2e6;
+}
+
+.jmk-accordion-menuitem:hover {
+    background:#e9f2fb;
+    text-decoration: none;
+}
+
+.jmk-accordion-title .jmk-accordion-link,
+.jmk-accordion-title, .jmk-accordion-link:hover {
+    color: #000;
+    font-size: 0.85em;
+    text-decoration: none;
+}
+
+.jmk-accordion-label {
+    margin: 0;
+    padding: 0;
+    line-height: 34px;
+    font-size: 0.9em;
+}
+
+.jmk-accordion-content {
+    border-bottom: 1px solid #B1CBDF;
+}
+
+/* general  styles */
+.jmakiBackround {
+    background:#eee;
+}
+
+.jmakiBackroundHover {
+    background:#FFC787;
+}
+
+.jmakiFont {
+    color : #FFF;
+}
+
+/* title used in accordion menu */
+
+.jmk-accordion-title {
+    background:#fe8749 url("images/tileGrayBg.png") repeat-x bottom left;
+    border-bottom: 1px solid #B1CBDF;
+    text-decoration: none;
+    line-height: 32px;
+}
+
+.jmk-accordion-title-selected {
+    background:#ff7a34 url("images/tileBlueBg.png") repeat-x bottom left;
+    border-bottom: 1px solid #B1CBDF;
+    text-decoration: none;
+    line-height: 32px;
+    font-size:1.1em;
+}
+.jmk-accordion-title:hover {
+    background:#F8F8F8 url("images/tileBlueAltBg.png") repeat-x bottom left;
+}
+
+/* tab menu styles */
+
+.jm-tm-center {
+    float: left;
+    height: 18px;
+    padding-top: 7px;
+    background: url(images/tabMid.gif) repeat-x;
+}
+
+.jm-tm-link {
+    font-family:"Myriad Pro",Myriad,Arial,Helvetica,clean,sans-serif;
+}
+
+.jm-tm-center .jm-tm-link {
+    color: #111;
+}
+
+.jm-tm-center-selected {
+    height: 18px;
+    padding-top: 7px;    
+    float: left;    
+    background: url(images/tabSelectedMid.gif) repeat-x;
+    cursor: pointer;
+}
+
+.jm-tm-right {
+    float: left;
+    margin-right: 3px;
+    width: 15px;
+    height: 25px;
+    background: url(images/tabRight.gif) no-repeat;
+}
+
+.jm-tm-right-selected {
+    float: left;
+    margin-right: 3px;  
+    width: 15px;
+    height: 25px;    
+    background: url(images/tabSelectedRight.gif) no-repeat;
+}
+
+.jm-tm-left {
+    float: left;
+    margin-left: 3px;
+    width: 15px;
+    height: 25px;      
+    background: url(images/tabLeft.gif) no-repeat;
+}
+
+.jm-tm-left-selected {
+    float: left; 
+    margin-left: 3px; 
+    width: 15px;
+    height: 25px;    
+    background: url(images/tabSelectedLeft.gif) no-repeat;
+}
+
+/* tab menu styles: hover */
+
+.jm-tm-center .jm-tm-link:hover,
+.jm-tm-center-selected  .jm-tm-link:hover {
+    text-decoration: none;
+}
+
+.jm-tm-container ul li:hover .jm-tm-left {
+    float: left;
+    margin-left: 3px;
+    width: 15px;
+    height: 25px;      
+    background: url(images/tabHoverLeft.gif) no-repeat;
+}
+
+.jm-tm-container ul li:hover .jm-tm-center {
+    float: left;
+    height: 18px;
+    padding-top: 7px;
+    background: url(images/tabHoverMid.gif) repeat-x;
+}
+
+.jm-tm-container ul li:hover .jm-tm-right {
+    float: left;
+    margin-right: 3px;
+    width: 15px;
+    height: 25px;
+    background: url(images/tabHoverRight.gif) no-repeat;
+}
+
+
+/* tabbed menu bottom  border */
+.jm-tm-centered {
+    
+}
+
+.jm-tm-container {
+    border-bottom: 4px solid #2E97D4;	
+    padding-bottom:0;
+}
+
+/* bread crumbs widget */
+
+.jm-bc-center {
+    font-size : .8em;
+    background-image : url(images/bg-charcol-m.jpg);
+    background-repeat: repeat-x;       
+    float : left;
+    height: 23px;
+    padding-top:5px;
+}
+
+*html .jm-bc-center, *html .jm-bc-center-selected { padding-top:3px; } /*IE6*/
+
+*:first-child+html .jm-bc-center, *:first-child+html .jm-bc-center-selected { padding-top:3px; } /* IE7 */
+
+.jm-bc-home {
+    font-size : 1.0em;
+    background-image : url(images/bg-charcol-m.jpg);
+    background-repeat: repeat-x;       
+    float : left;
+    height : 23px;   
+    padding-top:3px; 
+    padding-left:5px;    
+    cursor : pointer;
+}
+
+.jm-bc-home-selected {
+    
+    background-image : url(images/bg-selected.gif);
+    background-repeat:repeat-x;
+    float : left;
+    font-size : 1.0em;  
+    height : 23px;   
+    padding-top:3px;      
+    padding-left:5px;
+    cursor : pointer;
+}
+
+.jm-bc-center-selected {
+    float: left;
+    background-image : url(images/bg-selected.gif);
+    background-repeat: repeat-x;       
+    font-size : .8em;
+    height : 23px;   
+    padding-top:5px;  
+    padding-left:5px;    
+    cursor : pointer;
+}
+
+.jm-bc-right {
+    float : left;
+    width : 15px;
+    height : 23px;
+    background-image : url(images/bc-separator.gif);
+    background-repeat: no-repeat;  
+    padding-right:5px;
+}
+
+.jm-bc-end {
+    float : left;
+    padding:0 0 0 5px;
+    width : 3px;
+    height : 23px;
+    background : repeat-y top right url(images/bc-end.gif);
+}
+
+.jm-bc-right-selected {
+    float : left;    
+    height : 23px;
+    width:20px;
+    background: top left no-repeat url(images/bc-separator-selected.gif);
+}
+
+.jm-bc-left-selected {
+    float: left;    
+    height: 23px;
+    width:15px;
+    background:no-repeat top right url(images/bc-separator-left-selected.gif);
+}
+
+.jm-bc-end-selected {
+    float : left;
+    padding:0;
+    padding-left:5px;
+    height : 23px;
+    width:3px;
+    background: top right repeat-y #ff7a34 url(images/bc-end-selected.gif);
+}
+
+.jm-bc-container {
+    background:#F8F8F8 url("images/tileGrayBg.png") repeat-x bottom left;
+    border: 1px solid #ff7a34; 
+    height : 23px;
+    padding:0;
+    font-family:"Myriad Pro",Myriad,Arial,Helvetica,clean,sans-serif;
+}
+
+.jm-bc-container ul {
+    margin : 0;
+    padding :0;
+    position: absolute;
+    list-style : none;
+}
+
+.jm-bc-container ul li {
+    float : left;      
+    margin : 0;
+    list-style : none;
+}
+
+/* Tag Cloud  */
+
+.jmk-tagcloud {
+    position : relative;
+    display: block;
+    padding : 0;
+    margin : 0;
+    width : auto;
+    color: #000;
+    background: #fdd7c3;
+    border: 1px solid #ff7a34;
+    font-family:"Myriad Pro",Myriad,Arial,Helvetica,clean,sans-serif;
+}
+
+.jmk-tagcloud-container {  
+    width: auto;
+    padding: 20px;
+    margin: 4px;
+    overflow :hidden;	
+    background: #FFF;
+    border: 1px solid #fc5d0a;
+}
+
+.jmk-tagcloud-tag {
+    float: left;
+    height: 35px;
+    vertical-align: bottom;
+    padding: 7px;
+    cursor: pointer;  
+    position: relative;
+    border :0;
+}
+
+.jmk-tagcloud-expander {
+    text-decoration: underline;
+    cursor: pointer;    
+    color: #FFF;
+    padding: 7px;
+    padding-bottom: 0px;
+    position : absolute;	
+    background: #ff7a34;
+}
+
+
+/* Block List  */
+
+.jmk-blocklist {
+    background: #e3edf7;
+    border: 1px solid #cddfec;
+    font-family:"Myriad Pro",Myriad,Arial,Helvetica,clean,sans-serif;
+    margin-bottom: 0;
+    padding : 0;
+}
+
+.jmk-blocklist-item {
+    color: #000;
+}
+
+.jmk-blocklist-item a {
+    text-decoration: none;
+    font-size: 16px;
+    color: #0046A2;
+}
+
+.jmk-blocklist-content {
+    margin: 4px;
+}
+
+.jmk-blocklist ul {
+    float: left;
+    width: 100%;
+    list-style : none;
+    margin: 0;
+    padding: 0;
+}
+
+.jmk-blocklist-nav {
+    color: #000;
+    font-size: .7em;
+    text-decoration: none;
+    margin: 4px;
+    padding: 0;
+    height: 23px;
+}
+
+.jmk-blocklist-nav .previous span {
+    font-size: 10px;
+    margin-right: 2px;
+}
+
+.jmk-blocklist-nav .next span {
+    font-size: 10px;
+    margin-left: 2px;
+}
+
+.jmk-blocklist-nav .previous,
+.jmk-blocklist-nav .mid,
+.jmk-blocklist-nav .next {
+    cursor: pointer;
+    float: left;
+    display: block;
+    visibility: visible !important;
+    background: #FFF;
+    border: 1px solid #B1CBDF;
+    height: 17px;
+    margin-right: 5px;
+    padding: 5px 8px 0 8px;
+    text-align: center;
+    color: #04469D;
+    /*	color: #9C9C9D;  <-- unselectable color */
+}
+
+
+.jmk-blocklist-nav .mid {
+    background: #FFF;
+    /*	color: #FFF;  <-- non current page text */	
+    /*	color: #1279c6;  <-- current page background color */		
+}
+
+/*Menu */
+
+.jmk-menu-bar {
+    height:20px;
+    font-family: "Lucida Grande",Arial,Helvetica,clean,sans-serif;
+    padding:0 0 5px 0;
+    font-size:14px;
+}
+
+.jmk-menu-top {
+    text-decoration:none;
+    margin-left:5px;
+    margin-right:5px;
+}
+
+.jmk-menu-separator {
+    width:1px;
+    margin-top : 5px;
+    height : 10px;
+    overflow:hidden;
+    margin-right:5px;
+}
+
+.jmk-menu-title {
+    background:#ff7a34 url("images/tileOrangeBg.png") repeat-x bottom left;
+    border: 1px solid #fd6616;
+}
+
+.jmk-menu-endSpacer {
+    width:0px;
+}
+
+.jmk-menu-container {
+    border:1px solid #fd6616;
+    font-size:12px;
+}
+
+.jmaki-menu-item {
+    padding:0.5em;
+}
+
+.jmk-menu-title-default {
+    color : #FFF;    
+    background:#ff7a34 url(images/tileOrangeBg.png) repeat-x bottom left;
+    border: 1px solid #fc5d0a;
+}
+
+.jmk-menu-item-default {
+    background:#ff7a34 url(images/tileOrangeBg.png) repeat-x bottom left;   
+    cursor:pointer;
+    margin:1px;
+    padding : 0.5em;
+}
+
+.jmk-menu-bg-hover{
+    cursor:pointer;
+    color : #fc5d0a;
+    background : #fdd7c3;
+    text-decoration:underline;
+}
+
+.jmk-menu-container .jmakiBackroundHover {
+    text-decoration:underline;
+}

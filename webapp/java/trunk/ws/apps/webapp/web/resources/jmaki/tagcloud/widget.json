@@ -1,0 +1,59 @@
+{"name": "Tag Cloud",
+         "type": "jmaki",
+         "version" : "1.8",
+         "jmakiVersion" : "1.8",
+         "author" : "Greg Murray",
+         "url" : "https://widgets.dev.java.net",         
+         "image" : "images/jmaki-tagcloud.jpg",
+         "description":"A configurable tag cloud.",
+         "value":{"type" : "OBJECT",
+                "defaultValue": {
+          "items" : [
+              { "label" : "jMaki", "weight" : 70},
+              { "label" : "Web2.0", "weight" : 150},
+              { "label" : "JSON", "weight" : 80},
+              { "label" : "JavaScript", "weight" : 145},
+              { "label" : "Java", "weight" : 100},
+              { "label" : "RSS", "weight" : 85},
+              { "label" : "Autocomplete", "weight" : 75},
+              { "label" : "Sun", "weight" : 65, "href" : "http://www.sun.com"},
+              { "label" : "jMaki", "weight" : 150},
+              { "label" : "Web3.0", "weight" : 70},
+              { "label" : "Phobos", "weight" : 105},
+              { "label" : "Glassfish", "weight" : 120},
+              { "label" : "RSS2.0", "weight" : 75},
+              { "label" : "Web1.0", "weight" : 50},
+              { "label" : "JavaEE", "weight" : 75},
+              { "label" : "Jersey", "weight" : 115},
+              { "label" : "Roller", "weight" : 150},
+              { "label" : "CSS", "weight" : 105},
+              { "label" : "DHTML", "weight" : 65},
+              { "label" : "Netbeans", "weight" : 115, "href" : "http://www.netbeans.com"}
+            ]
+           }
+  },
+  "hasCSS" : false,
+  "args": [
+         {"tagSelectSubType":{"type":"STRING", "defaultValue": "onSelect", "description": "The sub type of the on select publish event."}}
+         ],
+  "config" : {
+          "type" :
+           { "id" : "jmaki",
+              "themes" : [
+                   {"id" : "kame",
+                     "style" : "../resources/styles/themes/kame/theme.css"
+                   },
+                   {"id" : "ocean",
+                    "default" : true,
+                     "style" : "../resources/styles/themes/ocean/theme.css"
+                   },
+                   {"id" : "orange",
+                     "style" : "../resources/styles/themes/orange/theme.css"
+                   }
+               ],
+               "resources" : [
+                   "../resources/styles"
+               ]
+          }
+    }
+ }

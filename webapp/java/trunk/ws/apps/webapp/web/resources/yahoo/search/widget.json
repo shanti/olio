@@ -1,0 +1,29 @@
+{
+    "name": "Search",
+    "type": "yahoo",
+    "version": "1.8.1",
+    "jmakiVersion" : "1.8.1",
+    "image": "images/yahoo-search.jpg",
+    "description": "This widget lets you use Yahoo! Search to search the web or find suggested spelling for a query.",
+    "args": [
+    {"topic":{"type":"STRING", "defaultValue": "/yahoo/search", "description": "The topic published to"}},
+    {"shown":{"type":"BOOLEAN", "defaultValue": "true", "description": "Whether to show the widget controls or not"}}],
+    "config" : {
+        "type": {
+            "id" : "yahoo.search",
+            "libs": [
+            "../resources/libs/yahoo/v2.6.0/yahoo-dom-event/yahoo-dom-event.js"
+            ]
+        }
+    },
+    "topicInfo": {
+       "type": "publish",
+       "defaultPublish": "/yahoo/search",
+       "events": [
+       {"name": "onSearchWeb",
+       "description":"This publishes to its topicName when searchWeb function is called an object with id and value. The value is {results} for onSearchWeb. See Yahoo JSON Search documentation for more information."},
+       {"name": "onSuggestSpell",
+       "description":"This publishes to its topicName when suggestSpell function is called an object with id and value. The value is {result} for onSuggestSpell."}
+       ]
+    }    
+}

@@ -1,0 +1,43 @@
+{
+    "name": "AutoComplete",
+    "type": "yahoo",
+    "version": "1.8.1", 
+    "jmakiVersion" : "1.8.1",
+    "image": "images/yahoo-autocomplete.jpg",
+    "docs" : {
+    	"modelURL" : "http://wiki.java.net/bin/view/Projects/jMakiComboxModel"
+    }, 
+    "description": "Autocomplete widget.",
+    "args": [
+     ],
+     "value": {
+         "required":"true",
+         "type": "ARRAY",
+         "defaultValue": [
+                              {"label" : "Alabama", "value" : "AL"},
+                              {"label" : "California", "value" : "CA"},
+                              {"label" : "New York", "value" : "NY", "selected" : true},
+                              {"label" : "Texas", "value" : "TX"}	           
+                              ]
+     },
+     "config" : {
+         "type": {
+             "id" : "yahoo.autocomplete",
+             "libs": [ 
+             "../resources/libs/yahoo/v2.6.0/yahoo-dom-event/yahoo-dom-event.js",
+             "../resources/libs/yahoo/v2.6.0/connection/connection-min.js",
+             "../resources/libs/yahoo/v2.6.0/datasource/datasource-min.js",
+             "../resources/libs/yahoo/v2.6.0/autocomplete/autocomplete-min.js"]
+         }
+     },
+       "topicInfo": {
+       "defaultPublish" : "/yahoo/autocomplete",       "defaultSubscribe" : ["/yahoo/autocomplete"],
+      "commands" : [
+          {"name" : "setValues",
+          "description" : "Clears the list and sets the values to the values provided."},
+          {"name" : "select",
+          "description" : "The Label of the item provided will be set as the value of the text field."
+          }
+        ],       "events" : [           {"name" :  "onSelect",           "description" : "publish the value of the selected item"}         ]    }
+
+}

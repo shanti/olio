@@ -1,0 +1,81 @@
+/*Menu */
+
+.jmk-menu-title {
+  width : 100%;
+}
+
+.jmk-menu-bar {
+    height:14px;
+    font-family: "Lucida Grande",Arial,Helvetica,clean,sans-serif;
+    padding:0 0 5px 0;
+    font-size:12px;
+    color : #FFF;
+}
+
+.jmk-menu-endSpacer{
+    height:12px;
+    width:35px;
+}
+
+.jmk-menu-separator{
+    color : #FFF;
+    margin-top: 5px;
+    width: 6px;
+    list-style : none;  
+    margin-left: 3px;
+    float : right;
+}
+
+.jmk-menu-top-item{
+    
+    text-align : left;
+    position: absolute;
+    cursor:pointer;
+}
+
+.jmk-menu-top-hover {
+    padding : 0;
+    margin : 0;
+    float:right;
+    margin-top: 2px;
+    list-style : none;
+    text-decoration:underline;    
+    margin-left:5px;
+    margin-right:5px;
+    cursor:pointer;
+}
+
+.jmk-menu-top {
+    padding : 0;
+    margin : 0;
+    float:right;
+    margin-top: 2px;
+    list-style : none;  
+    text-decoration:none;
+    margin-left:5px;
+    margin-right:5px;
+    cursor:pointer;
+}
+
+.jmk-menu-separator {
+    width:1px;
+    height : 6px;
+    border-right:1px solid #fff;
+    overflow:hidden;
+    margin-right:5px;
+}
+
+.jmk-menu-endSpacer {
+    width:0px;
+}
+
+.jmk-menu-container { 
+    list-style : none;
+    background:#fff;
+    padding : 3px;
+    position: absolute;
+    z-index:9999;
+    width:90px;
+    display:none;
+    font-size:12px;
+}

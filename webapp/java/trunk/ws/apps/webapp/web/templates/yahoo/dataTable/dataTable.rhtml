@@ -1,0 +1,26 @@
+
+<%#
+  #  The Ruby version of jMaki is currently missing proxy functionality.
+  #  Until it can be implemented, this widget has functionality more
+  #  limited than documented for other platforms.  Please see the
+  #  release notes for details. This functionality will be enabled in 
+  #  the next major release.
+  #
+%>
+
+
+
+<%= jmaki_widget 'yahoo.dataTable',
+:value =>
+{:columns => [
+     { :label => 'Title', :id => 'title'},
+     { :label =>'Author', :id => 'author'},
+     { :label => 'ISBN', :id => 'isbn'},
+     { :label => 'Description', :id => 'description'}
+     ],
+  :rows => [
+     { :title => 'Book Title 1', :author => 'Author 1', :isbn => '4412', :description => 'A Some long description'},
+     { :id => 'bar', :title => 'Book Title 2', :author => 'Author 2', :isbn => '4412', :description => 'A Some long description'}
+     ]
+  }
+-%>

@@ -1,0 +1,18 @@
+/*
+Style the Button instance's label as a square whose background color 
+represents the current value of the ColorPicker instance.
+*/
+.current-color {
+    display: block;
+    display: inline-block;
+    *display: block;    /* For IE */
+    margin-top: .5em;
+    *margin: .25em 0;    /* For IE */
+    width: 1em;
+    height: 1em;
+    overflow: hidden;
+    text-indent: 1em;
+    background-color: #fff;
+    white-space: nowrap;
+    border: solid 1px #000;
+}

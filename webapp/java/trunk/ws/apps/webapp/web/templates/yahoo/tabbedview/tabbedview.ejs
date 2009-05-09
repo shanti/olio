@@ -1,0 +1,11 @@
+<% library.jmaki.insert(
+    {
+      component : 'yahoo.tabbedview',
+     value : {
+         items:[
+           {label : 'My Tab', content : 'Some Content'},
+           {id : 'bar', label : 'My Tab 2', include : 'test.js', lazyLoad : true},
+           {label : 'My Tab 3', content : 'Tab 3 Content', selected : true}
+            ]
+             }
+    }); %>

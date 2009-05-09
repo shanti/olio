@@ -1,0 +1,14 @@
+<div id="${uuid}" style="display:none;">
+    <input type="text" id="${uuid}_query" value="ajax">
+    <select id="${uuid}_num">
+        <option value="5" selected>5</option>
+        <option value="10">10</option>
+        <option value="20">20</option>
+    </select>
+    <input type="button" value="Y! Search" 
+           onclick="jmaki.attributes.get('${uuid}').searchWeb();"/>
+    <input type="button" value="Y! Spelling Suggest" 
+           onclick="jmaki.attributes.get('${uuid}').suggestSpelling();"/>
+    <br/>
+    <div id="${uuid}_results"></div>
+</div>

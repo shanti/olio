@@ -1,0 +1,30 @@
+{"name": "Dynamic Container",
+         "type": "jmaki",
+         "version" : "1.8",
+         "jmakiVersion" : "1.8",
+         "author" : "Greg Murray",
+         "url" : "https://widgets.dev.java.net",         
+         "image" : "images/jmaki-dcontainer.jpg",
+         "docs" : {        	  "modelURL" : "http://wiki.java.net/bin/view/Projects/JMakiMultiViewContainerDataModel",   	       "jsDoc" : "http://jmaki.dev.java.net/jsdoc/jmaki_menu"   		},
+         "description": "This widget is will go up and retrieve conent directly from the client. No proxy configuration necessary.",
+         "args": [
+         	{"include":{"type":"STRING", "description": "The url containing the contents you want to include."}},
+         {"content":{"type":"STRING", "description": "The  static content you want to include."}}
+         	],
+        "topicInfo": {
+       "defaultPublish" : "/jmaki/dcontainer",       "defaultSubscribe" : ["/jmaki/dcontainer", "/tabbedview"],
+      "commands" : [
+          {"name" : "setInclude",
+          "description" : "Load data that is expected to be external to the page and is reference by passing a URL"},
+          {"name" : "setContent",
+          "description" : "Load data that is pass directly to the widget. "},
+          {"name" : "select",
+          "description" : "Set the view that is identified by the targetId to be visible."
+          },
+          {"name" : "clear",
+          "description" : "Clears the content."
+          }
+      ],       "events" : [           {"name" :  "onSelect",           "description" : "publish the id of the selected item"}         ]    }
+ }
+ 
+ 

@@ -1,0 +1,47 @@
+{"name": "Carousel",
+         "type": "jmaki",
+         "version" : "1.8",
+         "jmakiVersion" : "1.8",
+         "author" : "Greg Murray",
+         "url" : "https://ajax.dev.java.net",         
+         "image" : "images/jmaki-carousel.jpg",
+         "description": "This widget allows you to scroll through a set of items.",
+         "args": [
+            {"theme":
+              {"type":"STRING",
+               "description" : "The theme. Will override global theme for this widget.",
+               "values": [
+                  {"name" : "Kame",   "value" : "kame", "description" : "Green."},
+                  {"name" : "Ocean",   "value" : "ocean", "description" : "Blue theme."},
+                  {"name" : "Orange",   "value" : "orange", "description" : "Orange theme."}
+                ],
+                "defaultValue": "ocean"
+             }
+            },         
+           {"scrollCarousel":{"type":"BOOLEAN", "defaultValue": true, "description": "Turn on autoscrolling."}},
+           {"showNavigation":{"type":"BOOLEAN", "defaultValue": true, "description": "Show bottom navigation."}},
+           {"itemCount":{"type":"NUMBER", "defaultValue": 5, "description": "Maximum number items to use."}},  
+           {"increment":{"type":"NUMBER", "defaultValue": 25, "description": "Number of pixels to jump when scrolling."}},           
+           {"scrollTimeout":{"type":"NUMBER", "defaultValue": 5000, "description": "Pause time between scrolling."}},
+           {"maxLength":{"type":"NUMBER", "defaultValue": 3000, "description": "Maximum length of a posting."}}
+             ],
+            "value":{"type" : "OBJECT",
+                "defaultValue":
+                [
+        {"title" : "jMaki Project Home", "link" : "https://ajax.dev.java.net", "description" : "Where to go for the latest jMaki." },
+        {"title" : "jMaki Widgets Home", "link" : "https://widgets.dev.java.net", "description" : "The source for the latest jMaki widgets." },
+        {"title" : "jMaki-Charting Home", "link" : "https://jmaki-charting.dev.java.net", "description" : "Enables complex charts rendered on the client in any modern browser." },
+        {"title" : "jMaki-Charting Home", "link" : "https://jmaki.com", "description" : "The place that ties it all together." }
+    ]
+    },
+    "topicInfo": {
+       "defaultPublish" : "/jmaki/carousel",       "defaultSubscribe" : ["/jmaki/carousel"],
+       "description":"on onclick event publish to /jmaki/carousel topic passing the cooresponding string for the menu item if the active property is used.  If the href property is used then navigation goes to the URL represented by that cooresponding string.",
+      "commands" : [
+          {"name" : "clear",
+          "description" : "Clear the carousel"},
+          {"name" : "setItems",
+          "description" : "Set the items in the carousel to the values specific"
+          }
+      ],       "events" : [           {"name" :  "onClick",           "description" : "publish the value of the selected node"}         ]    }
+ }

@@ -1,0 +1,63 @@
+{"name": "Bread Crumbs",
+ "type": "jmaki",
+ "version" : "1.8",
+ "jmakiVersion" : "1.8",
+ "author" : "Greg Murray",
+ "url" : "https://widgets.dev.java.net",         
+ "image" : "images/jmaki-breadCrumbs.jpg",
+ "description":"An single level menu following the jMaki menu model.",
+ "docs" : {	"modelURL" : "http://wiki.java.net/bin/view/Projects/jMakiMenuDataModel",    "jsDoc" : "http://jmaki.dev.java.net/jsdoc/jmaki_breadCrumbs"
+    },
+    "value":{"type" : "OBJECT",
+           "defaultValue":
+           {"menu" : [
+                { "label" : "Sample",
+                "action" :
+                [
+                  {"topic": "/myview/select",
+                   "message": { "targetId" : "bar"}},
+                  {"topic": "/myview/setInclude",
+                   "message": { "targetId" : "bar", "value" : "bar.jsp"}}
+                   ]
+                },
+                { "label" :"Documentation",
+                "action" :{"topic": "/myview/setInclude",
+                "message": { "targetId" : "bar", "value" : "p2.jsp"}}
+                },
+                  { "label" :"Code",
+                "action" :{"topic": "/myview2/select",
+                "message": { "targetId" : "p3"}}
+                }
+               ]
+           }
+      },
+      "config" : {
+          "type" :
+           { "id" : "jmaki",
+              "themes" : [
+                   {"id" : "kame",
+                    "default" : true,
+                     "style" : "../resources/styles/themes/kame/theme.css"
+                   },
+                   {"id" : "ocean",
+                    "style" : "../resources/styles/themes/ocean/theme.css"
+                   },
+                   {"id" : "orange",
+                     "style" : "../resources/styles/themes/orange/theme.css"
+                   }
+               ],
+               "resources" : [
+                   "../resources/styles"
+               ]
+          }  
+     },
+    "topicInfo": {
+     "defaultPublish" : "/jmaki/breadCrumbs",     "defaultSubscribe" : ["/jmaki/breadCrumbs"],
+     "description":"on onclick event publish to /jmaki/breadCrumbs topic passing the cooresponding string for the bread crumb item.",
+     "commands" : [
+          {"name" : "select",
+          "description" : "Select the item"
+          }
+     ],     "events" : [           {"name" :  "onClick",           "description" : "publish the value of the selected item"}     ]
+   }
+ }

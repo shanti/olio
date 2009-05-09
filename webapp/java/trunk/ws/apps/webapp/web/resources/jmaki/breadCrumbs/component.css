@@ -1,0 +1,19 @@
+.jm-bc-center .jm-bc-link:hover {
+  text-decoration: underline;
+}
+
+.jm-bc-center-selected .jm-bc-link:hover {
+  text-decoration: underline;
+}
+
+.jm-bc-center .jm-bc-link {
+  cursor: pointer;
+  color : #2f2f2f;
+  text-decoration: none;
+}
+
+.jm-bc-center-selected .jm-bc-link {
+  cursor: pointer;
+  color : #fff;
+  text-decoration: none;
+}

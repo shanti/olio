@@ -1,0 +1,66 @@
+{
+ "name": "Accordion Menu",
+ "type": "jmaki",
+ "version" : "1.8",
+ "jmakiVersion" : "1.8",
+ "author" : "Greg Murray",
+ "url" : "https://widgets.dev.java.net",         
+ "image" : "images/jmaki-accordion-menu.jpg",
+ "docs" : {
+     "modelURL" : "http://wiki.java.net/bin/view/Projects/jMakiMenuDataModel",
+ },
+ "description":"An single level menu following the jMaki menu model.",
+ "value":{"type" : "OBJECT",
+        "defaultValue":
+        {"menu" : [
+             { "label" : "My Sites",
+             "action" :
+             [
+               {"topic": "/myview/select",
+                "message": { "targetId" : "bar"}},
+               {"topic": "/myview/setInclude",
+                "message": { "targetId" : "bar", "value" : "bar.jsp"}}
+                ],
+                "menu" : [
+                    { "label" : "jMaki.com", "href" : "http://jmaki.com"},
+                    { "label" : "jMaki Developer Site", "href" : "https://ajax.dev.java.net"},
+                    { "label" : "Ajaxian", "href" : "http://ajaxian.com"}
+                ]
+             },
+             { "label" :"Documentation",
+             "action" :{"topic": "/myview/setInclude",
+             "message": { "targetId" : "bar", "value" : "p2.jsp"}}
+             },
+               { "label" :"Code",
+             "action" :{"topic": "/myview2/select",
+             "message": { "targetId" : "p3"}}
+             }
+            ]
+        }
+  },
+  "hasCSS" : false,
+  "config" : {
+   "type" :
+       { "id" : "jmaki",
+          "themes" : [
+               {"id" : "kame",
+                 "style" : "../resources/styles/themes/kame/theme.css"
+               },
+               {"id" : "ocean",
+                 "default": true,               
+                 "style" : "../resources/styles/themes/ocean/theme.css"
+               },
+               {"id" : "orange",
+                 "style" : "../resources/styles/themes/orange/theme.css"
+               }
+           ],
+           "resources" : [
+               "../resources/styles"
+           ]
+      }  
+    },
+    "topicInfo": {
+       "defaultPublish" : "/jmaki/accordionMenu",
+       "description":"on onclick event publish to /jmaki/accordionMenu topic passing the cooresponding string for the menu item selected.",       "events" : [           {"name" :  "onClick",           "description" : "publish the value of the selected item"}        ]
+    }       
+}

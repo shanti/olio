@@ -1,0 +1,30 @@
+{
+    "name": "Weather",
+    "type": "yahoo",
+    "version": "1.0",
+    "jmakiVersion" : "1.8",
+    "image": "images/yahoo-weather.jpg",
+    "description": "This widget lets you find the weather forecast using Yahoo Weather RSS feed.",
+    "args": [
+    {"location":{"type":"STRING", "defaultValue": "94089", "description": "The location for the forcast."}},
+    {"unit":{
+       "type":"STRING", "defaultValue": "c",
+       "values" : [
+         { "name" : "Celsius", value : "c", "description" : "Temperature in celcius."},
+         { "name" : "Farenheit", value : "f", "description" : "Temperature in farenheit."}
+      ],
+      "description": "The location for the forcast."}},
+    {"showConfig":{"type":"BOOLEAN", "defaultValue": false, "description": "Whether to show the widget form."}}
+    ],
+    "topicInfo": {
+       "defaultPublish": "/yahoo/weather/",
+       "defaultSubscribe": "/yahoo/weather/",
+       "commands": [
+       {"name": "getForecast", "description": "Get the forecast of the location passed in (city or zipcode).  Optionally can specify if the return value should be in Celsius (c) or Fahrenheit(f)"}
+       ],
+       "events": [
+       {"name": "onChange",
+       "description":"This publish to its topicName when getForecast is called. Publish an object with id and value. The value is {success, data: { ok, lastUpdated, city, region, country, temparature_unit, distance_unit, pressure_unit, speed_unit, chill,direction,speed,humidity,visibility,pressure,rising, sunrise,sunset,latitude,longitude, forecast: [{date,text,code,temparature},{day,date,text,code,low,high}+]}}"}
+       ]
+    }    
+}

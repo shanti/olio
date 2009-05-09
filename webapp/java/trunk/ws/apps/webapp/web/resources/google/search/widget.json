@@ -1,0 +1,56 @@
+{"name": "Search",
+         "type": "Google",
+         "version": "1.8.1",
+         "jmakiVersion" : "1.8.1",         
+         "image" : "images/google-search.jpg",
+         "description": "A configurable search component.",
+         "args": [
+           {"showWebSearch":{"type":"BOOLEAN", "defaultValue": true, "description": "Show web search results."}},
+           {"showNewsSearch":{"type":"BOOLEAN", "defaultValue": true, "description": "Show news search results."}},
+           {"showBlogSearch":{"type":"BOOLEAN", "defaultValue": false, "description": "Show blog search results."}},
+           {"showImageSearch":{"type":"BOOLEAN", "defaultValue": false, "description": "Show image search results."}},
+           {"showBookSearch":{"type":"BOOLEAN", "defaultValue": false, "description": "Show book search results."}},
+           {"showVideoSearch":{"type":"BOOLEAN", "defaultValue": false, "description": "Show video search results."}},
+           {"showLocalSearch":{"type":"BOOLEAN", "defaultValue": false, "description": "Show local search results."}},
+           {"defaultSearch" : {
+             "type":"STRING", 
+             "description" : "The default search value."
+             }
+           }
+         ],
+         "config" : {
+             "type" : {
+                  "id": "google.map",
+                  "apikey" : "google"
+                },
+         "apikeys" : [
+           {"id": "google", "keys": [
+                        {"url": "http://localhost:3000/",
+                     "key": "ABQIAAAAyEQwWkLnhtibmBGdNd7jrBTJQa0g3IQ9GZqIMmInSLzwtGDKaBTBJNVRUL7-ClkkvrYjRgYCxRzgfg"
+                     },        
+                    {"url": "http://localhost/",
+                     "key": "ABQIAAAAyEQwWkLnhtibmBGdNd7jrBT2yXp_ZAY8_ufC3CFXhHIE1NvwkxRvP3_IZHyjXX94-rCTiuxmYeGQ9g"
+                     },   
+                    {"url": "http://localhost:8080/",
+                     "key": "ABQIAAAAyEQwWkLnhtibmBGdNd7jrBTwM0brOpm-All5BF6PoaKBxRWWERSE9HbFrfC3qz1xdiSml249wpOibA"
+                     },
+                    {"url" : "http://localhost:8888/",
+                    "key" : "ABQIAAAAyEQwWkLnhtibmBGdNd7jrBTb-vLQlFZmc2N8bgWI8YDPp5FEVBRvQXpq7gkjNd3TJLZPPh3tV7BD7A"
+                    },
+                    {"url" : "http://localhost:8084/",
+                    "key" : "ABQIAAAAyEQwWkLnhtibmBGdNd7jrBTFRfqDGOwfXAlOK-54sJyR4NNS5RTlVk2wm8p_8xaiZbGfRrggljudNw"
+                    },
+                    {"url" : "http://127.0.0.1/",
+                    "key" : "ABQIAAAAyEQwWkLnhtibmBGdNd7jrBRi_j0U6kJrkFvY4-OX2XYmEAa76BQy1Kzr6fIOg47q143rky3NvV22NA"
+                    },
+                    {"url" : "http://127.0.0.1:8001/",
+                    "key" : "ABQIAAAAyEQwWkLnhtibmBGdNd7jrBSGVe95GGoMBsAFkzQCETZHVe6XWhQ3xyr_DQg-DBs0zLcmqOrV7RBGmA"
+                    },
+                    {"url" : "http://jmaki.com/jmaki/cl-mashup/",
+                    "key" : "ABQIAAAAyEQwWkLnhtibmBGdNd7jrBRo0HO-KLrzLZTqz6TJKgsZxFOWmhRA5usD8qGp3gftsu_6QWkw8iB8jg"
+                    }
+              ]
+         }     
+     ]  
+   }         
+ }

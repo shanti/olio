@@ -1,0 +1,35 @@
+.jm-tm-container {
+  height : 25px;
+  margin: 0 auto;
+  padding-bottom : 2px;
+}
+
+.jm-tm-container ul {
+  margin : 0;
+  padding :0;
+  position: absolute;
+  list-style : none;
+}
+
+.jm-tm-container ul li {
+ float : left;      
+  margin : 0;
+  list-style : none;
+}
+
+.jm-tm-centered {
+  margin-right : auto;
+  margin-left :auto;
+  height : 25px;
+}
+
+
+.jm-tm-link:hover {
+  text-decoration: underline;
+}
+
+.jm-tm-link {
+  cursor: pointer;
+  color : white;
+  text-decoration: none;
+}

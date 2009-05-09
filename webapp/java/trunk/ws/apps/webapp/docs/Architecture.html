@@ -1,0 +1,294 @@
+<!--
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
+  <title>Architecture Document</title>
+</head>
+<body>
+<h1>Architecture Document</h1>
+<h2>Security</h2>
+The first thing we tried is to use the form based login functionality
+that is available from the web container.&nbsp; After prototyping the
+functionality, we found that the model was lacking do to the fact that
+you could only trigger the login page if you accessed a protected
+resource.&nbsp;&nbsp; One of our goals was to provide a more vibrant
+user experience and use Ajax functionality to facilitate the login
+whether accessing a protected resource or not.&nbsp; We tried using a
+iframe to help trigger the web container to allow a form to be
+submitted to j-security-check, but this was problematic when
+considering how to handle an invalid login due to browser
+incompatibilities when accessing an ifame's resultant document. Talking
+with our web container team, they told me that a login api will be part
+of the next revision of the servlet specification and be in Java EE
+6.&nbsp; If the login api was available we would have been able to
+utilize the form based login.<br>
+<br>
+We decided to use full programmatic security that is implemented in the
+form of a servlet filter intercepting each request.&nbsp; The request's
+URI will be compared with a preset data set to determine whether the
+resource is protected or not.&nbsp; We will also use groups to
+determine whether a user is an administrator or not.&nbsp; If the user
+is an administrator, they can edit any information in case
+inappropriate items have been submitted.&nbsp; There will also be a
+third level of authentication to verify that the user has rights to
+edit/update the object. <br>
+<br>
+<img alt="Security Sequence" title="Security Sequence"
+ src="images/securitySequence.jpg" style="width: 650px; height: 712px;"><br>
+<br>
+<br>
+There are two scenarios we need to cover.&nbsp; When a non-protected
+resource is being access and when a protected resource is access.&nbsp;
+For this purpose a resource is a jsp or servlet that is accessed
+through a URI.&nbsp; The URI is what is marked as protected or
+not.&nbsp; The two scenarios that are shown above in the sequence
+diagram is as follows:<br>
+<br>
+<span style="font-weight: bold;">Accessing a non-protected resource:</span><br>
+<ul>
+  <li>&nbsp;The resource is requested</li>
+  <li>&nbsp;The entryFilter uses the security class(es) to check if the
+resource is protected</li>
+  <li>&nbsp;The entryFilter continues to serve the request</li>
+</ul>
+<br>
+<span style="font-weight: bold;">Accessing a protected resource:</span><br>
+<ul>
+  <li>The resource is requested</li>
+  <li>The entryFilter uses the security class(es) to check if the
+resource is protected</li>
+  <li>If the user isn't logged in then the login.jsp page is returned
+to the user with a hidden field that holds the original URI of the
+request.</li>
+  <li>The login information is submitted, the entryFilter uses the
+security class(es) to verify the login information.&nbsp; If the
+information is valid then the request continues.&nbsp; If the
+information is invalid then the login.jsp page is presented again
+showing and appropriate error and allows the user to try to login again.</li>
+  <li>The target resource can optionally use the security class(es) to
+verify that the person logged in has rights to alter the object.&nbsp;
+This could happen in the case where and event or personal data is being
+edited.&nbsp; If the logged in user doesn't have access to the object,
+then the error page is shown to the user.&nbsp; If the user does have
+access
+to the object then the request continues.&nbsp; Also, the create,
+update and delete actions have to be protected.<br>
+  </li>
+</ul>
+<br>
+<span style="font-weight: bold;">Ajax Interactions:</span><br>
+The Ajax interactions with the server needed to take into account that
+the client controls the processing.&nbsp; If a user submits an Ajax
+request that violates the security constraints the client will have to
+forward the user to the login page.&nbsp; The login page still comes
+back as the response, but the XMLHttpRequest doesn't operate like a
+regular browser and doesn't render the returned page.&nbsp; The fact
+that the login page is returned should circumvent any one trying to
+hack the application by submitting a request directly to the
+ControllerServlet because the request will not be accepted and the
+login page will be displayed.&nbsp; For the XMLHttpRequest handling a
+"NeedLogin" Response Header was added&nbsp; for performance reasons so
+the response data wouldn't have to be parsed.&nbsp; For example, to
+submit an attendee to an event, the user has to be logged in, if not,
+the entryFilter will use the security classes to determine that the url
+is protected, that the user isn't logged in and then set the response
+header and return the login page.&nbsp; The code below depicts the
+client side code that looks for the response header and forwards the
+user to the login page as expected.<br>
+<br>
+<br>
+<pre><code><br>    function addAttendeeCallback(type, data, evt) {<br>        // check successful response<br>        if (evt.readyState == 4) {<br>            if (evt.status == 200) {<br>               <span
+ style="color: rgb(51, 51, 255);"> if(evt.getResponseHeader("NeedLogin")) {</span><br
+ style="color: rgb(51, 51, 255);"><span style="color: rgb(51, 51, 255);">                    window.location="${pageContext.request.contextPath}/login.jsp?accessingURL=" + </span><br
+ style="color: rgb(51, 51, 255);"><span style="color: rgb(51, 51, 255);">                        escape("/eventDetail.jsp?socialEventID=" + ${socialEvent.socialEventID});</span><br>                } else {<br>                    // process dojo ajax response<br><br><br></code></pre>
+The sequence diagram below shows the actual interactions, step by step:<br>
+<br>
+<img alt="Ajax Security Sequence" title="Ajax Security Sequence"
+ src="images/ajaxSecuritySequence.jpg"
+ style="width: 652px; height: 710px;"><br>
+<br>
+<br>
+<span style="font-weight: bold;">Protecting Artifacts:</span><br>
+When considering protecting uploaded artifacts to be accessed by a
+user's list of friends, the artifact will need to be able to be
+identified without hitting the database for performance reasons.&nbsp;
+If not, every uploaded artifact will need to access the database to see
+if it is protected.&nbsp; A special access URI for the protected
+artifacts would be a logically choice.&nbsp; For example, unprotected
+artifacts could be stored directly in the "artifact" directory and
+protected artifacts could be stored in the "artifact/protected"
+directory.&nbsp; This way we will have to restrict the artifacts that
+have "/protected" on the URI.&nbsp; Restricting a resource will include
+making sure the accessors is logged in and that the person is in the
+submitters list of friends.<br>
+<br>
+If we also provide the functionality to allow a submitter to restrict
+events to be only visible by the friends list, we will need to add a
+column to the event object to track this information.&nbsp; Also,
+before the request to view the event is served, the action/page will
+have to make sure the user is logged in and is part of the submitters
+friends list.<br>
+<br>
+<br>
+<h2>Fileupload</h2>
+The fileupload approach is a version taken from the JavaServer Faces
+(JSF) component that exists in the BluePrints Solutions Catalog.&nbsp;
+The fileupload utilizes the Apache Commons FileUpload libraries to
+digest the multi-part mime data that is uploaded from a HTML form
+submission with a encoding type of "multipart/form-data".&nbsp; The
+idea was to use as much of the existing code as possible and create a
+re-usable library for developers who didn't want to use JSF.&nbsp; <br>
+<br>
+Since the all the entries submitted in the form are encoded in
+multi-mime format, a mechanism needed to be devised so a developer
+could access the digested data to perform custom operations like
+persistence.&nbsp; The mechanism also had to be versatile to
+accommodate varying data type that could be submitted in a HTML
+form.&nbsp; For this reason a Hashtable was used to store the data that
+is submitted in the form, which is returned to the developer so custom
+operations could be performed.&nbsp; The key to the Hashtable is the
+name of&nbsp; the input field being submitted and the value of the
+Hashtable is the value string of the submission.&nbsp; This approach
+follows the same methodology as the ServletRequest uses with the
+getParameter method.&nbsp; If any fields with the type of "file" are
+submitted then there is an additional entry added to the
+Hashtable.&nbsp; One with the key of the field name and the value of
+the file being uploaded and another with the key of the field name
+concatenated with&nbsp;
+com.sun.javaee.blueprints.webapp.fileupload.FileUploadUtil.FILE_LOCATION_KEY,
+this value is set to the fully qualified path of the file on
+disk.&nbsp; This Hashtable is returned from the
+FileUploadHandler.handleFileUpload Method and is to be used by the
+developer to implement custom functionality like persistence.<br>
+<br>
+The fileupload classes also have an interface for monitoring the upload
+that is in progress.&nbsp; These method formulates a XML document that
+is sent in the response of the request for status. If an Object version
+of the status is required a session Object of type
+com.sun.javaee.blueprints.webapp.fileupload.FileUploadStatus is
+available under the key
+com.sun.javaee.blueprints.webapp.fileupload.FileUploadUtil.FILE_UPLOAD_STATUS
+while the download is progressing.<br>
+<br>
+Accompanying the fileupload's server side classes is a Javascript
+library that facilitates the submission of the form, polling of the
+status to update a&nbsp; progress bar and the submitting of the final
+request for status.&nbsp; To compensate for a Dojo component bug where
+the response of the Ajax request submitting the form can't be
+consistently read depending on the browser that the person is using, a
+second Ajax request is sent to get the final status of the upload once
+the upload has completed.&nbsp; This second request is initiated from
+the Ajax callback function of the Ajax request. submitting the form.<br>
+<br>
+<br>
+<img alt="FileUpload Sequence" title="FileUpload Sequence"
+ src="images/fileuploadSequence.jpg"
+ style="width: 957px; height: 714px;"><br>
+<br>
+<br>
+The fileupload sequence depicted above that the application uses is as
+follow:<br>
+<ul>
+  <li>An Ajax request encoded in multi-part mime format is sent to the
+entities specific fileupload action.</li>
+  <li>The action forwards the request to the fileupload classes.<br>
+  </li>
+  <li>The fileupload classes digest the uploaded data using Apache's
+Commons Fileupload libraries</li>
+  <li>A Hashtable of uploaded data is returned to the action and it is
+used to update the database using the ModelFacade</li>
+  <li>The request is finished and no response is returned.</li>
+  <li>The Ajax request's callback function is invoked and another Ajax
+request is sent to get the final status if the upload.</li>
+  <li>The action forwards the request to the fileupload classes</li>
+  <li>A XML document is returned in the response and optionally,
+presented to the user.<br>
+  </li>
+</ul>
+<br>
+During the above interaction, a second Ajax request is polling for
+status if a progress bar is enabled using the fileupload's client
+libraries.&nbsp; The interaction is as follows:<br>
+<ul>
+  <li>An Ajax request is sent to the specific entities action classes</li>
+  <li>The action forwards the request to the fileupload classes.</li>
+  <li>A XML document is returned in the response and the progress bar
+is updated</li>
+  <li>When the above interaction finishes, this polling is discontinued
+and the progress bar is hidden</li>
+</ul>
+<br>
+<br>
+<br>
+<h2>Event Persistance</h2>
+<br>
+Persisting Events to the database has to take into account that
+data/times need to be displayed in a user's timezone.&nbsp; To fulfill
+this requirement, we stored the date/time of the event in a
+java.sql.timestamp converted to the UTC (GMT) timezone.&nbsp; This way
+all stored dates are in the same timezone.&nbsp; When the timestamps
+are display in a web page, the "http://java.sun.com/jsp/jstl/fmt" tag
+library can be used to diplay the timestamp in its proper format, for
+example:<br>
+<br>
+&nbsp;&nbsp;&nbsp; &lt;fmt:formatDate dateStyle="full" timeStyle="full"
+type="both" value="${socialEvent.eventTimestamp}"
+timeZone="${param['timezone']}"/&gt;&lt;br/&gt;<br>
+<br>
+The timestamp of when the event was created will also be stored for
+sorting purposes.<br>
+<br>
+<span style="font-weight: bold;">Adding Attendees:</span><br>
+To add attendees to an event a button is used that invokes an Ajax
+request to the EventRestAction.&nbsp; Since the action is protected,
+the user must first be logged in, to be able to submit the
+request.&nbsp; The button to add an attendee is only shown if the user
+is logged in and isn't already listed as an attendee to the
+event.&nbsp; Once the attendee button is click an Ajax request is sent
+to the server with the response being a JSON object that is populated
+with all the attendees of the event.&nbsp; So in the case where
+multiple people add themselves after your eventDetail page is rendered,
+the list will be updated to reflect the current list of attendees.<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+</body>
+</html>

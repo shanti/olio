@@ -1,0 +1,44 @@
+{
+    "name": "RGB Slider",
+    "type": "yahoo",
+    "version": "1.8.1", 
+    "jmakiVersion" : "1.8.1",
+    "image": "images/yahoo-rgbslider.jpg",
+    "description": "An RGB/HSV color slider widget.",
+    "args":  [ 
+         {"sliderType":{"type":"STRING", "defaultValue": "RGB", "values": [
+         {"name" : "RGB", "value" : "RGB", "description" : "RGB slider."},
+         {"name" : "HSV", "value" : "HSV", "description" : "HSV slider."}
+     ]}}
+     ],
+     "config" : {
+         "type": {
+             "id" : "yahoo.rgbslider",
+             "libs": [
+             "../resources/libs/yahoo/v2.6.0/yahoo-dom-event/yahoo-dom-event.js",
+             "../resources/libs/yahoo/v2.6.0/animation/animation-min.js",
+             "../resources/libs/yahoo/v2.6.0/dragdrop/dragdrop-min.js",
+             "../resources/libs/yahoo/v2.6.0/slider/slider-min.js",
+             "../resources/libs/yahoo/v2.6.0/element/element-beta-min.js",
+             "../resources/libs/yahoo/v2.6.0/container/container_core-min.js",
+             "../resources/libs/yahoo/v2.6.0/button/button-min.js"
+             ],
+             "styles": [
+             "../resources/libs/yahoo/v2.6.0/fonts/fonts-min.css",
+             "../resources/libs/yahoo/v2.6.0/button/assets/skins/sam/button.css"],
+	    "resources": [
+                "../resources/libs/yahoo/v2.6.0/assets",
+                "../resources/libs/yahoo/v2.6.0/button/assets"]        
+         }
+     },
+    "topicInfo": {
+       "type": "publish",
+       "defaultPublish": "/yahoo/rgbslider",
+       "events" : [ 
+       {"name": "onRGBChange",
+       "description":" publish to the topicName when the rgb color has changed by the user. Publish an object with id and value where value is {r,g,b}."},
+       {"name": "onHSVChange",
+       "description":"publish to the topicName when the hsv color has changed by the user. Publish an object with id and value where value is {h,s,v}."}
+       ]
+    }
+}

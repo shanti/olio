@@ -1,0 +1,62 @@
+{
+    "name": "Simple Dialog",
+    "type": "yahoo",
+    "version": "1.8.1", 
+    "jmakiVersion" : "1.8.1",
+    "image": "images/yahoo-simpledlg.jpg",
+    "description": "A simple dialog widget that is easy to use.",
+    "hasCSS" : false, 
+    "args": [
+    {"topic":{"type":"STRING", "defaultValue": "/yahoo/simpledlg", "description": "The topic published to"}},
+    {"width":{"type":"STRING", "defaultValue": "300px", "description": "dialog width"}},
+    {"fixedcenter":{"type":"BOOLEAN", "defaultValue": true, "description": "is it centered?"}},
+    {"header":{"type":"STRING", "defaultValue": "Header Text", "description": "dialog header text"}},
+    {"text":{"type":"STRING", "defaultValue": "Body Text", "description": "dialog body text"}},
+    {"draggable":{"type":"BOOLEAN", "defaultValue": true, "description": "is draggable?"}},
+    {"visible":{"type":"BOOLEAN", "defaultValue": true, "description": "is visible at startup?"}},
+    {"close":{"type":"BOOLEAN", "defaultValue": true, "description": "has a close button?"}},
+    {"modal":{"type":"BOOLEAN", "defaultValue": false, "description": "is modal?"}},
+    {"constraintoviewport":{"type":"BOOLEAN", "defaultValue": true, "description": "is constrained to viewport?"}},
+    {"icon": {
+         "type":"STRING", 
+         "defaultValue": "INFO", 
+         "description": "Icon type",
+         "values": [
+         {"value": "ALARM", "description": "standard network icon for alarm"},
+         {"value": "BLOCK","description": "standard network icon for a blocking action"},
+         {"value": "HELP","description": "standard network icon for help"},
+         {"value": "INFO","description": "standard network icon for info"},
+         {"value": "TIP","description": "standard network icon for a tip"},
+         {"value": "WARN","description": "standard network icon for warning"}]
+     }}
+    ],
+    "value": {
+        "required":"true",
+        "type": "OBJECT",
+        "defaultValue":{
+        }
+    },    
+    "config" : {
+        "type": {
+            "id" : "yahoo.simpledlg",
+            "libs": [
+            "../resources/libs/yahoo/v2.6.0/yahoo-dom-event/yahoo-dom-event.js",
+            "../resources/libs/yahoo/v2.6.0/animation/animation-min.js",
+            "../resources/libs/yahoo/v2.6.0/dragdrop/dragdrop-min.js",
+            "../resources/libs/yahoo/v2.6.0/container/container-min.js"],
+            "styles": [
+            "../resources/libs/yahoo/v2.6.0/fonts/fonts-min.css",
+            "../resources/libs/yahoo/v2.6.0/container/assets/container.css"],
+	    "resources": [
+                "../resources/libs/yahoo/v2.6.0/container/assets"],        
+        }
+    },
+    "topicInfo": {
+       "type": "publish",
+       "defaultPublish": "/yahoo/simpledlg",
+       "events" :[
+       {"name" : "onClick",
+       "description":"onClick publishes to the topicName when the a dialog button is clicked and the dialog is hidden. It publishes an object with id and value and the value is simply a {label}."}
+       ]
+    }
+}

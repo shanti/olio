@@ -1,0 +1,1 @@
+<a:widget name="yahoo.editor" value="Edit me" />

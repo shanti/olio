@@ -1,0 +1,30 @@
+/* CSS for horizontal slider */
+.hsliderbg {
+    position: relative;
+    background: url(assets/bg-h.gif) 5px 0 no-repeat;
+    height: 28px;
+    display: none;
+}
+.hsliderthumb {
+    cursor: default;
+    position: absolute;
+    top: 4px;
+}
+/* CSS for vertical slider */
+.vsliderbg {
+    position: relative;
+    background: url(assets/bg-v.gif) 0px 0 no-repeat;
+    width: 24px;
+    display: none;
+}
+.vsliderthumb {
+    cursor: default;
+    position: absolute;
+}
+/*button current slider value*/
+.bslidercurrval {
+    width: 2em;
+    font-style: normal;
+    display: block;
+    text-align: center;
+}

@@ -1,0 +1,21 @@
+<%= jmaki_widget 'yahoo.menu',
+    :value => {
+      :menu => [
+        { :label => 'Slashdot', :url => 'http://www.slashdot.org' },
+        { :label => 'dev.java.net',
+          :menu => [
+            { :label => 'jMaki', :url => 'http://ajax.dev.java.net' },
+            { :label => 'Glassfish', :url => 'http://glassfish.dev.java.net' }
+          ]
+        },
+        { :label => 'Click me for fun',
+          :style => { :strongemphasis => true } },
+        { :label => 'Disabled',
+          :style => { :disabled => true } },
+        { :label => 'Yahoo!', :url => 'http://www.yahoo.com'},
+        { :label => 'Sun Microsystems', :url => 'http://www.sun.com',
+          :style => { :checked => true } },
+        { :label => 'Oracle', :url => 'http://www.oracle.com' }
+      ]
+    }
+-%>

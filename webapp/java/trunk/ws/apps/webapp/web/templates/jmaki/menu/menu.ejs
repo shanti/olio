@@ -1,0 +1,26 @@
+<% library.jmaki.insert(
+    {
+    component : "jmaki.menu" ,
+    value : {  menu : [
+       {label: 'Some Label',
+            menu: [
+                { label : 'Some Item',
+                  href : 'http://www.sun.com'},
+                { label : 'Some Item 2',
+                  href : 'http://www.jmaki.com'}
+                ]
+       },
+       {label: 'Some Other Label',
+            menu: [
+                { label : 'Some Other Item',
+                  href :'http://www.java.sun.com'
+                },
+                { label :'Some Other Item 2',
+                  action :{topic: '/foo/select',
+                         message: { targetId : 'bar'}}
+                }
+                ]}
+                ]
+       }
+          
+    }); %>

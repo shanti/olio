@@ -1,0 +1,14 @@
+{
+    "name": "Geocoder",
+    "type": "yahoo",
+    "version": "1.0",
+    "jmakiVersion" : "1.0",
+    "image": "images/yahoo-geocoder.jpg",
+    "description": "This widget lets you find geocordinates using the XMLHttpProxy using the Yahoo Geocoder service.",
+    "args": [
+    {"topic":{"type":"STRING", "defaultValue": "/yahoo/geocoder", "description": "The topic published to"}}],
+    "topicInfo": {
+       "defaultPublish": "/yahoo/geocoder/onGeocode",
+       "events" : [           {"name" :  "onGeocode",           "description" : "publishes to its topicName when getCoordinates is called (via button or jmaki function call). It publishes an object with id and value. The value is has the following structure {success,results}. results is {latitude,longitude,address,city,state,zip}"}         ]
+    }
+}

@@ -1,0 +1,29 @@
+<div id="${uuid}">
+    <form id="${uuid}_form" style="display:none" onsubmit="jmaki.getWidget('${uuid}').getForecast();return false;">
+        <table>
+            <tr>
+                <td>
+                    <b>Location ID/Zipcode:</b>
+                </td>
+                <td colspan="2">
+                    <input style="width:150px" type="text" id="${uuid}_location" value="94089">
+                </td>
+            </tr>
+            <tr>
+            <td>        
+                <b>Unit:</b>
+            </td>
+            <td >
+                <select id="${uuid}_unit">
+                    <option value="f">Fahrenheit</option>
+                    <option value="c">Celsius</option>
+                </select>
+
+            </td>
+            <td>
+                <input type="submit" value="Get Forecast"/>
+            </td>
+        </table>
+    </form>
+    <div id="${uuid}_results"></div>
+</div>

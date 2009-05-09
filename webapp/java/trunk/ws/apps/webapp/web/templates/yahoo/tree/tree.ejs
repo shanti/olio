@@ -1,0 +1,20 @@
+<% library.jmaki.insert(
+    {
+      component : 'yahoo.tree',
+        value :{
+        root : {
+           title : 'Yahoo Tree Root Node',
+           expanded : true,
+           children : [
+             { title : 'Node 1.1'},
+             { title : 'Node 1.2',
+                 children : [
+                   { title : 'Node 3.1',
+                     action : { topic : '/foo/select', message : {targetId : 'bar'}}
+                   }
+                 ]
+             }
+            ]
+          }
+        }
+    }); %>

@@ -1,0 +1,39 @@
+{
+  "name": "Block List",
+  "type": "jmaki",
+  "version": "1.8",
+  "jmakiVersion" : "1.8",
+  "author" : "Greg Murray",
+  "image" : "images/jmaki-blockList.jpg",           
+  "url" : "https://widgets.dev.java.net",    
+  "description": "A highly customizable list of block components you can customize.",
+  "docs" : {"jsDoc" : "http://jmaki.dev.java.net/jsdoc/jmaki_blockList"   		},
+  "args": [
+         {"showNavigation":{"type":"BOOLEAN", "defaultValue": "true", "description": "Whether or not to show navigation arrows when pagging is available."}},
+         {"count":{"type":"NUMBER", "defaultValue": 3, "description": "The number of blocks to display at any given time."}}
+         ],
+         "config" : {
+          "type" :
+           { "id" : "jmaki",
+              "themes" : [
+                   {"id" : "kame",
+                     "style" : "../resources/styles/themes/kame/theme.css"
+                   },
+                   {"id" : "ocean",
+                    "default" : true,                   
+                     "style" : "../resources/styles/themes/ocean/theme.css"
+                   },
+                   {"id" : "orange",
+                     "style" : "../resources/styles/themes/orange/theme.css"
+                   }
+               ],
+               "resources" : [
+                   "../resources/styles"
+               ]
+          }  
+    },
+    "topicInfo": {
+       "defaultPublish" : "/jmaki/blocklist",       "defaultSubscribe" : [ "/jmaki/blocklist"],
+       "description":"This widget currently does not publish any events and subscribes to any commands."
+    }
+}

@@ -1,0 +1,17 @@
+<style type="text/css">
+/* Hide controls/swatches for the ColorPicker instance. */
+#${uuid}_overlay .yui-picker-controls,
+#${uuid}_overlay .yui-picker-swatch,
+#${uuid}_overlay .yui-picker-websafe-swatch {
+    display: none;
+}
+</style>
+<span class="yui-skin-sam">
+    <div id="${uuid}_div"
+         style="display:none;position:relative;width:450px;height:195px;">
+        <!-- Color picker widget goes here -->
+    </div>
+    <!-- Color picker button goes here -->
+    <input type="button" id="${uuid}_btn" name="${uuid}_btn"
+        value="" style="display:none;"/>
+</span>

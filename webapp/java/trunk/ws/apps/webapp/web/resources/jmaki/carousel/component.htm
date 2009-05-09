@@ -1,0 +1,19 @@
+<div id="${uuid}" class="jmk-carousel">
+    <div id="${uuid}_scrollpane" class="jmk-carousel-content">
+        <div id="${uuid}_content" class="jmk-carousel-content-scroller">
+    </div>
+    </div>
+<div id="${uuid}_nav" class="jmk-carousel-nav" style="display:none">
+        <div id="${uuid}_mid" class="jmk-carousel-mid"></div>
+</div>
+
+<div id="${uuid}_template" style="display:none"><div  class="jmk-carousel-item">
+        <div class="jmk-carousel-title"><a href="@{link}" target="_top">@{title}</a></div>
+        <div class="jmk-carousel-item-content" id="${uuid}_item_@{id}">
+            @{body}
+        </div>
+        <div class="jmk-posted">Posted : @{date}</div>
+    </div>
+</div>
+
+</div>
