@@ -42,3 +42,16 @@ This product includes the Whalin memcached client:
 * Copyright (c) 2007, Greg Whain
 * All rights reserved.
 
+This product includes the Dojo javascript library:
+Copyright (C) 2003-2004 Lawrence E. Rosen. All rights reserved.
+
+This product includes the Google javascript library:
+Copyright (c) 2009 google.com
+
+This product includes the Yahoo javascript library:
+Copyright (c) 2009, Yahoo! Inc.
+All rights reserved
+
+
+
+

@@ -19,7 +19,7 @@
 package org.apache.olio.webapp.util;
 
 import org.apache.olio.webapp.util.fs.FileSystem;
-import org.apache.olio.webapp.util.fs.hadoop.HadoopFileSystem;
+//import org.apache.olio.webapp.util.fs.hadoop.HadoopFileSystem;
 import org.apache.olio.webapp.util.fs.local.LocalFileSystem;
 import java.io.IOException;
 import java.util.Properties;
@@ -143,12 +143,14 @@ public class ServiceLocator {
                     fs = new LocalFileSystem();
                     cache.put(cacheKey, fs);
                 }
+                /* commenting this out for now 
                 else if (fileSystemName.equalsIgnoreCase("hadoop")) {
                     Properties props = new Properties();
                     props.put(HadoopFileSystem.FS_NAME, System.getProperty (HadoopFileSystem.FS_NAME));
                     fs = new HadoopFileSystem (props);
                     cache.put(cacheKey, fs);
                 }
+                */ 
                 else {
                     throw new IOException ("FileSystem - " + fileSystemName + " is not supported");
                 }
