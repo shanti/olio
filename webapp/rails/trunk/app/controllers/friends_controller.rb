@@ -49,6 +49,7 @@ class FriendsController < ApplicationController
     respond_to do |format|
       if flash[:error].blank?
         flash[:notice] = "Friendship requested"
+        expire_fragment ("events/friend_requests/#{@target.id}")
         format.html { redirect_to(search_users_path) }
         format.js { render :layout => false }
       else
@@ -72,6 +73,7 @@ class FriendsController < ApplicationController
         decrement_friendship_requests
         generate_friend_cloud @user.friends
         flash[:notice] = 'Friendship approved.'
+        expire_fragment ("events/friend_requests/#{@target.id}")
       else
         flash[:error] = 'Friendship could not be approved.'
       end
@@ -118,6 +120,7 @@ class FriendsController < ApplicationController
       
       if @user.unfriend(@target)
         flash[:notice] = confirmation_msg
+        expire_fragment ("events/friend_requests/#{@target.id}")
         decrement_friendship_requests if @friend_action =~ /^reject/i
         generate_friend_cloud @user.friends if @friend_action =~ /^remove/i
       else

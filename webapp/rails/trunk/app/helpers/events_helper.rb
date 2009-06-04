@@ -22,11 +22,11 @@ module EventsHelper
     if logged_in?
       attending = @attendees.find { |u| u.id == session[:user_id] }
       if attending
-        links += form_remote_tag :url => unattend_event_path(event), :method => :post, :html => {:method => :post}
+        links += form_remote_tag :url => unattend_event_path(event.id), :method => :post, :html => {:method => :post}
         links += submit_tag "Unattend"
         links += "</form>"
       else
-        links += form_remote_tag :url => attend_event_path(event), :method => :post, :html => {:method => :post}
+        links += form_remote_tag :url => attend_event_path(event.id), :method => :post, :html => {:method => :post}
         links += submit_tag "Attend"
         links += "</form>"
       end
@@ -65,4 +65,13 @@ module EventsHelper
     text_field_tag 'zipcode', "#{zip}"
   end
   
+  def my_event?(event_id)
+    event = Event.find_by_id(event_id)
+    if !session[:user_id].nil? && event.user_id == session[:user_id]
+      return true;
+    else
+      return false;
+    end
+  end
+
 end

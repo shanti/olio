@@ -30,7 +30,7 @@
 	// Set map type to either of: YAHOO_MAP_SAT, YAHOO_MAP_HYB, YAHOO_MAP_REG
 	map.setMapType(YAHOO_MAP_REG);
 	// Display the map centered on a geocoded location
-	map.drawZoomAndCenter("<%= "#{@address.street1} #{@address.street2} #{@address.city} #{@address.state} #{@address.zip} #{@address.country}" %>", 4);
+	map.drawZoomAndCenter("<%= "#{@event.address.street1} #{@event.address.street2} #{@event.address.city} #{@event.address.state} #{@event.address.zip} #{@event.address.country}" %>", 4);
 </script>
 <script type="text/javascript">
 	map.addOverlay(new YMarker(map.getCenterLatLon()));

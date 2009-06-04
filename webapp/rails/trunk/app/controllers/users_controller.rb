@@ -19,7 +19,7 @@ class UsersController < ApplicationController
   
   before_filter :authorize, :except => [ :new, :create, :login, :check_name, :show ]
   layout "site"
-    
+
   # GET /users
   # GET /users.xml
   def index
@@ -176,7 +176,11 @@ class UsersController < ApplicationController
         session[:original_uri] = nil
         
         flash[:notice] = "Successfully logged in!"
-        redirect_to(uri || events_path)
+        if CACHED
+          redirect_to(uri || home_path)
+        else
+          redirect_to(uri || events_path)
+        end
       else
         user = nil
         params[:email] = nil

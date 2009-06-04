@@ -26,49 +26,51 @@ class EventsController < ApplicationController
 
   MAX_ATTENDEES = 20
   
-  # caches_page :index
+  if CACHED
+    after_filter :expire_home, :only => :index
+    after_filter :expire_calendar, :only => :update_calendar
+    after_filter :expire_tag, :only => :tag
+
+    # caches_page :index, {:expire => 2.minutes.to_i}
+    cache_sweeper :event_sweeper, :only => [:create, :destroy, :update]
+  end
     
   ### CRUD Actions ######################################################## 
   
   # GET /events
   # GET /events.xml
-  def index
-    unless params[:month].nil? and params[:day].nil? and params[:year].nil?
-      date = Date.parse("#{params[:month]}/#{params[:day]}/#{params[:year]}")
-    end
-    @zipcode = params[:zipcode] ? params[:zipcode] : session[:zipcode] # Update zipcode filter if changed by the user
-    session[:zipcode] = @zipcode # Store the new zipcode filter in the user's session
-    
-    @date = Date.parse(date.to_s) unless date.nil?  
-    session[:date] = @date
-    
-    conditions = @date ? "event_date = '#{@date}'" : "event_date >= '#{Date.today}'"
-
-    session[:order] = params[:order] || session[:order] || 'event_date'
-      
-    @events = Event.paginate :page => params[:page], :conditions => conditions, :order => session[:order], :per_page => 10
-    if @zipcode and !@zipcode.empty?
-      @events.delete_if { |e| e.address.zip != @zipcode }
-    end
-      
-    @tags = Event.top_n_tags(50)
-
-    respond_to do |format|
-      format.html # index.html.erb
-      format.js # index.js.rjs
-      format.xml  { render :xml => @events }
+  def home
+    if CACHED and !session[:user_id].nil?
+      do_index_page
+      respond_to do |format|
+        format.html { render :template => "events/index.html.erb" } # index.html.erb
+        format.js { render :template => "events/index.js.rjs", :layout => false } # index.js.rjs
+        format.xml  { render :xml => @events }
+      end
+    else
+      redirect_to(root_path)
     end
   end
   
+  # "home" = root page for those not logged in
+  def index
+    if !CACHED or session[:user_id].nil?
+      do_index_page
+      respond_to do |format|
+        format.html # index.html.erb
+        format.js  # index.js.rjs
+        format.xml { render :xml => @events }
+      end
+    else
+      redirect_to(home_path)
+    end
+  end
+
   # GET /events/1
   # GET /events/1.xml  
   def show
-    @event = Event.find(params[:id], :include => [:image, :document, {:comments => :user }, :address])
-    @address = @event.address
-    @attendees = attendee_list(@event, MAX_ATTENDEES)
-    @image = @event.image
-    @document = @event.document
-    @comments = @event.comments
+    @event = lazy { Event.find(params[:id], :include => [:image, :document, {:comments => :user }, :address]) }
+    @attendees = lazy { attendee_list(@event, MAX_ATTENDEES) }
     @comment = Comment.new
     @comment.rating = 0
     respond_to do |format|
@@ -154,14 +156,13 @@ class EventsController < ApplicationController
         @event.attributes = params[:event]
         @event.set_date
         @address.attributes = params[:address]
-        @geolocation = Geolocation.new(@address.street1, @address.city, @address.state, @address.zip)
-        @address.longitude = @geolocation.longitude
-        @address.latitude = @geolocation.latitude
         @address.save!
         
         @event.image = Image.make_from_upload(params[:event_image], @event.id) if new_image?
         @event.document = Document.make_from_upload(params[:event_document], @event.id) if new_document?
-        
+        @geolocation = Geolocation.new(@address.street1, @address.city, @address.state, @address.zip)
+        @address.longitude = @geolocation.longitude
+        @address.latitude = @geolocation.latitude
         @event.save! # must come after all other updates
         
         set_tags(@event)
@@ -178,7 +179,6 @@ class EventsController < ApplicationController
         format.xml  { render :xml => @event.errors, :status => :unprocessable_entity }
       end
     end
-    
   end
   
   # DELETE /events/1
@@ -250,6 +250,7 @@ class EventsController < ApplicationController
           flash[:error] = "You are already attending #{@event.title}"
         else
           @event.new_attendee(user)
+          expire_attendees
           flash[:notice] = "You are attending #{@event.title}"
         end
         session[:upcoming] = user.upcoming_events.map { |e| e.id }
@@ -272,6 +273,7 @@ class EventsController < ApplicationController
           flash[:error] = "You are not attending #{@event.title}"
         else
           @event.remove_attendee(user) 
+          expire_attendees
           flash[:notice] = "You are no longer attending #{@event.title}"
         end
         session[:upcoming] = user.upcoming_events.map { |e| e.id }
@@ -304,6 +306,7 @@ class EventsController < ApplicationController
   
   # GET /events/update_calendar (AJAX)
   def update_calendar
+    expire_fragment(:controller => "events", :part => "default_calendar")
     respond_to do |format|
       format.html { redirect_to(root_path) } 
       format.js
@@ -313,6 +316,29 @@ class EventsController < ApplicationController
   
   private #################################################################################### 
   
+  def do_index_page
+    unless params[:month].nil? and params[:day].nil? and params[:year].nil?
+      date = Date.parse("#{params[:month]}/#{params[:day]}/#{params[:year]}")
+    end
+
+    @zipcode = params[:zipcode] ? params[:zipcode] : session[:zipcode] # Update zipcode filter if changed by the user
+    session[:zipcode] = @zipcode # Store the new zipcode filter in the user's session
+  
+    @date = Date.parse(date.to_s) unless date.nil?
+    session[:date] = @date
+  
+    conditions = @date ? "event_date = '#{@date}'" : "event_date >= '#{Date.today}'"
+
+    session[:order] = params[:order] || session[:order] || 'event_date'
+
+    @events = lazy { Event.paginate :page => params[:page], :conditions => conditions, :order => session[:order], :per_page => 10,  :include => [:address, :image] }
+    if @zipcode and !@zipcode.empty?
+      @events.delete_if { |e| e.address.zip != @zipcode }
+    end
+
+    @tags = lazy { Event.top_n_tags(50) }
+  end
+
   def check_creator(event_user_id, action)
     if event_user_id != session[:user_id]
       flash[:error] = "You can only #{action} events you created"
@@ -345,4 +371,26 @@ class EventsController < ApplicationController
     users
   end
   
+  # CACHING - methods to expire fragments
+
+  def expire_home
+    expire_page(root_path)
+  end
+
+  def expire_calendar
+    expire_fragment(:controller => "events", :part => "default_calendar")
+  end
+
+  def expire_tag
+    unless session.nil?
+      expire_fragment(:controller => 'events', :action => 'index', :part => 'tag_cloud')
+    end
+    expire_page(root_path)
+  end
+
+  def expire_attendees
+    expire_fragment(:controller => "events", :action => "show", :id => @event.id, :part => "event_attendees")
+    expire_fragment(:controller => "events", :action => "show", :id => @event.id, :part => "event_attendees", :login => true)
+  end
+
 end

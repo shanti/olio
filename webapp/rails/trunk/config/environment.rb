@@ -22,11 +22,15 @@
 ENV['RAILS_ENV'] ||= 'production'
 
 # Specifies gem version of Rails to use when vendor/rails is not present
-# RAILS_GEM_VERSION = '2.1.2' unless defined? RAILS_GEM_VERSION
+# RAILS_GEM_VERSION = '2.2.2' unless defined? RAILS_GEM_VERSION
 
 # Bootstrap the Rails environment, frameworks, and default configuration
 require File.join(File.dirname(__FILE__), 'boot')
 require 'hodel_3000_compliant_logger'
+
+CACHED = false
+MEMCACHED = false
+CACHE_SERVER = 'localhost'
 
 IMAGE_STORE_PATH = 'public/uploaded_files'
 DOCUMENT_STORE_PATH = 'public/uploaded_files'
@@ -42,6 +46,7 @@ Rails::Initializer.run do |config|
 
   # Add additional load paths for your own custom dirs
   # config.load_paths += %W( #{RAILS_ROOT}/extras )
+  config.load_paths += %W( #{RAILS_ROOT}/app/sweepers )
 
   # Force all environments to use the same logger level
   # (by default production uses :info, the others :debug)
@@ -87,8 +92,8 @@ end
 # Include your application configuration below
 require 'uploadable'
 require 'will_paginate'
+require 'lazy'
 #require RAILS_ROOT + '/test/selenium_helper' if defined? SeleniumOnRails::FixtureLoader
 
 require 'geolocation'
 Geolocation.url = 'http://localhost:8080/geocoder/geocode?appid=gsd5f'
-

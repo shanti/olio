@@ -17,38 +17,43 @@
  * 
 -->
 <div id="event_header">
-  <div id="event_thumbnail"><%= thumbnail(@image) %></div>
-
-  <div id="main_event_details">
-    <h1 class="inline"><%=h @event.title %></h1> <%= edit_delete_links(@event) %>
-    <hr />
-    <%= output_date(@event.event_timestamp) %><br />
-    <br />
-  	<% unless @document.nil? -%>
-  		<%= link_to 'Event Literature', @document.public_filename %>
-  	<% end -%>
+  <% cache({:controller => "events", :action => "show", :id => params[:id], :part => "main_event_details", :creator => (session[:user_id])}, {:expire => 30.seconds.to_i}) do -%>
+  end
+    <div id="event_thumbnail"><%= thumbnail(@event.image) %></div>
+    <div id="main_event_details">
+      <h1 class="inline"><%=h @event.title %></h1> <%= edit_delete_links(@event) %>
+      <hr />
+      <%= output_date(@event.event_timestamp) %><br />
+      <br />
+    	<% unless @event.document.nil? -%>
+  		<%= link_to 'Event Literature', @event.document.public_filename %>
+    	<% end -%>
 	
   	<br />
-    <div id="event_address">
-      <%=h @address.street1 %><br />
-      <% unless @address.street2.nil? or @address.street2.empty? -%>
-        <%=h @address.street2 %><br />
-      <% end -%>
-      <%=h @address.city %>, <%=h @address.state %> <%=h @address.zip %><br />
-      <%=h @address.country %>
+      <div id="event_address">
+        <%=h @event.address.street1 %><br />
+        <% unless @event.address.street2.nil? or @event.address.street2.empty? -%>
+          <%=h @event.address.street2 %><br />
+        <% end -%>
+        <%=h @event.address.city %>, <%=h @event.address.state %> <%=h @event.address.zip %><br />
+        <%=h @event.address.country %>
+      </div>
+      Contact: <span id="event_contact"><%=h @event.telephone %></span><br />
     </div>
-    Contact: <span id="event_contact"><%=h @event.telephone %></span><br />
-  </div>
+  <% end -%>
   <div class="clr"></div>
 </div>
 
-<div id="event_attendees">
-  <%= render :partial => 'attendees' %>
-</div>
+<% cache({:controller => "events", :action => "show", :id => params[:id], :part => "event_attendees", :login => !session[:user_id].nil?}, {:expire => 30.seconds.to_i}) do -%>
+  <div id="event_attendees">
+    <%= render :partial => 'attendees' %>
+  </div>
+<% end -%>
 
+<% cache({:controller => "events", :action => "show", :id => params[:id], :part => "event_description"}, {:expire => 30.seconds.to_i}) do -%>
 <div id="event_description">
-	<p><strong>Summary</strong></p>
-	<p><%= @event.summary %></p>
+  	<p><strong>Summary</strong></p>
+  	<p><%= @event.summary %></p>
 	<p><strong>Description</strong></p>
   <p><%= @event.description %></p>
 </div>
@@ -66,6 +71,7 @@
   </div>
   <div class="clr"></div>
 </div>
+<% end -%>
 
 <div id="event_comments">
   <%= render :partial => 'comments/list' %>

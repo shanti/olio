@@ -33,15 +33,13 @@
         <%= zipcode_filter(@zipcode) %>
         <br />
         
-        <% unless @events.empty? -%>
           <% unless @date -%>
 						Sort: 
-           	<%= created_at_radio_button %>
-            Created Date
+         	<%= created_at_radio_button %>
+          Created Date
             
-            <%= event_date_radio_button %>
-            Event Date
-          <% end -%>
+          <%= event_date_radio_button %>
+          Event Date
         <% end -%>
         <% if @date -%>
           <input type="hidden" name="month" value="<%= month %>" />
@@ -75,8 +73,10 @@
 <div id="tag_cloud">
   <h2 class="tight_heading">Tag Cloud</h2>
   <div>
+  <% cache(:action => 'index', :part => 'tag_cloud') do -%>
     <% tag_cloud_items(@tags).each do |link| -%>
     	<%= link %>
     <% end -%>
+  <% end -%>
   </div>
 </div>

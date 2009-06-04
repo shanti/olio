@@ -21,6 +21,8 @@ class CommentsController < ApplicationController
   before_filter :validate_event
   layout "site"
   
+  after_filter :expire_comment, :only => [:create, :destroy, :update]
+
   # GET /events/1/comments
   def index
     @comments = Comment.find_all_by_event_id(params[:event_id])
@@ -168,4 +170,8 @@ class CommentsController < ApplicationController
     end
   end
   
+  def expire_comment
+    expire_fragment(:controller => "events", :action => "show", :id => @comment.event_id, :part => "event_comments")
+  end
+
 end

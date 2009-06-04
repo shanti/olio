@@ -82,7 +82,7 @@ module ApplicationHelper
   #depends on calling controller having a tagged action, defaults to events_controller
   def tag_cloud_items(tags, target_controller = 'events')
     links = []
-    tag_cloud_font_sizes tags do |name, font_size|
+    tag_cloud_font_sizes(tags) do |name, font_size|
       link = link_to name, {:controller => target_controller, :action => 'tagged', :tag => name}, {:style => font_size}
       links << link
     end
