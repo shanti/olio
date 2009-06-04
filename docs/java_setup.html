@@ -6,6 +6,8 @@
 
 
 
+
+  
   
   
   
@@ -15,9 +17,12 @@
 
 
 
+
   
 
 
+  
+  
   
   
   
@@ -32,6 +37,8 @@
 
 
 
+
+  
   
   
   
@@ -42,6 +49,8 @@
 
 
 
+
+  
   
   
   
@@ -52,6 +61,8 @@
 
 
 
+
+  
   
   
   
@@ -62,6 +73,8 @@
 
 
 
+
+  
   
   
   
@@ -76,13 +89,16 @@
 
 
 
+
 <h1 align="center">Olio/Java<br>
 
 
 
 
 
+
 Install and Setup Guide From Source Tree</h1>
+
 
 
 
@@ -96,13 +112,16 @@ memcached related setup instructions</span><br>
 
 
 
+
 </p>
 
 
 
 
 
+
 <h2>Overview</h2>
+
 
 
 
@@ -116,13 +135,16 @@ components:</p>
 
 
 
+
 <ol>
 
 
 
 
 
+
   <li>
+    
     
     
     
@@ -133,13 +155,16 @@ components:</p>
 
 
 
+
   </li>
 
 
 
 
 
+
   <li>
+    
     
     
     
@@ -150,13 +175,16 @@ components:</p>
 
 
 
+
   </li>
 
 
 
 
 
+
   <li>
+    
     
     
     
@@ -168,13 +196,16 @@ servers (MogileFS or localFS)</p>
 
 
 
+
   </li>
 
 
 
 
 
+
   <li>
+    
     
     
     
@@ -186,13 +217,16 @@ database (for MogileFS)</p>
 
 
 
+
   </li>
 
 
 
 
 
+
   <li>
+    
     
     
     
@@ -203,7 +237,9 @@ database (for MogileFS)</p>
 
 
 
+
   </li>
+
 
 
 
@@ -214,7 +250,9 @@ database (for MogileFS)</p>
     
     
     
+    
     <p>Workload driver</p>
+
 
 
 
@@ -226,7 +264,9 @@ database (for MogileFS)</p>
 
 
 
+
 </ol>
+
 
 
 
@@ -247,6 +287,7 @@ measured do not include arbitrary delays.</p>
 
 
 
+
 <p>For a horizontally scaled workload, or to measure the
 performance of the individual components, you can deploy the SUT
 components on separate physical or virtual machines. &nbsp;Keep in
@@ -254,7 +295,9 @@ mind though that the
 bulk of cpu is spent in the application server component.&nbsp;<br>
 
 
+
 <br>
+
 
 
 Java Olio is available either as a kit, or by downloading the source.
@@ -262,7 +305,9 @@ Java Olio is available either as a kit, or by downloading the source.
 either by <a href="#Extracting_the_Contents">Extracting the Contents</a>, or by <a href="#Downloading_The_Source">Downloading the source</a>.<br>
 
 
+
 <br>
+
 
 
 
@@ -275,10 +320,14 @@ needed to configure each component :</p>
 
 
 
+
 <a href="#Extracting_the_Contents">Extracting the Contents</a><br>
+
 <br>
+
 <a href="#Downloading_The_Source">Downloading the source</a>
 <p><a href="#setupDriver">Setting up the driver</a></p>
+
 
 
 
@@ -291,7 +340,9 @@ Application</a></p>
 
 
 
+
 <p><a href="#setupDB">Setting up the database</a></p>
+
 
 
 
@@ -303,7 +354,9 @@ Application</a></p>
 
 
 
+
 <p><a href="#setupFileStore">Setting up the filestore</a></p>
+
 
 
 
@@ -316,8 +369,10 @@ Server</a></p>
 
 
 
+
 <p><a href="#setupEmulator">Setting up the Geocoder
 Emulator</a></p>
+
 
 
 
@@ -329,7 +384,9 @@ Emulator</a></p>
 
 
 
+
 <p><a href="#startRun">Starting a benchmark run</a></p>
+
 
 
 
@@ -342,7 +399,9 @@ Software:</h2>
 
 
 
+
 <ul>
+
 
 
 
@@ -355,8 +414,10 @@ SE 6</a></li>
 
 
 
+
   <li><a href="http://ant.apache.org/">Apache
 Ant&nbsp;</a></li>
+
 
 
 
@@ -369,8 +430,10 @@ an open source revision control system</li>
 
 
 
+
   <li><a href="http://faban.sunsource.net/">Faban</a>
 a facility for developing and running benchmarks.</li>
+
 
 
 
@@ -382,7 +445,9 @@ a facility for developing and running benchmarks.</li>
 
 
 
+
   <li>Java Persistence API (JPA) provider - eg. <a href="http://www.eclipse.org/eclipselink/">Eclipselink</a></li>
+
 
 
 
@@ -394,13 +459,17 @@ a facility for developing and running benchmarks.</li>
 
 
 
+
 </ul>
+
 
 
 <h2><a name="Extracting_the_Contents"></a>Extracting the Contents</h2>
 
 
+
 <br>
+
 
 
 The Olio/Java kit is packaged as a gzipped tar file. The first task is
@@ -408,94 +477,126 @@ to unzip the file and untar it to extract it's contents. Because of the
 long pathnames, please use gtar to extract. This can be done as follows:<br>
 
 
+
 <br>
+
 
 
 # gzcat olio-java-&lt;version&gt;.tar.gz | gtar xvf -<br>
 
 
+
 <br>
+
 
 
 This will cause a directory named olio-java-&lt;version&gt; to be created whose contents should look like:<br>
 
 
+
 <br>
+
 
 
 # ls olio-java-0.1*<br>
 
 
+
 <br>
+
 
 
 LICENSE JavaOlioDriver.jar RELEASE-NOTES-java-0.1.txt geocoder.war Java_setup.html<br>
 
 
+
 <br>
+
 
 
 NOTICE olioJava/ release<br>
 
 
+
 <br>
+
 
 
 #<br>
 
 
+
 <br>
+
 
 
 We will use $JAVA_OLIO_HOME to designate the name of this directory. A description of the contents follows :<br>
 
 
+
 <br>
+
 
 
 <ul>
 
 
-  <li>&nbsp;The oliojava directory contains the web application. This
-application will be deployed on the webserver. &nbsp;This oliojava/<br>
+
+  <li>&nbsp;The <span style="font-style: italic;">oliojava</span> directory contains the web application. This
+application will be deployed on the webserver. <br>
+    <br>
+
 
 
   </li>
 
 
-  <li>&nbsp;JavaOlioDriver.jar contains the load generator/driver
-(which we typically refer to simply as driver). The driver is
-implemented using Faban, an open source benchmarking toolkit.<br>
+
+  <li>&nbsp;<span style="font-style: italic;">JavaOlioDriver.jar</span> contains the load generator/driver
+(which we typically refer to simply as <span style="font-style: italic;">driver</span>). The driver is
+implemented using <a href="http://sunsource.faban.net">Faban</a>, an open source benchmarking toolkit.<br>
+
 
 
     <br>
 
 
+
   </li>
 
 
-  <li>geocoder.war contains the simple servlet used to emulate the geocoder.<br>
+
+  <li><span style="font-style: italic;">geocoder.war</span> contains the simple servlet used to emulate the geocoder.<br>
+
 
 
     <br>
 
 
-  </li>
-
-
-  <li>java_setup.html is this document.<br>
-
 
   </li>
 
 
-  <li>release contains the release name. LICENSE and NOTICE contain the licenses.<br>
+
+  <li><span style="font-style: italic;">java_setup.html</span> is this document.<br>
+    <br>
+
 
 
   </li>
+
+
+
+  <li><span style="font-style: italic;">release</span> contains the release name. LICENSE and NOTICE contain the licenses.<br>
+
+
+
+  </li>
+
 
 
 </ul>
+
 
 
 
@@ -508,7 +609,9 @@ The Source</h2>
 
 
 
+
 <span style="text-decoration: underline; font-weight: bold;"></span><br>
+
 
 
 
@@ -524,13 +627,16 @@ follows :<br>
 
 
 
+
 <br>
 
 
 
 
 
+
 <ul>
+
 
 
 
@@ -548,13 +654,16 @@ webapp/java/trunk as $WEBAPP in this document.</li>
 
 
 
+
 </ul>
 
 
 
 
 
+
 <ul>
+
 
 
 
@@ -571,13 +680,17 @@ application. The $OLIO_HOME/workload/java/trunk directory is referred to as
 $WORKLOAD in this document.<br>
 
 
+
   </li>
+
 
 
   <li>The geocoder directory contains the code for the geocoder emulator. This code is shared across all implementations of Olio.<br>
 
 
+
   </li>
+
 
 
 
@@ -589,7 +702,9 @@ $WORKLOAD in this document.<br>
 
 
 
+
 <p></p>
+
 
 
 
@@ -597,6 +712,7 @@ $WORKLOAD in this document.<br>
 
 <h2><a name="setupDriver"></a>Setting up the
 driver</h2>
+
 
 
 
@@ -612,7 +728,9 @@ system as the web application.
 
 
 
+
   <li>
+    
     
     
     
@@ -629,7 +747,9 @@ will refer to the faban install directory as $FABAN_HOME.</p>
 
 
 
+
   </li>
+
 
 
 
@@ -640,7 +760,9 @@ will refer to the faban install directory as $FABAN_HOME.</p>
     
     
     
+    
     <p align="left">To build the driver, do the following:<br>
+
 
 
 
@@ -652,11 +774,14 @@ will refer to the faban install directory as $FABAN_HOME.</p>
 
 
 
+
+    
     
     
     
     
     <ul>
+
 
 
 
@@ -668,13 +793,16 @@ will refer to the faban install directory as $FABAN_HOME.</p>
 
 
 
+
         <br>
 
 
 
 
 
+
       </li>
+
 
 
 
@@ -690,13 +818,16 @@ usually the driver system.<br>
 
 
 
+
         <br>
 
 
 
 
 
+
       </li>
+
 
 
 
@@ -709,7 +840,9 @@ JDK1.6 installation.<br>
 
 
 
+
         <br>
+
 
 
 
@@ -721,22 +854,29 @@ JDK1.6 installation.<br>
 
 
 
+
       <li>Build the driver using the command: ant deploy.jar. If
 successful, you should see the file JavaWeb20Driver.jar in the build
 sub-directory.</li>
+
       <br>
 
 
 
 
 
+
+    
     
     
     
     
     </ul>
+
   </li>
+
   <li>Download MySQL Connector/J (JDBC Driver for MySQL) and install the jar in&nbsp;$FABAN_HOME/benchmarks/JavaOlioDriver/lib.</li>
+
 
 
 
@@ -752,9 +892,11 @@ sub-directory.</li>
     
     
     
+    
     <p align="left">For the driver to work, you will need
 JDK 1.6. Set JAVA_HOME to the path of the JDK in the faban user's
 environment.</p>
+
 
 
 
@@ -766,7 +908,9 @@ environment.</p>
 
 
 
+
   <li>
+    
     
     
     
@@ -778,6 +922,8 @@ driver machine :</p>
 
 
 
+
+    
     
     
     
@@ -788,7 +934,9 @@ driver machine :</p>
 
 
 
+
   </li>
+
 
 
 
@@ -799,18 +947,22 @@ driver machine :</p>
     
     
     
+    
     <p align="left">Test that you can connect to the
 master by pointing your browser at http://<i>&lt;driver_machine&gt;</i>:9980.
 &nbsp;You should see the Faban welcome page or if you have already
 deployed the driver, a page with the text "Welcome to Java Olio
 Workload"</p>
+
   </li>
+
   <li>To deploy the Faban driver, you can
-either copy $WORKLOAD/build/Web20Driver.jar to the
+either copy $WORKLOAD/build/JavaOlioDriver.jar to the
 $FABAN_HOME/benchmarks directory, or execute <span style="font-family: monospace;">ant deploy</span>.
 &nbsp;Executing the deploy target will deploy the build jar file on
 the Faban master that you specified as the 'faban.url' in the
 build.properties file. &nbsp;To use ant deploy you must have completed steps 4, 6 and 7 and have Faban up and running.</li>
+
 
 
   
@@ -824,9 +976,11 @@ build.properties file. &nbsp;To use ant deploy you must have completed steps 4, 
 
 
 
+
 <span style="font-weight: bold;"></span>
 <h2><a name="Setting_Up_the_Database"></a>Setting
 Up the Database</h2>
+
 
 
 
@@ -842,6 +996,7 @@ please install the mySQL on those systems. &nbsp;You can <a href="https://cds.su
 
 
 
+
   <li>If you plan to run MySQL on a separate machine, install
 MySQL on
 that system. We will refer to the MySQL installation directory as
@@ -851,7 +1006,9 @@ MYSQL_HOME.</li>
 
 
 
+
   <li>
+    
     
     
     
@@ -863,7 +1020,9 @@ directories: <br>
 
 
 
+
     <span style="font-family: monospace;"></span><span style="font-family: monospace;"># groupadd mysql </span><br style="font-family: monospace;">
+
 
 
 
@@ -876,8 +1035,10 @@ directories: <br>
 
 
 
+
 # chown -R
 mysql:mysql $MYSQL_HOME</span><br>
+
 
 
 
@@ -889,7 +1050,9 @@ mysql:mysql $MYSQL_HOME</span><br>
 
 
 
+
   </li>
+
 
 
 
@@ -900,7 +1063,9 @@ mysql:mysql $MYSQL_HOME</span><br>
     
     
     
+    
     <p>Create the database :<br>
+
 
 
 
@@ -912,7 +1077,9 @@ mysql:mysql $MYSQL_HOME</span><br>
 
 
 
+
     <span style="font-family: monospace;">$ cd&nbsp;bin</span><br style="font-family: monospace;">
+
 
 
 
@@ -921,20 +1088,25 @@ mysql:mysql $MYSQL_HOME</span><br>
     <span style="font-family: monospace;">$
 ./mysql_install_db</span></p>
 
+
   </li>
+
 
   <li>A sample MySQL configuration file (my.cnf) is included in the
 $WEBAPP/etc. Please read the embedded comments and edit the file
 appropriately after copying it to /etc. &nbsp; Note that the data
 directory that the <span style="font-style: italic;">innodb_data_home_dir</span> variable refers to must be writable by the mysql user.<br>
 
+
   </li>
 
 
 
 
 
+
   <li>
+    
     
     
     
@@ -947,7 +1119,9 @@ typically use</span><i> adminadmin</i><span style="font-style: normal;">)</span>
 
 
 
+
     <span style="font-family: monospace;">$&nbsp;</span><span style="font-family: monospace;">./mysqld_safe --defaults-file=/etc/my.cnf &amp;</span><br style="font-family: monospace;">
+
 
 
 
@@ -955,6 +1129,7 @@ typically use</span><i> adminadmin</i><span style="font-style: normal;">)</span>
 
     <span style="font-family: monospace;">$ ./mysqladmin
 -u root password <span style="font-style: italic;">&lt;your-</span></span><i style="font-family: monospace;"><span style="font-style: italic;">password&gt;</span><br>
+
 
 
 
@@ -968,7 +1143,9 @@ $ </i><span style="font-family: monospace;">./mysqladmin
 
 
 
+
   </li>
+
 
 
 
@@ -979,7 +1156,9 @@ $ </i><span style="font-family: monospace;">./mysqladmin
     
     
     
+    
     <p>Create the olio user and grant privileges :<br>
+
 
 
 
@@ -992,8 +1171,10 @@ $ </i><span style="font-family: monospace;">./mysqladmin
 
 
 
+
     <span style="font-family: monospace;">mysql&gt;
 create user 'olio'@'%' identified by 'olio';</span><br style="font-family: monospace;">
+
 
 
 
@@ -1007,13 +1188,16 @@ identified by 'olio' with grant option;</span><span style="font-family: monospac
 
 
 
+
     </span><span style="font-family: monospace;"></span><span style="font-family: monospace;"><br>
 
 
 
 
 
+
     <br>
+
 
 
 
@@ -1030,6 +1214,7 @@ of the driver and apache systems.<br>
 
 
 
+
     <span style="font-family: monospace;"></span>Eg.<span style="font-family: monospace;"> mysql&gt;
 grant all </span><span style="font-family: monospace;">privileges
     </span><span style="font-family: monospace;">on
@@ -1039,7 +1224,9 @@ grant all </span><span style="font-family: monospace;">privileges
 
 
 
+
     </p>
+
 
 
 
@@ -1049,7 +1236,9 @@ grant all </span><span style="font-family: monospace;">privileges
 
 
 
+
   <li>Create database<br>
+
 
 
 
@@ -1062,8 +1251,10 @@ create database bpwebapp;</span><br style="font-family: monospace;">
 
 
 
+
     <span style="font-family: monospace;">mysql&gt;
 use bpwebapp;<br>
+
 
 
 
@@ -1075,7 +1266,9 @@ use bpwebapp;<br>
 
 
 
+
     </span></li>
+
 
 
 
@@ -1093,7 +1286,9 @@ the driver to the Faban master.<br>
 
 
 
+
     <br>
+
 
 
 
@@ -1106,7 +1301,9 @@ the driver to the Faban master.<br>
 
 
 
+
 mysql&gt; exit</span><span style="font-family: monospace;"><br>
+
 
 
 
@@ -1120,7 +1317,9 @@ database created by the root user.</li>
 
 
 
+
 </ol>
+
 
 
 
@@ -1128,6 +1327,7 @@ database created by the root user.</li>
 
 <h2><a name="loadDB"></a> <font size="4">Loading
 the database</font></h2>
+
 
 
 
@@ -1143,13 +1343,16 @@ automatically re-load the database before the run.</font></p>
 
 
 
+
 <ol>
 
 
 
 
 
+
   <li>
+    
     
     
     
@@ -1161,7 +1364,9 @@ the Faban master driver. Only this machine has the loader at this time.</font></
 
 
 
+
   </li>
+
 
 
 
@@ -1174,7 +1379,9 @@ the loader script:<br>
 
 
 
+
     </font><font size="3"><span style="font-family: monospace;"># cd </span></font><span style="font-family: monospace;"><span style="font-style: italic;">$FABAN_HOME</span>/benchmarks/JavaOlioDriver/bin</span></li>
+
 
 
 
@@ -1188,14 +1395,18 @@ we will need to change that ourselves:<br>
 
 
 
+
     <span style="font-family: monospace;"># chmod +x
 dbloader.sh</span></li>
+
 
   <li>You may have to edit the dbloader.sh to reflect your version of
 the JDBC Driver for MySQL that you downloaded and placed in the&nbsp;
 $FABAN_HOME/benchmarks/JavaOlioDriver/lib in step 3 of <a href="#setupDriver">Setting Up the Driver</a> section. &nbsp;On line 51 of dbloader.sh, the CLASSPATH is currently set to MySQL JDBC driver version 5.0.6. &nbsp;<br>
 
+
 Eg. <span style="font-family: monospace;">CLASSPATH=$B/mysql-connector-java-5.0.6-bin.jar</span></li>
+
 
 
 
@@ -1207,8 +1418,10 @@ Eg. <span style="font-family: monospace;">CLASSPATH=$B/mysql-connector-java-5.0.
 
 
 
+
     <span style="font-family: monospace;"># ./dbloader.sh <span style="font-style: italic;">&lt;dbserver&gt;
 &lt;load_scale&gt;</span></span><br>
+
 
 
 
@@ -1222,8 +1435,10 @@ testing<span style="font-weight: bold;">.</span></li>
 
 
 
+
   <span style="font-family: monospace;"></span>
 </ol>
+
 
 
 
@@ -1236,6 +1451,7 @@ server</font></h2>
 
 
 
+
 Note - for the current version of Olio Java, you will not have need to
 install memcached servers. <br>
 
@@ -1243,7 +1459,9 @@ install memcached servers. <br>
 
 
 
+
 <br>
+
 
 
 
@@ -1263,8 +1481,10 @@ memcached. This can typically run on the same system as the web server.
 
 
 
+
   <li>Download and install memcached on the system you plan to
 use. </li>
+
 
 
 
@@ -1275,8 +1495,10 @@ use. </li>
     
     
     
+    
     <p style="margin-bottom: 0in;"><font size="3">Start
 the memcached server thus :<br>
+
 
 
 
@@ -1289,13 +1511,16 @@ nohup /opt/coolstack/bin/memcached -m 256 -u mysql &amp;</span></font></p>
 
 
 
+
   </li>
 
 
 
 
 
+
   <li>
+    
     
     
     
@@ -1308,8 +1533,10 @@ Web Application for more details).<font size="3"><span style="font-family: monos
 
 
 
+
     </span></font><font size="3">Note that the
 Faban harness will start the memcached servers before each run.</font></p>
+
 
 
 
@@ -1321,7 +1548,9 @@ Faban harness will start the memcached servers before each run.</font></p>
 
 
 
+
 </ol>
+
 
 
 
@@ -1330,6 +1559,7 @@ Faban harness will start the memcached servers before each run.</font></p>
 <h2><a name="setupEmulator"><font size="4">Setting
 up the Geocoder
 Emulator</font></a></h2>
+
 
 
 
@@ -1345,13 +1575,16 @@ describe how to install it.</p>
 
 
 
+
 <p>To build the geocoder:</p>
 
 
 
 
 
+
 <ul>
+
 
 
 
@@ -1364,7 +1597,9 @@ directory and following the instructions in the README file.</li>
 
 
 
+
 </ul>
+
 
 
 
@@ -1377,7 +1612,9 @@ For Glassfish:</p>
 
 
 
+
 <ol>
+
 
 
 
@@ -1391,9 +1628,11 @@ deploy - see below)</li>
 
 
 
-  <li>Copy the Web20Emulator.war from the Web20Bench kit to
+
+  <li>Copy the geocoder.war from the geocoder directory ($OLIO_HOME/geocoder) to
 $GLASSFISH_HOME/domains/domain1/autodeploy (domain1 is the default
 domain created with Glassfish)</li>
+
 
 
 
@@ -1406,7 +1645,9 @@ start-domain domain1.</li>
 
 
 
+
 </ol>
+
 
 
 
@@ -1419,7 +1660,9 @@ For Tomcat:
 
 
 
+
   <li>
+    
     
     
     
@@ -1433,7 +1676,9 @@ we will refer to it as $TOMCAT_HOME. </p>
 
 
 
+
   </li>
+
 
 
 
@@ -1444,10 +1689,13 @@ we will refer to it as $TOMCAT_HOME. </p>
     
     
     
+    
     <p>Build the geocoder.war file by going to the 'geocoder' directory and following the instructions in the README file.</p>
 
 
+
   </li>
+
 
 
   <li>Copy the geocoder.war file from the geocoder/dist directory to $TOMCAT_HOME/webapps.</li>
@@ -1456,7 +1704,9 @@ we will refer to it as $TOMCAT_HOME. </p>
 
 
 
+
   <li>
+    
     
     
     
@@ -1464,10 +1714,13 @@ we will refer to it as $TOMCAT_HOME. </p>
     <p>Start Tomcat using $TOMCAT_HOME/bin/startup.sh.</p>
 
 
+
   </li>
 
 
+
 </ol>
+
 
 
 
@@ -1480,7 +1733,9 @@ the Web Application</h2>
 
 
 
+
 <br>
+
 
 
 
@@ -1494,13 +1749,16 @@ components:<br>
 
 
 
+
 <br>
 
 
 
 
 
+
 <ol>
+
 
 
 
@@ -1513,13 +1771,16 @@ v2.1</a>)</li>
 
 
 
+
   <li>JPA provider &nbsp;( eg. <a href="http://www.eclipse.org/eclipselink/">Eclipselink</a>)</li>
 
 
 
 
 
+
 </ol>
+
 
 
 
@@ -1534,6 +1795,7 @@ Configuration.<br>
 
 
 
+
 Before building the WAR file to deploy on the application server, you
 will first have to edit the web descriptors to point to your database
 and geocoder that you set up in the previous steps. &nbsp;<br>
@@ -1542,7 +1804,9 @@ and geocoder that you set up in the previous steps. &nbsp;<br>
 
 
 
+
 <ol>
+
 
 
 
@@ -1557,11 +1821,14 @@ $WEBAPP/ws/apps/webapp/web/WEB-INF/web.xml &nbsp;</li>
 
 
 
+
+  
   
   
   
   
   <ol>
+
 
 
 
@@ -1574,6 +1841,8 @@ your geocoder application is deployed.</li>
 
 
 
+
+  
   
   
   
@@ -1584,7 +1853,9 @@ your geocoder application is deployed.</li>
 
 
 
+
 </ol>
+
 
 
 
@@ -1597,7 +1868,9 @@ the web application from the codebase</h2>
 
 
 
+
 <ol>
+
 
 
 
@@ -1608,7 +1881,9 @@ the web application from the codebase</h2>
 
 
 
+
   </li>
+
 
 
 
@@ -1624,13 +1899,16 @@ Source":<br>
 
 
 
+
     <span style="font-family: monospace;">$ vi
 &lt;$WEBAPP&gt;/ws/bp-project/build.properties<br>
 
 
 
 
+
     <br>
+
 
 
 
@@ -1645,7 +1923,9 @@ directory.<br>
 
 
 
+
   </li>
+
 
 
 
@@ -1657,13 +1937,16 @@ directory.<br>
 
 
 
+
     <span style="font-family: monospace;">$ cd
 &lt;$WEBAPP&gt;/ws/apps/webapp<br>
 
 
 
 
+
     </span></li>
+
 
 
 
@@ -1677,7 +1960,9 @@ compiling:<br>
 
 
 
+
     <span style="font-family: monospace;"><br>
+
 
 
 
@@ -1689,68 +1974,114 @@ $ ant<br>
 
 
 
+
 Buildfile: build.xml<br>
 
 
 
 
 
+
     <br>
+
 build:<br>
+
     <br>
+
 default:<br>
+
     <br>
+
 default-ear:<br>
+
     <br>
+
 init:<br>
+
     <br>
+
 -pre-compile:<br>
+
     <br>
+
 bpp-actual-compilation:<br>
+
 &nbsp;&nbsp;&nbsp;&nbsp; [echo] Compiling webapp<br>
+
 &nbsp;&nbsp;&nbsp; [javac] Compiling 49 source files to
 /Users/klichong/projects/java_testOlio/JavaOlio/webapp/java/trunk/ws/apps/webapp/build/classes<br>
+
 &nbsp;&nbsp;&nbsp; [javac] Note: Some input files use unchecked or unsafe operations.<br>
+
 &nbsp;&nbsp;&nbsp; [javac] Note: Recompile with -Xlint:unchecked for details.<br>
+
     <br>
+
 include-jmaki-local:<br>
+
     <br>
+
 include-jmaki:<br>
+
 &nbsp;&nbsp;&nbsp;&nbsp; [echo] Copying jMaki Runtime to
 /Users/klichong/projects/java_testOlio/JavaOlio/webapp/java/trunk/ws/apps/webapp/./build/web<br>
+
 &nbsp;&nbsp;&nbsp; [mkdir] Created dir:
 /Users/klichong/projects/java_testOlio/JavaOlio/webapp/java/trunk/ws/apps/webapp/build/web/temp<br>
+
 &nbsp;&nbsp;&nbsp; [unzip] Expanding:
 /Users/klichong/projects/java_testOlio/JavaOlio/webapp/java/trunk/ws/lib/ajax-wrapper-comp-1.8.1.jar
 into
 /Users/klichong/projects/java_testOlio/JavaOlio/webapp/java/trunk/ws/apps/webapp/build/web/temp<br>
+
 &nbsp;&nbsp;&nbsp; [mkdir] Created dir:
 /Users/klichong/projects/java_testOlio/JavaOlio/webapp/java/trunk/ws/apps/webapp/build/web/resources<br>
+
 &nbsp;&nbsp; [delete] Deleting directory
 /Users/klichong/projects/java_testOlio/JavaOlio/webapp/java/trunk/ws/apps/webapp/build/web/temp<br>
+
     <br>
+
 -post-compile:<br>
+
 &nbsp;&nbsp;&nbsp;&nbsp; [copy] Copying 3 files to
 /Users/klichong/projects/java_testOlio/JavaOlio/webapp/java/trunk/ws/apps/webapp/build/classes<br>
+
 &nbsp;&nbsp;&nbsp; [mkdir] Created dir:
 /Users/klichong/projects/java_testOlio/JavaOlio/webapp/java/trunk/ws/apps/webapp/build/web/WEB-INF/lib<br>
+
 &nbsp;&nbsp;&nbsp;&nbsp; [copy] Copying 7 files to
 /Users/klichong/projects/java_testOlio/JavaOlio/webapp/java/trunk/ws/apps/webapp/build/web/WEB-INF/lib<br>
+
     <br>
+
 ......<br>
+
 ......<br>
+
     <br>
+
 bpp-copy-dist:<br>
+
 &nbsp;&nbsp;&nbsp; [mkdir] Created dir: /Users/klichong/projects/java_testOlio/JavaOlio/webapp/java/trunk/ws/apps/webapp/dist<br>
+
 &nbsp;&nbsp;&nbsp;&nbsp; [copy] Copying 1 file to
 /Users/klichong/projects/java_testOlio/JavaOlio/webapp/java/trunk/ws/apps/webapp/dist<br>
+
     <br>
+
 default-not-ear:<br>
+
     <br>
+
 default:<br>
+
     <br>
+
 BUILD SUCCESSFUL<br>
+
     </span></li>
+
 
 
 
@@ -1763,13 +2094,16 @@ file should be located in the&nbsp;<span style="font-family: monospace;">&lt;$OL
 
 
 
+
 </ol>
 
 
 
 
 
+
 <h2>Deploying the Web Application</h2>
+
 
 
 
@@ -1783,14 +2117,17 @@ application server with a JPA provider.
 
 
 
+
   <li>
     
     
     
     
+    
     <p>Deploy
-the webapp.war from the web20Bench Java kit from dist directory to your
+the webapp.war from the $WEBAPP/ws/apps/webapp/dist directory to your
 Java EE 5 application server. &nbsp;<br>
+
 
 
 
@@ -1807,7 +2144,9 @@ deploy via different methods by referring to <a href="https://glassfish.dev.java
 
 
 
+
   </li>
+
 
 
 
@@ -1819,7 +2158,9 @@ deploy via different methods by referring to <a href="https://glassfish.dev.java
 
 
 
+
 <h2><a name="installWebApp"></a><font size="4">Configuring the Application Server</font></h2>
+
 
 
 
@@ -1831,9 +2172,11 @@ deploy via different methods by referring to <a href="https://glassfish.dev.java
 
 
 
+
   <li>Download the JDBC driver for mysql from <a href="http://dev.mysql.com/downloads/connector/j/5.1.html">http://dev.mysql.com/downloads/connector/j/5.1.html.</a>&nbsp;
 Extract the mysql-connector-java-5.1.X-bin.jar and put this your
 application server classpath (or external library directory)</li>
+
 
 
 
@@ -1848,10 +2191,12 @@ and put this in your application server classpath.</li>
 
 
 
+
   <li>Create JDBC connection pool and resource for connecting to
 mySQL
 database. &nbsp;Below are examples for the properties used for the
 connection pool:<br>
+
 
 
 
@@ -1864,6 +2209,7 @@ the JDBC resource.&nbsp; eg. BPwebappPool<br>
 
 
 
+
 &nbsp;&nbsp;&nbsp; * Resource Type: Specify the appropriate
 value, eg. javax.sql.DataSource<br>
 
@@ -1871,7 +2217,9 @@ value, eg. javax.sql.DataSource<br>
 
 
 
+
 &nbsp;&nbsp;&nbsp; * Database Vendor: mysql<br>
+
 
 
 
@@ -1884,6 +2232,7 @@ the following:<br>
 
 
 
+
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 o com.mysql.jdbc.jdbc2.optional.MysqlDataSource<br>
 
@@ -1891,7 +2240,9 @@ o com.mysql.jdbc.jdbc2.optional.MysqlDataSource<br>
 
 
 
+
 &nbsp;&nbsp;&nbsp; * Properties:<br>
+
 
 
 
@@ -1905,8 +2256,10 @@ Specify the host name or IP address of the database server.<br>
 
 
 
+
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 o port - Specify the port number of the database server eg. 3306<br>
+
 
 
 
@@ -1919,6 +2272,7 @@ o user - Set as appropriate.<br>
 
 
 
+
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 o&nbsp; password - Set as appropriate.<br>
 
@@ -1926,8 +2280,10 @@ o&nbsp; password - Set as appropriate.<br>
 
 
 
+
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 o databaseName - Set as appropriate, eg. bpwebapp<br>
+
 
 
 
@@ -1943,6 +2299,7 @@ jdbc:mysql://&lt;dbhost&gt;:3306/bpwebapp<br>
 
 
 
+
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 o Keep the rest of properties created.<br>
 
@@ -1950,7 +2307,9 @@ o Keep the rest of properties created.<br>
 
 
 
+
     <br>
+
 
 
 
@@ -1963,13 +2322,16 @@ jdbc/BPWebappDB pointing to new resource created above.<br>
 
 
 
+
   </li>
 
 
 
 
 
+
 </ol>
+
 
 
 
@@ -1982,7 +2344,9 @@ Installation and Configuration</font></h2>
 
 
 
+
 <ol>
+
 
 
 
@@ -1993,8 +2357,10 @@ Installation and Configuration</font></h2>
     
     
     
+    
     <p>Install Glassfish application server V2 UR2 from <a href="https://glassfish.dev.java.net/public/downloadsindex.html"><span style="text-decoration: underline;">https://glassfish.dev.java.net/public/downloadsindex.html.</span></a>
     <br>
+
 
 
 
@@ -2007,13 +2373,16 @@ to as $GLASSFISH_HOME. </p>
 
 
 
+
   </li>
 
 
 
 
 
+
   <li>
+    
     
     
     
@@ -2028,7 +2397,9 @@ named your domain).</p>
 
 
 
+
   </li>
+
 
 
 
@@ -2051,7 +2422,9 @@ July 2008. </li>
 
 
 
+
   <br>
+
 
 
 
@@ -2062,6 +2435,7 @@ Glassfish admin
 interface is <a href="https://glassfish.dev.java.net/javaee5/admin-gui/admin-gui.html#Usage">https://glassfish.dev.java.net/javaee5/admin-gui/admin-gui.html#Usage</a>.
 &nbsp;To edit the classpath prefix, please consult&nbsp; <a href="https://glassfish.dev.java.net/javaee5/docs/AG/ablwj.html#ablwm">https://glassfish.dev.java.net/javaee5/docs/AG/ablwj.html#ablwm</a>.
 &nbsp;<br>
+
 
 
 
@@ -2078,8 +2452,10 @@ domain name is if you are using the default domain1).<br>
 
 
 
+
 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;To
 stop Glassfish, use $GLASSFISH_HOME/bin/asadmin stop-domain domain1.</li>
+
 
 
 
@@ -2090,9 +2466,11 @@ stop Glassfish, use $GLASSFISH_HOME/bin/asadmin stop-domain domain1.</li>
     
     
     
+    
     <p>Create JDBC connection pool and resource. &nbsp;Please
 consult <a href="https://glassfish.dev.java.net/javaee5/docs/AG/ablih.html">https://glassfish.dev.java.net/javaee5/docs/AG/ablih.html</a>
 for details. &nbsp;MM MySQL Type 4 Driver (Non-XA)<br>
+
 
 
 
@@ -2107,17 +2485,21 @@ using the following settings:<br>
 
 
 
+
     </p>
 
 
 
 
 
+
+    
     
     
     
     
     <ul>
+
 
 
 
@@ -2130,8 +2512,10 @@ resource. &nbsp;eg. BPwebappPool</li>
 
 
 
+
       <li>Resource Type: Specify the appropriate value, eg.
 javax.sql.DataSource</li>
+
 
 
 
@@ -2143,17 +2527,21 @@ javax.sql.DataSource</li>
 
 
 
+
       <li>DataSource Classname: Specify one of the following:</li>
 
 
 
 
 
+
+      
       
       
       
       
       <ul>
+
 
 
 
@@ -2165,11 +2553,14 @@ javax.sql.DataSource</li>
 
 
 
+
+      
       
       
       
       
       </ul>
+
 
 
 
@@ -2181,11 +2572,14 @@ javax.sql.DataSource</li>
 
 
 
+
+      
       
       
       
       
       <ul>
+
 
 
 
@@ -2198,6 +2592,8 @@ the database server.</li>
 
 
 
+
+      
       
       
       
@@ -2208,11 +2604,14 @@ the database server.</li>
 
 
 
+
+      
       
       
       
       
       <ul>
+
 
 
 
@@ -2225,6 +2624,8 @@ eg. 3306</li>
 
 
 
+
+      
       
       
       
@@ -2235,11 +2636,14 @@ eg. 3306</li>
 
 
 
+
+      
       
       
       
       
       <ul>
+
 
 
 
@@ -2251,13 +2655,16 @@ eg. 3306</li>
 
 
 
+
         <li>&nbsp;password - Set as appropriate, eg. olio</li>
 
 
 
 
 
+
         <li>databaseName - Set as appropriate, eg. bpwebapp</li>
+
 
 
 
@@ -2272,12 +2679,15 @@ jdbc:mysql://&lt;dbhost&gt;:3306/bpwebapp</li>
 
 
 
+
         <li>Keep the rest of properties created.</li>
 
 
 
 
 
+
+      
       
       
       
@@ -2288,11 +2698,14 @@ jdbc:mysql://&lt;dbhost&gt;:3306/bpwebapp</li>
 
 
 
+
+    
     
     
     
     
     </ul>
+
 
 
 
@@ -2305,7 +2718,9 @@ jdbc/BPWebappDB pointing to new resource created above. </li>
 
 
 
+
 </ol>
+
 
 
 
@@ -2317,7 +2732,9 @@ jdbc/BPWebappDB pointing to new resource created above. </li>
 
 
 
+
 <ol>
+
 
 
 
@@ -2330,7 +2747,9 @@ http://localhost:4848.</li>
 
 
 
+
   <li>
+    
     
     
     
@@ -2344,13 +2763,16 @@ sized Xmx and Xms to 3G.</p>
 
 
 
+
   </li>
 
 
 
 
 
+
   <li>
+    
     
     
     
@@ -2365,17 +2787,21 @@ so,&nbsp; <br>
 
 
 
+
     </p>
 
 
 
 
 
+
+    
     
     
     
     
     <ul>
+
 
 
 
@@ -2390,6 +2816,7 @@ domain name is if you are using the default domain1).&nbsp;</li>
 
 
 
+
       <li>To
 stop Glassfish, use $GLASSFISH_HOME/bin/asadmin stop-domain domain1.</li>
 
@@ -2397,11 +2824,14 @@ stop Glassfish, use $GLASSFISH_HOME/bin/asadmin stop-domain domain1.</li>
 
 
 
+
+    
     
     
     
     
     </ul>
+
 
 
 
@@ -2413,7 +2843,9 @@ stop Glassfish, use $GLASSFISH_HOME/bin/asadmin stop-domain domain1.</li>
 
 
 
+
 </ol>
+
 
 
 
@@ -2421,6 +2853,7 @@ stop Glassfish, use $GLASSFISH_HOME/bin/asadmin stop-domain domain1.</li>
 
 <h2><font size="4">Setting up the
 filestore</font></h2>
+
 
 
 
@@ -2447,13 +2880,16 @@ and mounted on the system running the web application.</p>
 
 
 
+
 <ol>
 
 
 
 
 
+
   <li>
+    
     
     
     
@@ -2469,7 +2905,9 @@ it:<br>
 
 
 
+
     </font><font size="3"><span style="font-family: monospace;"># mkdir -p <span style="font-style: italic;">&lt;filestore&gt;</span></span><br style="font-family: monospace;">
+
 
 
 
@@ -2481,13 +2919,16 @@ it:<br>
 
 
 
+
   </li>
 
 
 
 
 
+
   <li>
+    
     
     
     
@@ -2500,8 +2941,10 @@ file on this system.</font><br>
 
 
 
+
     <font size="3"><font style="font-family: monospace;" size="3">#&nbsp;<span style="font-style: italic;"></span></font></font>cd
 $FABAN_HOME/benchmarks; mkdir olio<br>
+
 
 
 
@@ -2513,7 +2956,9 @@ $FABAN_HOME/benchmarks; mkdir olio<br>
 
 
 
+
 # cd olio; jar xvf ../JavaOlioDriver.jar; chmod a+x bin/*<br>
+
 
 
 
@@ -2526,7 +2971,9 @@ $FABAN_HOME/benchmarks; mkdir olio<br>
 
 
 
+
     <br>
+
 
 
 
@@ -2539,7 +2986,9 @@ use for up to<span style="font-style: italic;"> load_scale</span> number of acti
 
 
 
+
     <br>
+
 
 
 
@@ -2552,8 +3001,10 @@ To load the filestore for 1000 users, you would do the following:</font></font><
 
 
 
+
     <span style="font-family: monospace;"># cd
 /filestore/artifacts</span><br style="font-family: monospace;">
+
 
 
 
@@ -2566,7 +3017,9 @@ To load the filestore for 1000 users, you would do the following:</font></font><
 
 
 
+
     <font size="3"><font size="3"><span style="font-family: monospace;"></span></font></font>
+    
     
     
     
@@ -2579,7 +3032,9 @@ number of concurrent users.&nbsp;</font></font></p>
 
 
 
+
   </li>
+
 
 
 
@@ -2597,7 +3052,9 @@ argument by looking at the<a href="#Glassfish_Installation_and_Configuration"> G
 
 
 
+
     </font></font><font size="3"><font size="3"><span style="font-family: monospace;"><br>
+
 
 
     </span></font></font><font size="3"><font size="3"><span style="font-family: monospace;"></span></font></font></li>
@@ -2606,7 +3063,9 @@ argument by looking at the<a href="#Glassfish_Installation_and_Configuration"> G
 
 
 
+
 </ol>
+
 
 
 
@@ -2620,13 +3079,16 @@ Application</font></font></h2>
 
 
 
+
 <ol>
 
 
 
 
 
+
   <li>
+    
     
     
     
@@ -2640,13 +3102,16 @@ error messages and all images get loaded, that's a great start !</font></p>
 
 
 
+
   </li>
 
 
 
 
 
+
   <li>
+    
     
     
     
@@ -2658,13 +3123,16 @@ error messages and all images get loaded, that's a great start !</font></p>
 
 
 
+
   </li>
 
 
 
 
 
+
   <li>
+    
     
     
     
@@ -2676,13 +3144,16 @@ error messages and all images get loaded, that's a great start !</font></p>
 
 
 
+
   </li>
 
 
 
 
 
+
   <li>
+    
     
     
     
@@ -2695,13 +3166,16 @@ have good results and images get loaded OK. </font> </p>
 
 
 
+
   </li>
 
 
 
 
 
+
   <li>
+    
     
     
     
@@ -2714,8 +3188,10 @@ upload. If not, take them from $FABAN_HOME/benchmarks/JavaOlioDriver/resources. 
 
 
 
+
 Submit the form. Make sure the form goes through. This completes the
 AddPerson transaction. </font> </p>
+
 
 
 
@@ -2727,7 +3203,9 @@ AddPerson transaction. </font> </p>
 
 
 
+
   <li>
+    
     
     
     
@@ -2740,7 +3218,9 @@ you're logged on. </font> </p>
 
 
 
+
   </li>
+
 
 
 
@@ -2751,8 +3231,10 @@ you're logged on. </font> </p>
     
     
     
+    
     <p><font size="3">Select an event, go back to
 the EventDetail page but this time as a logged on user. <br>
+
 
 
 
@@ -2765,13 +3247,16 @@ attendee added (about 8-9% of all EventDetail views). </font> </p>
 
 
 
+
   </li>
 
 
 
 
 
+
   <li>
+    
     
     
     
@@ -2784,8 +3269,10 @@ can also use the files from <br>
 
 
 
+
 $FABAN_HOME/benchmarks/JavaOlioDriver/resources. Fill in the form and submit.
 This is the AddEvent transaction. <br>
+
 
 
 
@@ -2797,7 +3284,9 @@ This is the AddEvent transaction. <br>
 
 
 
+
     </font> </p>
+
 
 
 
@@ -2809,7 +3298,9 @@ This is the AddEvent transaction. <br>
 
 
 
+
 </ol>
+
 
 
 
@@ -2817,6 +3308,7 @@ This is the AddEvent transaction. <br>
 
 <h2><a name="startRun"></a><font size="4">Starting
 a benchmark run</font></h2>
+
 
 
 
@@ -2831,7 +3323,9 @@ kick off a benchmark run. </p>
 
 
 
+
 <ol>
+
 
 
 
@@ -2845,12 +3339,15 @@ it is already running.</li>
 
 
 
+
   <li>
     
     
     
     
+    
     <p>Point your browser at http://<i>&lt;driver_machine&gt;</i>:9980</p>
+
 
 
 
@@ -2862,7 +3359,9 @@ it is already running.</li>
 
 
 
+
   <li>
+    
     
     
     
@@ -2874,13 +3373,16 @@ Run</b></span> link.</p>
 
 
 
+
   </li>
 
 
 
 
 
+
   <li>
+    
     
     
     
@@ -2893,7 +3395,9 @@ NOT</span> click on the OK button yet !</p>
 
 
 
+
   </li>
+
 
 
 
@@ -2904,12 +3408,15 @@ NOT</span> click on the OK button yet !</p>
     
     
     
+    
     <p>Select the Driver tab. </p>
 
 
 
 
 
+
+    
     
     
     
@@ -2923,6 +3430,8 @@ particular run is testing. </p>
 
 
 
+
+    
     
     
     
@@ -2935,6 +3444,8 @@ separate them by a space). </p>
 
 
 
+
+    
     
     
     
@@ -2946,6 +3457,8 @@ separate them by a space). </p>
 
 
 
+
+    
     
     
     
@@ -2959,6 +3472,8 @@ utilization.</p>
 
 
 
+
+    
     
     
     
@@ -2972,6 +3487,8 @@ steady state of at least 600 seconds during which measurements are made.</p>
 
 
 
+
+    
     
     
     
@@ -2986,7 +3503,9 @@ value to 1000 milliseconds.</p>
 
 
 
+
   </li>
+
 
 
 
@@ -2997,31 +3516,40 @@ value to 1000 milliseconds.</p>
     
     
     
+    
     <p>Select the Web Server tab.<br>
 
 
 
 
 
+
     <br>
+
 The number of Agents is best the same or multiple the number of driver
 machines - we start with 1. The Host:Port Pairs field takes the host
 port pairs where the web applications are running. The host and port is
 separated by a colon. Each pair is separated by space. &nbsp;Note that
 you cannot use the string "localhost" - you must specify a valid
 hostname or IP number. <br>
+
     <br>
+
 For the
 Webserver type field, enter either "GlassFish" dependent on which web
 server you're using, or leave the field blank if you're using servers
 other than these two. Only the GlassFish servers are supported at this
 time. Then provide the application server's bin, log, and config
 directories. &nbsp;<br>
+
     <br>
+
 You can ignore the box for the directory
 containing
 the php.ini file in the respective fields - that field is for the PHP version of Olio. <br>
+
     <br>
+
 Next, choose the server type
 to be Java, if it is not already that way. Then, in the tools box, type
 the tools you want to run. Here are the tools we typically run : vmstat
@@ -3031,6 +3559,8 @@ the tools you want to run. Here are the tools we typically run : vmstat
 
 
 
+
+    
     
     
     
@@ -3043,7 +3573,9 @@ GlassFish server, assuming that the path information for the server is
 entered correctly. &nbsp;If set to true, then the harness will not
 start the GlassFish server and assume that you have already started it
 before the run.<br>
+
     <br>
+
 The number of Agents is
 the same as the number of driver machines &ndash; we start with 1.</p>
 
@@ -3051,18 +3583,25 @@ the same as the number of driver machines &ndash; we start with 1.</p>
 
 
 
+
+    
     
     
     
     
     <p style="margin-bottom: 0in;">Enter the Host and Port
-where the web application is running. &nbsp; &nbsp;Note that you cannot use the string "localhost" - you must specify a valid hostname or IP number. <br>
+where the web application is running. &nbsp; &nbsp;Note that you cannot
+use the string "localhost" - you must specify a valid hostname or IP
+number. <br>
+
  </p>
 
 
 
 
 
+
+    
     
     
     
@@ -3074,13 +3613,16 @@ typically run : vmstat 10; mpstat 10; iostat -xnmp 10</p>
 
 
 
+
   </li>
 
 
 
 
 
+
   <li>
+    
     
     
     
@@ -3092,6 +3634,8 @@ tab.</p>
 
 
 
+
+    
     
     
     
@@ -3099,6 +3643,7 @@ tab.</p>
     <p style="margin-bottom: 0in;">For the database
 server, enter the Host name. Edit the hostname part along of the JDBC
 Connection URL. &nbsp; &nbsp;Note that you cannot use the string "localhost" - you must specify a valid hostname or IP number. <br>
+
  This is used by the loader program to reload the
 database before a run. Set the 'Loader for Concurrent Users' to 25
 (this is the minimum number of users we can load for and is good for up
@@ -3112,6 +3657,8 @@ fields to true every time </p>
 
 
 
+
+    
     
     
     
@@ -3124,6 +3671,8 @@ server.&nbsp;</p>
 
 
 
+
+    
     
     
     
@@ -3139,8 +3688,10 @@ is not given, the default memcached port of 11211 is assumed. &nbsp;<br>
 
 
 
+
     <span style="font-weight: bold;">*NOTE - the memcache
 server information is not necessary in this release of Java Olio. &nbsp;You can leave these fields blank</span></p>
+
 
 
 
@@ -3152,7 +3703,9 @@ server information is not necessary in this release of Java Olio. &nbsp;You can 
 
 
 
+
   <li>
+    
     
     
     
@@ -3164,7 +3717,9 @@ can click on the View Results link on the left to monitor the run.</p>
 
 
 
+
   </li>
+
 
 
 
@@ -3176,7 +3731,9 @@ can click on the View Results link on the left to monitor the run.</p>
 
 
 
+
 <br>
+
 
 
 
