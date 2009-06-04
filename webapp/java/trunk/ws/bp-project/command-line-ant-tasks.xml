@@ -73,6 +73,8 @@
     <path id="classpath">
         <fileset dir="${javaee.home}" includes="lib/javaee.jar, lib/appserv-rt.jar, lib/appserv-ws.jar"/>
         <fileset dir="../../lib" includes="*.jar"/>
+        <!-- include jersey jars now -->
+        <fileset dir="../../lib/jersey" includes="*.jar"/>
         <pathelement location="${build.classes.dir}"/>
         <pathelement path="${javac.classpath}"/>
         <pathelement path="${extra.classpath}"/>

@@ -35,6 +35,47 @@
         <servlet-name>XmlHttpProxy</servlet-name>
         <servlet-class>jmaki.xhp.XmlHttpProxyServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>Jersey</servlet-name>
+        <servlet-class>com.sun.jersey.server.impl.container.servlet.ServletAdaptor</servlet-class>
+        <init-param>
+            <param-name>com.sun.jersey.config.feature.Redirect</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <init-param>
+            <param-name>unit:BPWebappPu</param-name>
+            <param-value>persistence/olio</param-value>
+        </init-param>
+         
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Jersey</servlet-name>
+        <url-pattern>/resources/*</url-pattern>
+    </servlet-mapping>
+   <!--
+   <servlet>
+        <servlet-name>jersey</servlet-name>
+        <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+        <init-param>
+            <param-name>com.sun.jersey.config.property.packages</param-name>
+            <param-value>org.apache.olio.webapp.rest</param-value>
+        </init-param>
+        <init-param>
+            <param-name>com.sun.jersey.config.property.resourceConfigClass</param-name>
+            <param-value>com.sun.jersey.api.core.PackagesResourceConfig</param-value>
+            </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>jersey</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+   -->
+
+
+
+    <!-- end jersey changes -->
     <servlet-mapping>
         <servlet-name>ControllerServlet</servlet-name>
         <url-pattern>/api/*</url-pattern>
@@ -92,12 +133,17 @@
         <exception-type>java.lang.RuntimeException</exception-type>
         <location>/site.jsp?page=error.jsp</location>
     </error-page>
+     <persistence-unit-ref>
+        <persistence-unit-ref-name>persistence/olio</persistence-unit-ref-name>
+        <persistence-unit-name>BPWebappPu</persistence-unit-name>
+    </persistence-unit-ref>
     <resource-ref>
         <res-ref-name>jdbc/BPWebappDB</res-ref-name>
         <res-type>javax.sql.DataSource</res-type>
         <res-auth>Container</res-auth>
         <res-sharing-scope>Shareable</res-sharing-scope>
     </resource-ref>
+  
     <env-entry>
         <description>Name of class used as the cache factory</description>
         <env-entry-name>cacheFactoryClass</env-entry-name>
@@ -112,9 +158,26 @@
     </env-entry>
     
     <jsp-config>
-            <jsp-property-group>
-                <url-pattern>*.jsp</url-pattern>
-                <trim-directive-whitespaces>true</trim-directive-whitespaces>
-            </jsp-property-group>
-        </jsp-config>
+        <jsp-property-group>
+            <url-pattern>*.jsp</url-pattern>
+            <trim-directive-whitespaces>true</trim-directive-whitespaces>
+        </jsp-property-group>
+    </jsp-config>
+    <persistence-context-ref>
+        <description>
+                Persistence context for the olio webapp
+        </description>
+        <persistence-context-ref-name>
+                persistence/olio/entity-manager
+        </persistence-context-ref-name>
+        <persistence-unit-name>
+                BPWebappPu <!-- Defined in persistence.xml -->
+        </persistence-unit-name>
+    </persistence-context-ref>
+    <persistence-unit-ref>
+        <persistence-unit-ref-name>persistence/olio/factory</persistence-unit-ref-name>
+        <persistence-unit-name>BPWebappPu</persistence-unit-name>
+    </persistence-unit-ref>
+ 
+            
 </web-app>

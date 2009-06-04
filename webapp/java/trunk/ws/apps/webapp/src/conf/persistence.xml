@@ -33,9 +33,8 @@
       <property name="eclipselink.target-server" value="SunAS9"/>
       <!-- for eclipselink 1.0 -->
       <property name="eclipselink.target-database" value="org.eclipse.persistence.platform.database.MySQLPlatform"/>
-<!--
-      <property name="eclipselink.logging.level" value="FINE"/>
--->
+
+      <!--property name="eclipselink.logging.level" value="FINE"/-->
       <!-- for eclipselink 0.9 -->
       <!--property name="eclipselink.target-database" value="org.eclipse.persistence.platform.database.MySQL4Platform"/-->
       <!--property name="eclipselink.ddl-generation" value="create-tables"/-->

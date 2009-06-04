@@ -17,6 +17,7 @@
  */
 package org.apache.olio.webapp.model;
 
+import javax.naming.NamingException;
 import static org.apache.olio.webapp.controller.WebConstants.*;
 import org.apache.olio.webapp.controller.WebConstants;
 import org.apache.olio.webapp.util.ServiceLocator;
@@ -40,6 +41,7 @@ import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Resource;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
@@ -167,7 +169,7 @@ public class ModelFacade implements ServletContextListener {
     }
 
 
-    public Person findPerson(String userName) {
+    public Person findPerson(String userName) {     
         EntityManager em = emf.createEntityManager();
         Person p = null;
         try {
@@ -217,7 +219,7 @@ public class ModelFacade implements ServletContextListener {
 
     @SuppressWarnings("unchecked")
     public List<Person> getAllPersons() {
-        EntityManager em = emf.createEntityManager();
+       EntityManager em = emf.createEntityManager();
         List<Person> persons = em.createQuery("SELECT i FROM Person i").getResultList();
         em.close();
         return persons;
@@ -273,41 +275,62 @@ public class ModelFacade implements ServletContextListener {
         return person;
     }
 
-    @SuppressWarnings("unchecked")
+     @SuppressWarnings("unchecked")
     public void deletePerson(String userName) {
-        EntityManager em = emf.createEntityManager();
-        try {
-            utx.begin();
-            Query q = em.createQuery("DELETE FROM Person i WHERE i.userName = :uname");
-            q.setParameter("uname", userName);
-            q.executeUpdate();
-            utx.commit();
-        } catch (Exception e) {
-            try {
-                utx.rollback();
-            } catch (Exception ex) {
-            }
-            throw new RuntimeException("Error deleting person", e);
-        } finally {
-            em.close();
-        }
+            EntityManager em = emf.createEntityManager();
 
+         try {
+             //try with em.remove instead
 
-        try {
-            utx.begin();
-            Query q = em.createQuery("DELETE FROM SocialEvent i WHERE i.socialEventID = :sid");
-            // q.setParameter("sid", id);
-            q.executeUpdate();
-            utx.commit();
-        } catch (Exception e) {
-            try {
-                utx.rollback();
-            } catch (Exception ex) {
+             utx.begin();
+             Person person = em.find(Person.class, userName);
+             if (person == null) // Not a valid event
+             {
+                 return;
+             }
+             em.remove(person);
+             utx.commit();
+         } catch (Exception e) {
+             e.printStackTrace();
+             try {
+                 utx.rollback();
+             } catch (Exception ex) {
+             }
+             throw new RuntimeException("Error deleting person", e);
+         } finally {
+             em.close();
+         }
+
+                /*
+                //Query q = em.createQuery("DELETE FROM Person i WHERE i.userName = :uname");
+                q.setParameter("uname", userName);
+                q.executeUpdate();
+                utx.commit();
+            } catch (Exception e) {
+                try {
+                    utx.rollback();
+                } catch (Exception ex) {
+                }
+                throw new RuntimeException("Error deleting person", e);
+            } finally {
+                em.close();
             }
-            throw new RuntimeException("Error deleting person", e);
-        } finally {
-            em.close();
-        }
+            try {
+                utx.begin();
+                Query q = em.createQuery("DELETE FROM SocialEvent i WHERE i.socialEventID = :sid");
+                // q.setParameter("sid", id);
+                q.executeUpdate();
+                utx.commit();
+            } catch (Exception e) {
+                try {
+                    utx.rollback();
+                } catch (Exception ex) {
+                }
+                throw new RuntimeException("Error deleting person", e);
+            } finally {
+                em.close();
+            }
+                 */
     }
 
     public void deleteEvent(int id) {
@@ -1311,5 +1334,7 @@ public class ModelFacade implements ServletContextListener {
         return WebappUtil.getArtifactPath();
         
     }
-     
+
+   
+    
 }

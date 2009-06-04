@@ -35,6 +35,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -154,7 +155,7 @@ public class WebappUtil {
     
         FileOutputStream fos = new FileOutputStream (imagePath);
         WriteThroughInputStream wis = new WriteThroughInputStream (is, fos);
-        
+        System.out.println(" the imagePath in saveImageWithThumbnail is "+ imagePath);
         try {
             scaler.customLoad(wis);
         } catch (Exception ex) {
@@ -164,7 +165,7 @@ public class WebappUtil {
         if (thumbnailPath != null) {
             scaler.resizeWithGraphics(thumbnailPath);
         }
-        
+        System.out.println(" the thumbNailPath in saveImageWithThumbnail is "+ thumbnailPath);
         wis.closeOutputStream();
         return true;
     } 
@@ -260,8 +261,11 @@ public class WebappUtil {
     
     public static Address handleAddress(ServletContext context, String street1, String street2, String city, String state, String zip, String country){
         StringBuffer addressx=new StringBuffer();
-        String proxyHost = context.getInitParameter(PROXY_HOST_INIT_PARAM);
-        String proxyPort = context.getInitParameter(PROXY_PORT_INIT_PARAM);
+        String proxyHost=null, proxyPort=null;
+        if(context!=null) {
+            proxyHost = context.getInitParameter(PROXY_HOST_INIT_PARAM);
+            proxyPort = context.getInitParameter(PROXY_PORT_INIT_PARAM);
+        }
         // change the addressx to conform to geocoder emulator (emulator yahoo service)
         // as opposed to google's'
         try {
@@ -554,6 +558,22 @@ public class WebappUtil {
 
     public static long getCacheTimeToLiveInSecs() {
         return Integer.parseInt(System.getProperty("CacheTimeToLiveInSecs", ""+WebappConstants.CACHE_TIME_TO_LIVE_IN_SECS));
+    }
+
+    
+    public static String parseValueFromHeader(String header, String parameterName) {
+        String parameterValue = null;
+        StringTokenizer st = new StringTokenizer(header, ";");
+          while (st.hasMoreTokens()) {
+              String token = st.nextToken();
+              if (token.contains(parameterName)) {
+                  int quoteIndex = token.indexOf("\"");
+                  parameterValue = token.substring(quoteIndex+1,token.length()-1);
+                  System.out.println("parameter " + parameterName + " is "+ parameterValue);
+                  break;
+              }
+          }
+        return parameterValue;
     }
 
 }
