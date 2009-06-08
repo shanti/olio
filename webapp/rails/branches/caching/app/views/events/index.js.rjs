@@ -1,1 +1,0 @@
-page[:yield].replace_html :partial => "events/event_list"

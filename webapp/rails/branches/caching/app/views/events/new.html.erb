@@ -1,8 +1,0 @@
-<h1>New event</h1>
-
-<% form_for :event, @event, :url => events_path, :html => {:multipart => true} do |f| -%>
-  <%= render :partial => 'change', :locals => {:f => f} %>
-  <%= submit_tag "Create" %>
-  <input type='reset' value='Reset' />
-<% end -%>
-
