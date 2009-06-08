@@ -9,6 +9,3 @@ Example
 =======
 
 country_select("user", "country_name")
-
-
-Copyright (c) 2008 Michael Koziarski, released under the MIT license
