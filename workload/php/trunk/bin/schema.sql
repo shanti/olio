@@ -37,7 +37,6 @@ friends_username VARCHAR(25) NOT NULL,
 is_accepted tinyint(1) NOT NULL,
 PRIMARY KEY (Person_username, friends_username)
 ) ENGINE=InnoDB;
-CREATE INDEX PERSON_USERNAME_IDX on PERSON_PERSON (Person_username);
 CREATE INDEX FRIENDS_USERNAME_IDX on PERSON_PERSON (friends_username);
 
 CREATE TABLE PERSON_SOCIALEVENT (
