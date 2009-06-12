@@ -232,6 +232,7 @@ public class UIDriver {
     private HashSet<String> cachedURLs = new HashSet<String>();
     private LinkedHashMap<String, String> loginHeaders =
             new LinkedHashMap<String, String>();
+    private LinkedHashMap<String, String> cachedHeaders;
     private UIDriverMetrics driverMetrics;
     private long imgBytes = 0;
     private int imagesLoaded = 0;
@@ -317,6 +318,10 @@ public class UIDriver {
         loginHeaders.put("Accept", "text/xml.application/xml,application/" +
                 "xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;" +
                 "q=0.5");
+
+        // We don't want the rest of the loginheaders in cachedHeaders
+		cachedHeaders = (LinkedHashMap)(loginHeaders.clone());
+
         loginHeaders.put("Accept-Language", "en-us,en;q=0.5");
         loginHeaders.put("Accept-Encoding", "gzip,deflate");
         loginHeaders.put("Accept-Charset", "ISO-8859-1,utf-8;q=0.7,*;q=0.7");
@@ -325,7 +330,11 @@ public class UIDriver {
         loginHeaders.put("Referer", homepageURL);
 
         isLoggedOn = false;
-        isCached = cached();
+
+		// Create headers for if-modified-since
+		String ifmod = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z").format(BASE_DATE);
+		cachedHeaders.put("If-Modified-Since", ifmod);
+        isCached= cached();
     }
 
     @BenchmarkOperation (
@@ -345,12 +354,15 @@ public class UIDriver {
             throw new IOException("Received empty response");
 
         Set<String> images = parseImages(responseBuffer);
+		/*****
         if (!isCached) {
-
+        ****/
             // Fetch the CSS/JS files
 
             loadStatics(homepageStatics);
+		/****
         }
+		***/
         loadImages(images);
         selectedEvent = RandomUtil.randomEvent(random, responseBuffer);
         logger.finer("Images loaded: " + imagesLoaded);
@@ -655,6 +667,11 @@ public class UIDriver {
         return urlSet;
     }
 
+    /*
+	 * We assume that the application has set an expiry far into the future.
+	 * As such the browser would not re-fetch these images within the same
+	 * session.
+	 */
     private void loadImages(Set<String> images) throws IOException {
         if (images != null)
             for (String image : images)
@@ -686,15 +703,22 @@ public class UIDriver {
     }
 
     private void loadStatics(String[] urls) throws IOException {
-
+        /**
         if (!isCached)
-            for (String url : urls)
-                if (cachedURLs.add(url)) {
-                    logger.finer("Loading URL " + url);
-                    http.readURL(url);
-                } else {
+		**/
+            for (String url : urls) {
+		// If we are simulating browser caching, send if-modified-since header
+		// Don't bother checking return code as we really don't want to fetch page
+		       if (isCached)
+			       http.readURL(url, cachedHeaders);
+               else {
+                   if (cachedURLs.add(url)) {
+                      logger.finer("Loading URL " + url);
+                      http.readURL(url);
+                   } else 
                     logger.finer("URL already cached: Not loading " + url);
-                }
+               }
+			}
     }
 
     public DateFormat getDateFormat() {
