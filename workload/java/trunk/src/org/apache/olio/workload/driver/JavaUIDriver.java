@@ -734,11 +734,14 @@ public class JavaUIDriver {
         StringBuilder responseBuffer = http.getResponseBuffer();
         if (responseBuffer.length() == 0)
             throw new IOException("Received empty response");
-        //Set<String> images = parseImages(responseBuffer);
+        Set<String> images = parseImages(responseBuffer);
         loadStatics(personStatics);
         //logger.info("The buffer is before appending is " + buffer.toString() );
         //logger.info("readURL is: " + buffer.toString() + id +".jpg"); 
+		/**
         http.readURL(buffer.append(id).append(".jpg").toString());
+		*/
+		loadImages(images);
     }
 
     public void doAddAttendee() throws IOException {

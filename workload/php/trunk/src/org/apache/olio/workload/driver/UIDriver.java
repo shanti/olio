@@ -612,9 +612,14 @@ public class UIDriver {
         StringBuilder responseBuffer = http.getResponseBuffer();
         if (responseBuffer.length() == 0)
             throw new IOException("Received empty response");
-
-        loadStatics(personStatics);       
+		/*
+		 * We need to also retrieve the images in the friend cloud
         http.readURL(buffer.append(id).append(".jpg").toString());
+		 */
+
+        Set<String> images = parseImages(responseBuffer);
+        loadStatics(personStatics);       
+		loadImages(images);
     }
 
     public void doAddAttendee() throws IOException {

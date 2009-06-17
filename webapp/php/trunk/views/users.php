@@ -128,7 +128,6 @@
   <p id="friendCloud"><?=$friendCloud;?></p>
   <p class="clr" />
 </div>
-<? echo '<a href="friends.php?username='.$username.'">more...</a>'; ?>
 <?if ($username == $_SESSION["uname"]) {?>
 <a name="incoming_requests"></a>
 <div id="incoming">

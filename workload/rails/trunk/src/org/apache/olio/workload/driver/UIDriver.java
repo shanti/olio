@@ -679,7 +679,8 @@ public class UIDriver {
             StringBuilder responseBuffer = new StringBuilder(personDetailGet.getResponseBodyAsString());
             if (responseBuffer.length() == 0)
                 throw new IOException("Received empty response");
-
+            Set<String> images = parseImages(responseBuffer);
+			loadImages(images);
             String event = RandomUtil.randomEvent(random, responseBuffer);
             if (event != null)
                 selectedEvent = event;

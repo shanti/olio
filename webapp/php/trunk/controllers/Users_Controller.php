@@ -64,6 +64,7 @@ class Users_Controller {
        }
    }
    
+/*****
    function getFriendCloud($username,$connection){
         $sql = "select firstname, lastname, friends_username from PERSON as p, PERSON_PERSON as pp where pp.person_username='$username' and p.username=pp.friends_username and pp.is_accepted=1";
         $result = $connection->query($sql);
@@ -82,27 +83,38 @@ class Users_Controller {
           return 'This person has no friends.';
         }
    }
-   /*
+****/
+   
    function getFriendCloud($username,$connection){
-        $sql = "select firstname, lastname, friends_username, imagethumburl from PERSON as p, PERSON_PERSON as pp where pp.person_username='$username' and p.username=pp.friends_username and pp.is_accepted=1 limit 6";
+        $sql = "select firstname, lastname, friends_username, imagethumburl from PERSON as p, PERSON_PERSON as pp where pp.person_username='$username' and p.username=pp.friends_username and pp.is_accepted=1";
         $result = $connection->query($sql);
         $rowsFound = false;
+        $count = 0;
+        $space = "&nbsp;";
         while($row = $result->getArray()) {
+	    $count = $count + 1;
             $rowsFound = true;
             $friend = $row['friends_username'];
             $fn = $row['firstname'];
             $ln = $row['lastname'];
             $image = $row['imagethumburl'];
-            $friendCloud = $friendCloud." ".'<div class="friend_cloud_item"> <a href="users.php?username=<?echo $username; ?>" style="display: block;"> <img src="fileService.php?cache=false&file=<?=$image?>" height=150px width=150px /> </a><br /> <a href="users.php?username='.$friend.'">'.$fn.' '.$ln.'</a> </div>';
+            $friendCloud = $friendCloud." ".'<div class="friend_cloud_item"> <a href="users.php?username='.$friend.'" style="display: block;"> <img src="fileService.php?cache=false&file='.$image.'" height=50px width=50px /> </a><br /> <a href="users.php?username='.$friend.'">'.$fn.' '.$ln.' </a> '.$space.' </div>';
+	    if($count >= 6){
+		break;
+	    }
         }
         unset($result);
         if ($rowsFound == true) {
-          return $friendCloud;
+	  if ($count >= 6){
+          	return $friendCloud."<br/ ". '<a href="friends.php?username='.$username.'">more...</a>';
+	  }else{
+		return $friendCloud;
+	  }
         }else{
           return 'This person has no friends.';
         }
    }
-   */
+   
    
    function getFriendsList($usernm,$loggedinuser,$connection,$offset){
         $sql = "select firstname, lastname, friends_username as username, imagethumburl from PERSON as p, PERSON_PERSON as pp where pp.person_username='$usernm' and p.username=pp.friends_username and pp.is_accepted=1 limit $offset,10";
