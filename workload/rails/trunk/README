@@ -1,4 +1,4 @@
-This directory contains the source code for the Olio PHP workload
+This directory contains the source code for the Olio Rails workload
 and data generators. The directory structure is standard to Faban.
 The directories of interest (where source code resides) are bin, 
 deploy and src. 
