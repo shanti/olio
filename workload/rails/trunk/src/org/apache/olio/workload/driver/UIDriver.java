@@ -42,6 +42,7 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.Part;
+import org.apache.commons.httpclient.methods.multipart.StringPart;
 
 @BenchmarkDefinition (
     name    = "Web20Bench",
@@ -526,26 +527,36 @@ public class UIDriver {
         MultipartPostMethod post = new MultipartPostMethod(addEventResultURL);
         GetMethod eventForm = new GetMethod(addEventURL);
 
+        StringPart tmpPart = null;
         // TODO: Implement prepareEvent() for Rails form data
-        StringBuilder buffer = new StringBuilder(256);
-        post.addParameter("commit", "Create");
-        // post.addParameter("controller", "events");
-        post.addParameter("event[title]", RandomUtil.randomText(random, 15, 20));
-        post.addParameter("event[summary]", RandomUtil.randomText(random, 50, 200));
-        post.addParameter("event[description]", RandomUtil.randomText(random, 100, 495));
-        post.addParameter("event[telephone]", RandomUtil.randomPhone(random, buffer));
-        post.addParameter("event[event_timestamp(1i)]", "2008");
-        post.addParameter("event[event_timestamp(2i)]", "10");
-        post.addParameter("event[event_timestamp(3i)]", "20");
-        post.addParameter("event[event_timestamp(4i)]", "20");
-        post.addParameter("event[event_timestamp(5i)]", "10");
+
+        String nvp[][] = {{"commit", "Create"},
+                          {"event[title]", RandomUtil.randomText(random, 15, 20)},
+                          {"event[summary]", RandomUtil.randomText(random, 50, 200)},
+                          {"event[description]", RandomUtil.randomText(random, 100, 495)},
+                          {"event[telephone]", RandomUtil.randomPhone(random, new StringBuilder(256))},
+                          {"event[event_timestamp(1i)]", "2008"},
+                          {"event[event_timestamp(2i)]", "10"},
+                          {"event[event_timestamp(3i)]", "20"},
+                          {"event[event_timestamp(4i)]", "20"},
+                          {"event[event_timestamp(5i)]", "10"}};
+
+        for (int i = 0; i < nvp.length; i++) {            
+            tmpPart = new StringPart(nvp[i][0], nvp[i][1]);
+            tmpPart.setContentType(null);
+            post.addPart(tmpPart);
+        }
 
         Part imagePart = new FilePart("event_image", eventImg, "image/jpeg", null);
         Part docPart = new FilePart("event_document", eventPdf, "application/pdf", null);
 
         post.addPart(imagePart);
         post.addPart(docPart);
-        post.addParameter("tag_list", "tag1");
+
+        tmpPart = new StringPart("tag_list", "tag1");
+        tmpPart.setContentType(null);
+
+        post.addPart(tmpPart);
 
         addAddress(post);
 
@@ -557,8 +568,11 @@ public class UIDriver {
 
         // Parse the authenticity_token from the response
         String token = parseAuthToken(responseBuffer);
-        if (token != null)
-            post.addParameter("authenticity_token", token);
+        if (token != null) {
+            tmpPart = new StringPart("authenticity_token", token);
+            tmpPart.setContentType(null);
+            post.addPart(tmpPart);
+        }
 
         doMultiPartPost(post, "Event was successfully created.");
 
@@ -581,27 +595,33 @@ public class UIDriver {
         MultipartPostMethod post = new MultipartPostMethod(addPersonResultURL);
         
         // TODO: Implement preparePerson() for Rails form data
-        String fields[]  = new String[8];
+        // String fields[]  = new String[8];
         StringBuilder b = new StringBuilder(256);
         int id = loadedUsers + personsAdded++ * ScaleFactors.activeUsers +
                                                         ctx.getThreadId() + 1;
         String username = UserName.getUserName(id);
         if (username == null || username.length() == 0)
             logger.warning("Username is null!");
-                            
-        post.addParameter("user[username]", username);
+
         http.readURL(checkNameURL, "name=" + username);
-        
-        post.addParameter("user[password]", "" + id);
-        post.addParameter("user[password_confirmation]", "" + id);
-        post.addParameter("user[firstname]",  RandomUtil.randomName(random, b, 2, 12).toString());
-        b.setLength(0);
-        post.addParameter("user[lastname]",  RandomUtil.randomName(random, b, 5, 12).toString());
-        post.addParameter("user[email]", username + "@" + random.makeCString(3, 10) + ".com");
-        b.setLength(0);
-        post.addParameter("user[telephone]", RandomUtil.randomPhone(random, b).toString());
-        post.addParameter("user[summary]", RandomUtil.randomText(random, 50, 200));
-        post.addParameter("user[timezone]", RandomUtil.randomTimeZone(random));
+
+        StringPart tmpPart = null;
+
+        String nvp[][] = {{"user[username]", username},
+                          {"user[password]", "" + id},
+                          {"user[password_confirmation]", "" + id},
+                          {"user[firstname]",  RandomUtil.randomName(random, new StringBuilder(256), 2, 12).toString()},
+                          {"user[lastname]",  RandomUtil.randomName(random, new StringBuilder(256), 5, 12).toString()},
+                          {"user[email]", username + "@" + random.makeCString(3, 10) + ".com"},
+                          {"user[telephone]", RandomUtil.randomPhone(random, new StringBuilder(256)).toString()},
+                          {"user[summary]", RandomUtil.randomText(random, 50, 200)},
+                          {"user[timezone]", RandomUtil.randomTimeZone(random)}};
+
+        for (int i = 0; i < nvp.length; i++) {
+            tmpPart = new StringPart(nvp[i][0], nvp[i][1]);
+            tmpPart.setContentType(null);
+            post.addPart(tmpPart);
+        }
         
         Part imagePart = new FilePart("user_image", personImg, "image/jpeg", null);
         post.addPart(imagePart);
@@ -902,13 +922,21 @@ public class UIDriver {
     // TODO: implement prepareAddress() for Rails form data
     public void addAddress(MultipartPostMethod post)
     {
+
+        StringPart tmpPart = null;
         //add the address
-        post.addParameter("address[street1]", street1());
-        post.addParameter("address[street2]",street2());
-        post.addParameter("address[city]", random.makeCString(4, 14));
-        post.addParameter("address[state]", random.makeCString(2, 2).toUpperCase());
-        post.addParameter("address[zip]", random.makeNString(5, 5));
-        post.addParameter("address[country]", country());
+        String nvp[][] = {{"address[street1]", street1()},
+                          {"address[street2]",street2()},
+                          {"address[city]", random.makeCString(4, 14)},
+                          {"address[state]", random.makeCString(2, 2).toUpperCase()},
+                          {"address[zip]", random.makeNString(5, 5)},
+                          {"address[country]", country()}};
+
+        for (int i = 0; i < nvp.length; i++) {
+            tmpPart = new StringPart(nvp[i][0], nvp[i][1]);
+            tmpPart.setContentType(null);
+            post.addPart(tmpPart);
+        }
     }
 
     public String street1() {
