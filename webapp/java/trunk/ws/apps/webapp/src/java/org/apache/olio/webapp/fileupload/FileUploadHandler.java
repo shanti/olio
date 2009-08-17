@@ -66,8 +66,8 @@ public class FileUploadHandler {
 
     private static Logger _logger = null;
     private FileUploadStatus fileUploadStatus = null;
-    private static final String FILE_UPLOAD_LOGGER = "com.sun.javaee.blueprints.components.ui.fileupload";
-    private static final String FILE_UPLOAD_LOG_STRINGS = "com.sun.javaee.blueprints.webapp.fileupload.LogStrings";
+    private static final String FILE_UPLOAD_LOGGER = "org.apache.olio.webapp.fileupload";
+    private static final String FILE_UPLOAD_LOG_STRINGS = null;
     
     /**
      * Default location of upload directory is /domain_dir/lib/upload, unless the Sun Appserver system property exits, then it will
