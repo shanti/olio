@@ -20,7 +20,7 @@
 #Script to run loader by hand
 
 if [ -z "$1" ] ; then
-    echo "Usage: $0 [concurrent users] <target directory>" >&2
+    echo "Usage: $0 [concurrent users] <target directory> <concurrency>" >&2
     exit 1
 fi
 
@@ -35,6 +35,12 @@ TARGET=$PWD
 
 if [ -n "$2" ] ; then
     TARGET=$2
+fi
+
+CONCURRENCY=128
+
+if [ -n "$3" ] ; then
+    CONCURRENCY=$3
 fi
 
 BINDIR=`dirname $0`
@@ -55,7 +61,7 @@ $L/fabancommon.jar:$L/commons-logging.jar:$L/fabandriver.jar:$L/fabanagents.jar
 export CLASSPATH
 
 $JAVA_HOME/bin/java -server org.apache.olio.workload.fsloader.FileLoader \
-    $BENCH_HOME/resources $TARGET $SCALE
+    $BENCH_HOME/resources $TARGET $SCALE $CONCURRENCY
 
 EXIT_CODE=$?
 if [ "$EXIT_CODE" = 0 ] ; then
