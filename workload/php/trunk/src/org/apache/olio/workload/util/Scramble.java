@@ -132,12 +132,12 @@ public class Scramble {
      * @param args ignored
      */
     public static void main(String[] args) {
-        char[][][] results = new char[8][][];
+        char[][][] results = new char[11][][];
         char[][] nullArray = new char[1][1];
         nullArray[0][0] = '0';
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < 5; i++)
             results[i] = nullArray;
-        for (int i = 2; i < 8; i++)
+        for (int i = 5; i < 11; i++)
             results[i] = genChars(i + 1);
         dumpArrays(results);
     }
