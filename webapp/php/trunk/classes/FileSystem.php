@@ -32,8 +32,7 @@ abstract class FileSystem {
   * In the PHP version, the last 2 arguments just default
   * appropriately.
   */
- abstract function create($key, $replication_factor = 2, 
- 						  $overwrite = 'true'); 
+ abstract function create($key, $replication_factor = 2, $overwrite = 'true');
 
  abstract function delete($key);
 
