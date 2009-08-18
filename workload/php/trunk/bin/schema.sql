@@ -17,6 +17,7 @@
 */
 
 create table PERSON(
+   userid INTEGER NOT NULL AUTO_INCREMENT,
    username VARCHAR(25) NOT NULL,
    password VARCHAR(25) NOT NULL,
    firstname VARCHAR(25) NOT NULL,
@@ -28,8 +29,10 @@ create table PERSON(
    summary VARCHAR(2500) NOT NULL,
    timezone VARCHAR(25) NOT NULL,
    ADDRESS_addressid INTEGER NOT NULL,
-   primary key (username)
+   primary key (userid)
 ) ENGINE=InnoDB;
+
+CREATE UNIQUE INDEX PERSON_USER_IDX on PERSON (username);
 
 CREATE TABLE PERSON_PERSON (
 Person_username VARCHAR(25) NOT NULL,
