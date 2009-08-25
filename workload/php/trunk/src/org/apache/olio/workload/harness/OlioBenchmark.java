@@ -48,12 +48,7 @@ public class OlioBenchmark extends DefaultFabanBenchmark {
     static Logger logger = Logger.getLogger(
                                         OlioBenchmark.class.getName());
     int totalRunningTimeInSecs = 0;
-    private List<NameValuePair<Integer>> memcacheServers;
-    private String webServerBinPath, webServerLogPath, webServerConfPath;
-    private String webServerPidPath, phpIniPath, cacheBinPath, dbConfPath;
-    WebServerService webServerService;
-    MemcachedService memcachedService = MemcachedService.getHandle();
-
+    
     /**
      * This method is called to configure the specific benchmark run
      * Tasks done in this method include reading user parameters,
@@ -66,56 +61,9 @@ public class OlioBenchmark extends DefaultFabanBenchmark {
         params = getParamRepository();
 
         //Obtaining configuration parameters
-        String webserverType = params.getParameter("webServer/type");
- 
-        webServerBinPath = params.getParameter("webServer/hostBinPath");
-        webServerLogPath = params.getParameter("webServer/hostLogPath");
-        webServerConfPath = params.getParameter("webServer/hostConfPath");
-        webServerPidPath = params.getParameter("webServer/hostPidPath");
-        phpIniPath = params.getParameter("webServer/phpIniPath");
-        cacheBinPath = params.getParameter("cacheServers/cacheBinPath");
-        dbConfPath = params.getParameter("dbServer/dbConfPath");
         String[] dbhosts = params.getParameter(
                             "dbServer/fa:hostConfig/fa:host").split(" ");
-        String[] webhosts = params.getParameter(
-                            "webServer/fa:hostConfig/fa:host").split(" ");
-
-        if ("apache".equals(webserverType)) {
-            webServerService = ApacheHttpdService.getHandle();
-            for (String webhost : webhosts) {
-                RunContext.getFile(webhost, webServerConfPath +
-                        File.separator + "httpd.conf", RunContext.getOutDir() +
-                        "httpd_conf.log." + getHostName(webhost));
-            }
-        } else if ("lighttpd".equals(webserverType)) {
-            webServerService = LighttpdService.getHandle();
-            for (String webhost : webhosts) {
-                RunContext.getFile(webhost, webServerConfPath +
-                        File.separator + "lighttpd.conf",
-                        RunContext.getOutDir() + "lighttpd_conf.log." +
-                        getHostName(webhost));
-            }
-        } else if ("glassfish".equals(webserverType)) {
-            webServerService = GlassfishService.getHandle();
-            for (String webhost : webhosts) {
-                RunContext.getFile(webhost, webServerConfPath +
-                        File.separator + "domain.xml",
-                        RunContext.getOutDir() + "domain_xml.log." +
-                        getHostName(webhost));
-            }
-        }
-        if (phpIniPath != null && phpIniPath.length() > 0)
-            for (String webhost : webhosts) {
-                RunContext.getFile(webhost, phpIniPath + "/php.ini",
-                        RunContext.getOutDir() + "php_ini.log." +
-                        getHostName(webhost));
-            }
-
-        for (String dbhost : dbhosts) {
-            RunContext.getFile(dbhost, dbConfPath + "/my.cnf",
-            RunContext.getOutDir() + "my_cnf.log." + getHostName(dbhost));
-        }
-
+        
         // Reloading database and media as necessary.
         boolean reloadDB = Boolean.parseBoolean(
                 params.getParameter("dbServer/reloadDB"));
@@ -175,36 +123,6 @@ public class OlioBenchmark extends DefaultFabanBenchmark {
 			if (exitValue != 0)
 				throw (new Exception("File load error, exited with value " + exitValue));
 		}
-        
-        //start the memcache servers
-        memcacheServers =
-                 params.getHostPorts("cacheServers/fa:hostConfig/fa:hostPorts");
-
-         // Assign the default port.
-         for (NameValuePair<Integer> hostPort : memcacheServers) {
-             if (hostPort.value == null)
-                 hostPort.value = 11211;
-         }
-
-        int index = 0;
-        String memServers[] = new String[memcacheServers.size()];
-        int ports[] = new int[memcacheServers.size()];
-        for (NameValuePair<Integer> thisCacheServer : memcacheServers) {
-            memServers[index] = thisCacheServer.name;
-            ports[index++] = thisCacheServer.value;
-        } 
-        memcachedService.setup(memServers, ports, "-u mysql -m 256",
-                cacheBinPath);
-        if ( !memcachedService.restartServers())
-            throw (new Exception("Memcached server(s) restart failed"));
-        
-        // Now start the web servers
-        if (webServerService != null) {
-            webServerService.setup(webhosts, webServerBinPath, webServerLogPath,
-                                    webServerConfPath, webServerPidPath);
-            if (!webServerService.restartServers())
-                throw (new Exception("Webserver(s) restart failed"));
-        }
 
         //calculate total running time, including rampUp, steadyState,
         // and rampDown
@@ -227,27 +145,13 @@ public class OlioBenchmark extends DefaultFabanBenchmark {
     public void end () throws Exception {
      
         super.end();
-        //stop the memcached servers
-        //logger.info("Stopping Memcached servers");
-        //memcachedService.stopServers();
-
-        if (webServerService != null) {
-            // xfer logs
-            logger.info("Transferring webserver error logs");
-            webServerService.xferLogs(totalRunningTimeInSecs);
-
-            // stop web servers
-            logger.info("Stopping web servers");
-            webServerService.stopServers();
-        }
+        
     }
 
     /* Override DefaultBenchmark's kill method to stop the servers.
      */
     public void kill() throws Exception {
-        memcachedService.stopServers();
-        if (webServerService != null)
-            webServerService.kill();
+       
         super.kill();
     }
 }

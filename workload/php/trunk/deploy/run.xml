@@ -20,22 +20,22 @@
 
 <olio>
     <jvmConfig xmlns="http://faban.sunsource.net/ns/fabanharness">
-        <javaHome>/apps/JVMs/jdk1.6.0_03</javaHome>
-        <jvmOptions>-Xmx1g -Xms256m -XX:+DisableExplicitGC</jvmOptions>
+        <javaHome>/usr/java</javaHome>
+        <jvmOptions>-Xmx3g -Xms256m -XX:+DisableExplicitGC</jvmOptions>
     </jvmConfig>
     
     <fa:runConfig definition="org.apache.olio.workload.driver.UIDriver" xmlns="http://faban.sunsource.net/ns/fabandriver" xmlns:fa="http://faban.sunsource.net/ns/faban" xmlns:fh="http://faban.sunsource.net/ns/fabanharness">
         <fh:description>Enter description for this run here</fh:description>
         
         <fa:hostConfig>
-            <fa:host>dewberry</fa:host>
+            <fa:host>pae4150-8</fa:host>
             <fh:enabled>true</fh:enabled>
             <fh:cpus>0</fh:cpus>
             <fh:tools>vmstat 10</fh:tools>
             <fh:userCommands/>
         </fa:hostConfig>
         
-        <fa:scale>50</fa:scale>
+        <fa:scale>25</fa:scale>
         
         <fa:runControl>
             <fa:rampUp>30</fa:rampUp>
@@ -47,7 +47,7 @@
         
         <audit>false</audit>
         <threadStart>            
-            <delay>10</delay>            
+            <delay>100</delay>
             <simultaneous>false</simultaneous>            
             <parallel>false</parallel>
         </threadStart>
@@ -58,11 +58,11 @@
         </stats>
         
         <runtimeStats enabled="false">
-            <interval>5</interval>
+            <interval>25</interval>
         </runtimeStats>
         
         <driverConfig name="UIDriver">            
-            <agents>2</agents>            
+            <agents>1</agents>
             <stats>
                 <interval>30</interval>
             </stats>            
@@ -75,66 +75,75 @@
     
     <webServer>
         <fa:hostConfig xmlns="http://faban.sunsource.net/ns/fabanharness" xmlns:fa="http://faban.sunsource.net/ns/faban">
-            <fa:hostPorts>abhi:8080</fa:hostPorts>
+            <fa:hostPorts>pae2200-2:8080</fa:hostPorts>
             <enabled>true</enabled>
             <cpus>0</cpus>
-            <tools>vmstat 10; mpstat 10; netsum -a -i 10; nicstat 10; statit 10; dladm show-aggr -s -i 5; ps -eo "pid pcpu time vsz rss nlwp args"; iostat -xn 10; cpustat</tools>           
+            <tools>vmstat 10; mpstat 10; iostat -xn 10</tools>           
             <userCommands/>            
         </fa:hostConfig>
         <type>apache</type>
-        <hostBinPath>/opt/coolstack/apache2/bin</hostBinPath>
-        <hostLogPath>/opt/coolstack/apache2/logs</hostLogPath>
-        <hostConfPath>/opt/coolstack/apache2/conf</hostConfPath>
-        <phpIniPath>/opt/coolstack/php5/lib</phpIniPath>
+        <fh:service xmlns:fh="http://faban.sunsource.net/ns/fabanharness">
+            <fh:name>ApacheHttpdService</fh:name>
+            <fh:tools>NONE</fh:tools>
+            <fh:restart>true</fh:restart>
+            <fh:config>
+                <cmdPath>/usr/apache2/2.2/bin/apachectl</cmdPath>
+                <logsDir>/var/apache2/2.2/logs</logsDir>
+             </fh:config>
+        </fh:service>
     </webServer>
     <dbServer>
         <fa:hostConfig xmlns="http://faban.sunsource.net/ns/fabanharness" xmlns:fa="http://faban.sunsource.net/ns/faban">
-            <fa:host>abhi</fa:host>
+            <fa:host>pae4250-03</fa:host>
             <enabled>true</enabled>
             <cpus>0</cpus>
-            <tools>vmstat 10; mpstat 10; netsum -a -i 10; nicstat 10; statit 10; dladm show-aggr -s -i 5; ps -eo "pid pcpu time vsz rss nlwp args"; iostat -xn 10; cpustat</tools>
+            <tools></tools>
             <userCommands/>
         </fa:hostConfig>
-        <dbDriver>com.mysql.jdbc.Driver</dbDriver>
-        <connectURL>jdbc:mysql://localhost/olio?user=olio&amp;password=olio&amp;relaxAutoCommit=true&amp;sessionVariables=FOREIGN_KEY_CHECKS=0</connectURL>
+        <dbDriver>com.mysql.jdbc.Driver</dbDriver>        
+        <connectURL>jdbc:mysql://pae4250-03/olio?user=olio&amp;password=olio&amp;relaxAutoCommit=true&amp;sessionVariables=FOREIGN_KEY_CHECKS=0</connectURL>
         <autoCommit>true</autoCommit>
         <reloadDB>true</reloadDB>
-        <scale>2000</scale>
-        <dbHomePath>/opt/coolstack/mysql_32bit</dbHomePath>
+        <scale>500</scale>
         <dbConfPath>/etc</dbConfPath>
+        <fh:service xmlns:fh="http://faban.sunsource.net/ns/fabanharness">
+            <fh:name>MySQLService</fh:name>
+            <fh:tools>Mysqlstats</fh:tools>
+            <fh:restart>true</fh:restart>
+            <fh:config>
+                <serverHome>/opt/coolstack/mysql</serverHome>
+                <user>olio</user>
+                <password>olio</password>
+             </fh:config>
+        </fh:service>
     </dbServer>
     <dataStorage>
-        <fa:hostConfig xmlns:fa="http://faban.sunsource.net/ns/faban"
-                       xmlns="http://faban.sunsource.net/ns/fabanharness">
-            <fa:host>abhi</fa:host>
+        <fa:hostConfig xmlns="http://faban.sunsource.net/ns/fabanharness" xmlns:fa="http://faban.sunsource.net/ns/faban">
+            <fa:host>pae2200-2</fa:host>
             <enabled>true</enabled>
             <cpus>0</cpus>
             <tools>NONE</tools>
             <userCommands></userCommands>
         </fa:hostConfig>
         <reloadMedia>false</reloadMedia>
-        <mediaDir>/filestore</mediaDir>
+        <mediaDir>/export/home/filestore</mediaDir>
     </dataStorage>
     <cacheServers>
         <fa:hostConfig xmlns="http://faban.sunsource.net/ns/fabanharness" xmlns:fa="http://faban.sunsource.net/ns/faban">
-            <fa:hostPorts>cacheHost:11212 cacheHost:11211</fa:hostPorts>
+            <fa:hostPorts>pae2200-2</fa:hostPorts>
             <enabled>true</enabled>
             <cpus>0</cpus>
             <tools>NONE</tools>
             <userCommands/>
         </fa:hostConfig>
-        <cacheBinPath>/opt/coolstack/bin</cacheBinPath>
+        <fh:service xmlns:fh="http://faban.sunsource.net/ns/fabanharness">
+            <fh:name>MemcachedService</fh:name>
+            <fh:tools>MemcacheStats -i 10</fh:tools>
+            <fh:restart>true</fh:restart>
+            <fh:config>
+                <cmdPath>/usr/lib/memcached</cmdPath>
+                <serverMemSize>256</serverMemSize>
+             </fh:config>
+        </fh:service>
     </cacheServers>
-    <!-- Shanti - commenting as not used
-    <otherServers>
-        <fa:hostConfig xmlns="http://faban.sunsource.net/ns/fabanharness" xmlns:fa="http://faban.sunsource.net/ns/faban">
-            <fa:host></fa:host>
-            <enabled>true</enabled>
-            <cpus>0</cpus>
-            <tools>NONE</tools>
-            <userCommands/>
-        </fa:hostConfig>
-        <serverList></serverList>
-    </otherServers>
-    -->
 </olio>
