@@ -27,7 +27,12 @@ import org.apache.olio.workload.util.ScaleFactors;
 import org.apache.olio.workload.util.UserName;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.methods.MultipartPostMethod;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.multipart.FilePart;
+import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
+import org.apache.commons.httpclient.methods.multipart.Part;
+import org.apache.commons.httpclient.methods.multipart.StringPart;
+import com.sun.faban.driver.transport.hc3.ApacheHC3Transport;
 
 import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
@@ -36,6 +41,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Logger;
+import org.apache.commons.httpclient.Header;
 
 @BenchmarkDefinition (
     name    = "OlioWorkload",
@@ -244,8 +250,10 @@ public class UIDriver {
         ctx = DriverContext.getContext();
         int scale = ctx.getScale();
         ScaleFactors.setActiveUsers(scale);
-        http = new HttpTransport();
-        // http.setFollowRedirects(true);
+        HttpTransport.setProvider("com.sun.faban.driver.transport.hc3.ApacheHC3Transport");
+        http = HttpTransport.newInstance();
+        //((ApacheHC3Transport) http).setRetry(false);
+        //http.setFollowRedirects(true);
         logger = ctx.getLogger();
         random = ctx.getRandom();
         driverMetrics = new UIDriverMetrics();
@@ -430,7 +438,7 @@ public class UIDriver {
             cachedURLs.clear();
             isCached = cached();
             isLoggedOn=false;
-            http = new HttpTransport(); // clear all state
+            http = HttpTransport.newInstance(); // clear all state
         }
     }
 
@@ -466,96 +474,104 @@ public class UIDriver {
     @BenchmarkOperation (
         name    = "AddEvent",
         max90th = 4,
-        timing  = Timing.MANUAL
+        timing  = Timing.AUTO
     )
     public void doAddEvent() throws IOException {
         logger.finer("doAddEvent");
-        ctx.recordTime();
         http.readURL(addEventURL);
         loadStatics(addEventStatics);
-
-        MultipartPostMethod post = new MultipartPostMethod(addEventResultURL);
         if(isLoggedOn) {
+            // Prepare the parts for the request.
+            ArrayList<Part> params = new ArrayList<Part>();
             String[] parameters = prepareEvent();
             if (parameters[0] == null || parameters[0].length() == 0)
                 logger.warning("Socialevent title is null!");
             else
                 logger.finer("addEvent adding event title: " + parameters[0]);
-            
-            post.addParameter("title", parameters[0]);
-            post.addParameter("description", parameters[1]);
-            post.addParameter("telephone", parameters[3]);
-            post.addParameter("timezone", parameters[4]);
+
+            params.add(new StringPart("title", parameters[0]));
+            params.add(new StringPart("description", parameters[1]));
+            params.add(new StringPart("telephone", parameters[3]));
+            params.add(new StringPart("timezone", parameters[4]));
+
             //add the address
             String[] addressArr = prepareAddress();
-            post.addParameter("street1", addressArr[0]);
-            post.addParameter("street2", addressArr[1]);
-            post.addParameter("city", addressArr[2]);
-            post.addParameter("state", addressArr[3]);
-            post.addParameter("zip", addressArr[4]);
-            post.addParameter("country", addressArr[5]);
-            post.addParameter("year",parameters[5]);
-            post.addParameter("month", parameters[6]);
-            post.addParameter("day", parameters[7]);
-            post.addParameter("hour", parameters[8]);
-            post.addParameter("minute", parameters[9]);
-            post.addParameter("tags", parameters[2]);
-            post.addParameter("submitter_user_name", username);
-            // We do the images last, not to split the fields into parts
-            post.addParameter("upload_image", eventImg);
-//            post.addParameter("eventThumbnail", eventThumb);
-            post.addParameter("upload_literature",eventPdf);
-            post.addParameter("addeventsubmit", "Create");
+            params.add(new StringPart("street1", addressArr[0]));
+            params.add(new StringPart("street2", addressArr[1]));
+            params.add(new StringPart("city", addressArr[2]));
+            params.add(new StringPart("state", addressArr[3]));
+            params.add(new StringPart("zip", addressArr[4]));
+            params.add(new StringPart("country", addressArr[5]));
 
+            params.add(new StringPart("year", parameters[5]));
+            params.add(new StringPart("month", parameters[6]));
+            params.add(new StringPart("day", parameters[7]));
+            params.add(new StringPart("hour", parameters[8]));
+            params.add(new StringPart("minute", parameters[9]));
+            params.add(new StringPart("tags", parameters[2]));
+
+            params.add(new StringPart("submitter_user_name", username));
+            // We do the images last, not to split the fields into parts
+            params.add(new FilePart("upload_image", eventImg));
+            params.add(new FilePart("upload_literature", eventPdf));
+            params.add(new StringPart("addeventsubmit", "Create"));
+            Part[] parts = new Part[params.size()];
+            parts = params.toArray(parts);
+            PostMethod post = new PostMethod(addEventResultURL);
+            post.setRequestEntity(
+                        new MultipartRequestEntity(parts, post.getParams()));
             doMultiPartPost(post);
-        }
-        ctx.recordTime();
+        }      
         ++driverMetrics.addEventTotal;
     }
 
     @BenchmarkOperation (
         name    = "AddPerson",
         max90th = 3,
-        timing  = Timing.MANUAL
+        timing  = Timing.AUTO
     )
     public void doAddPerson() throws IOException {
         logger.finer("doAddPerson");
         if (isLoggedOn)
             doLogout();
 
-        ctx.recordTime();
         http.readURL(addPersonURL);
         loadStatics(addPersonStatics);
-        MultipartPostMethod post = new MultipartPostMethod(addPersonResultURL);
-        String[] parameters = preparePerson();
-        
+        // Prepare the parts for the request.
+        ArrayList<Part> params = new ArrayList<Part>();
+        String[] parameters = preparePerson();        
         // Debug
         if (parameters[0] == null || parameters[0].length() == 0)
             logger.warning("Username is null!");
         else
             logger.finer("addPerson adding user: " + parameters[0]);
-        
-        post.addParameter("add_user_name", parameters[0]);
-        post.addParameter("psword", parameters[1]);
-        post.addParameter("passwordx", parameters[1]);
-        post.addParameter("first_name", parameters[2]);
-        post.addParameter("last_name", parameters[3]);
-        post.addParameter("email",parameters[4]);
+
+        params.add(new StringPart("add_user_name", parameters[0]));
+        params.add(new StringPart("psword", parameters[1]));
+        params.add(new StringPart("passwordx", parameters[1]));
+        params.add(new StringPart("first_name", parameters[2]));
+        params.add(new StringPart("last_name", parameters[3]));
+        params.add(new StringPart("email", parameters[4]));
+
         String[] addressArr = prepareAddress();
-        post.addParameter("street1",addressArr[0]);
-        post.addParameter("street2",addressArr[1]);
-        post.addParameter("zip", addressArr[4]);
-        post.addParameter("city", addressArr[2]);
-        post.addParameter("state", addressArr[3]);
-        post.addParameter("country", addressArr[5]);
-        post.addParameter("telephone",parameters[5]);
-        post.addParameter("timezone", parameters[7]);
-        post.addParameter("user_image", personImg);
-//        post.addParameter("user_thumbnail",personThumb);
-        post.addParameter("summary", parameters[6]);
-        post.addParameter("addpersonsubmit", "Create");
+        params.add(new StringPart("street1", addressArr[0]));
+        params.add(new StringPart("street2", addressArr[1]));
+        params.add(new StringPart("zip", addressArr[4]));
+        params.add(new StringPart("city", addressArr[2]));
+        params.add(new StringPart("state", addressArr[3]));
+        params.add(new StringPart("country", addressArr[5]));
+
+        params.add(new StringPart("telephone", parameters[5]));
+        params.add(new StringPart("timezone", parameters[7]));
+        params.add(new FilePart("user_image", personImg));
+        params.add(new StringPart("summary", parameters[6]));
+        params.add(new StringPart("addpersonsubmit", "Create"));
+        Part[] parts = new Part[params.size()];
+        parts = params.toArray(parts);
+        PostMethod post = new PostMethod(addPersonResultURL);
+        post.setRequestEntity(
+                        new MultipartRequestEntity(parts, post.getParams()));
         doMultiPartPost(post);
-        ctx.recordTime();
         ++driverMetrics.addPersonTotal;
     }
 
@@ -761,13 +777,21 @@ public class UIDriver {
                 String.valueOf(randomId) + "&submit=Login";
     }
 
-    public void doMultiPartPost(MultipartPostMethod post) throws IOException {
-
-        HttpClient client = new HttpClient();
-        client.setConnectionTimeout(5000);
+    public void doMultiPartPost(PostMethod post) throws IOException {
+        HttpClient client = ((ApacheHC3Transport) http).getHttpClient();
+        client.getHttpConnectionManager().getParams().
+                    setConnectionTimeout(5000);
         int status = client.executeMethod(post);
-        if(status != HttpStatus.SC_OK)
-            throw new IOException("Multipart Post did not work");
+        Header locationHeader = post.getResponseHeader("location");
+        if (locationHeader != null) {
+            String redirectLocation = locationHeader.getValue();
+            // Release the connection after we get the location, etc.
+            post.releaseConnection();
+            http.fetchURL(baseURL + '/' + redirectLocation);
+        } else if(status != HttpStatus.SC_OK){
+            post.releaseConnection();
+            throw new IOException("Multipart Post did not work, returned status code: " + status);
+        }
     }
 
     public String[] prepareEvent()  {
