@@ -476,6 +476,12 @@ public class UIDriver {
         max90th = 4,
         timing  = Timing.AUTO
     )
+    @NegativeExponential(
+        cycleType = CycleType.CYCLETIME,
+        cycleMean = 5000,
+        cycleMin = 1000,
+        cycleDeviation = 2
+    )
     public void doAddEvent() throws IOException {
         logger.finer("doAddEvent");
         http.readURL(addEventURL);
@@ -529,6 +535,12 @@ public class UIDriver {
         name    = "AddPerson",
         max90th = 3,
         timing  = Timing.AUTO
+    )
+    @NegativeExponential(
+        cycleType = CycleType.CYCLETIME,
+        cycleMean = 5000,
+        cycleMin = 1000,
+        cycleDeviation = 2
     )
     public void doAddPerson() throws IOException {
         logger.finer("doAddPerson");
