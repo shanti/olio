@@ -22,13 +22,9 @@ package org.apache.olio.workload.harness;
 
 import com.sun.faban.common.Command;
 import com.sun.faban.common.CommandHandle;
-import com.sun.faban.common.NameValuePair;
-import com.sun.faban.harness.DefaultFabanBenchmark;
-import com.sun.faban.harness.RunContext;
-import com.sun.faban.harness.engine.*;
+import com.sun.faban.harness.DefaultFabanBenchmark2;
+import com.sun.faban.harness.PreRun;
 
-import java.io.File;
-import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
@@ -43,7 +39,7 @@ import static com.sun.faban.harness.RunContext.*;
  *
  * @author Akara Sucharitakul
  */
-public class OlioBenchmark extends DefaultFabanBenchmark {
+public class OlioBenchmark extends DefaultFabanBenchmark2 {
     
     static Logger logger = Logger.getLogger(
                                         OlioBenchmark.class.getName());
@@ -56,7 +52,7 @@ public class OlioBenchmark extends DefaultFabanBenchmark {
      *
      * @throws Exception If configuration was not successful
      */
-    public void configure() throws Exception {
+    @PreRun public void prerun() throws Exception {
         
         params = getParamRepository();
 
@@ -136,22 +132,5 @@ public class OlioBenchmark extends DefaultFabanBenchmark {
         this.totalRunningTimeInSecs = Integer.parseInt(rampUp) +
                 Integer.parseInt(steadyState) + Integer.parseInt(rampDown);
 
-        super.configure();
-    }
-
-    /* override DefaultBenchmark's end method to collect webserver log file
-     * via the OlioBenchmark harness class
-     */
-    public void end () throws Exception {
-     
-        super.end();
-        
-    }
-
-    /* Override DefaultBenchmark's kill method to stop the servers.
-     */
-    public void kill() throws Exception {
-       
-        super.kill();
     }
 }
