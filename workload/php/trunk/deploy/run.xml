@@ -89,6 +89,7 @@
             <fh:config>
                 <cmdPath>/usr/apache2/2.2/bin/apachectl</cmdPath>
                 <logsDir>/var/apache2/2.2/logs</logsDir>
+                <tmpDir>/tmp</tmpDir>
              </fh:config>
         </fh:service>
     </webServer>
