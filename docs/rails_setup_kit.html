@@ -308,8 +308,13 @@ path to your rails app's public directory: </CODE>
 <PRE STYLE="margin-bottom: 0.2in"><CODE>       root /var/www/virtual/example.com/rails/railsapp/public;</CODE></PRE><P STYLE="margin-bottom: 0.04in">
 to <CODE>root $APP_DIR/public;</CODE> <I># replace $APP_DIR with
 whatever value you used for $APP_DIR throughput the installation</I></P>
-<P STYLE="margin-bottom: 0.04in"><BR><BR>
+<P STYLE="margin-bottom: 0.04in">
 </P>
+<OL>
+<P>You may need to increase the number of open file descriptors allowed when running at
+larger scales. You can do this by using the command <CODE>ulimit -n 10240</CODE>. 
+</P>
+</OL>
 <OL START=3>
 	<P STYLE="margin-bottom: 0.14in">Do NOT start nginx yet.</P>
 </OL>
