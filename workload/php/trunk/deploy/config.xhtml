@@ -103,7 +103,7 @@
 				</xforms:bind>
 				<xforms:bind id='bind-webServer-service-config-logsDir' xforms:nodeset='logsDir'  >
 				</xforms:bind>
-				<xforms:bind id='bind-webServer-service-config-tmpDir' xforms:nodeset='tmpDir'  >
+				<xforms:bind id='bind-webServer-service-config-phpSessionDir' xforms:nodeset='phpSessionDir'  >
 				</xforms:bind>
 			</xforms:bind>
 		</xforms:bind>
@@ -242,7 +242,7 @@
 <config>Config</config>
 <cmdPath>Cmd Path</cmdPath>
 <logsDir>Logs Dir</logsDir>
-<tmpDir>Tmp Dir</tmpDir>
+<phpSessionDir>Php Session Dir</phpSessionDir>
 <dbServer>Db Server</dbServer>
 <dbDriver>Db Driver</dbDriver>
 <connectURL>Connect U R L</connectURL>
@@ -450,8 +450,8 @@
 				<xforms:input id='input-webServer-service-config-logsDir' xforms:bind='bind-webServer-service-config-logsDir'>
 			<xforms:label xforms:model='benchmark-labels' xforms:ref='/labels/logsDir'/>
 		</xforms:input>
-				<xforms:input id='input-webServer-service-config-tmpDir' xforms:bind='bind-webServer-service-config-tmpDir'>
-			<xforms:label xforms:model='benchmark-labels' xforms:ref='/labels/tmpDir'/>
+				<xforms:input id='input-webServer-service-config-phpSessionDir' xforms:bind='bind-webServer-service-config-phpSessionDir'>
+			<xforms:label xforms:model='benchmark-labels' xforms:ref='/labels/phpSessionDir'/>
 		</xforms:input>
 
 
