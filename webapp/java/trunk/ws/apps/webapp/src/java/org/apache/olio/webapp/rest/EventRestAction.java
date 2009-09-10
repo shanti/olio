@@ -44,6 +44,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
+import java.util.TimeZone;
 
 /**
  * handles all request related to users
@@ -282,6 +283,7 @@ public class EventRestAction implements Action {
         String yearx=htUpload.get("year");
         String hourx=htUpload.get("hour");
         String minutex=htUpload.get("minute");
+        String timezonex = htUpload.get(TIMEZONE_PARAM);
         
         // SECURITY get submitter from session
         String submitterUserName=null;
@@ -323,7 +325,8 @@ public class EventRestAction implements Action {
    
         
         // gat time in utc milliseconds...
-        Calendar localCal=GregorianCalendar.getInstance();
+        //adding timezone specific info for social event
+        Calendar localCal=GregorianCalendar.getInstance(TimeZone.getTimeZone(timezonex));
         localCal.set(Calendar.MONTH, Integer.parseInt(monthx) - 1);
         localCal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(dayx));
         localCal.set(Calendar.YEAR, Integer.parseInt(yearx));

@@ -62,8 +62,8 @@ theme : 'simple'
       <p><label for="description">Description</label><br/>
       <textarea cols="37" id="description" name="description" rows="20" >${requestScope['description']}</textarea></p>
     </div>
-
     <div id="misc_event_form">
+
       <p>
       <label for="event_timestamp">Event date and time</label><br/>
       <c:choose>
@@ -71,11 +71,16 @@ theme : 'simple'
         ${requestScope['socialEvent'].yearDropDown} ${requestScope['socialEvent'].monthDropDown} ${requestScope['socialEvent'].dayDropDown}
         &mdash;<br/> 
         ${requestScope['socialEvent'].hourDropDown}:${requestScope['socialEvent'].minuteDropDown}
+        &mdash;<br/> 
        </c:when>
        <c:otherwise>
         ${mf.yearDropDown} ${mf.monthDropDown} ${mf.dayDropDown}
         &mdash;<br/> 
         ${mf.hourDropDown}:${mf.minuteDropDown}
+        &mdash;<br/> 
+	<select id="timezone" name="timezone">
+                             <%@ include file="timezones.html" %>
+                        </select>
        </c:otherwise>
       </c:choose>
       </p><p>
