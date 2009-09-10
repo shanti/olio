@@ -49,10 +49,12 @@
          
         <load-on-startup>1</load-on-startup>
     </servlet>
+<!--
     <servlet-mapping>
         <servlet-name>Jersey</servlet-name>
         <url-pattern>/resources/*</url-pattern>
     </servlet-mapping>
+-->
    <!--
    <servlet>
         <servlet-name>jersey</servlet-name>
