@@ -174,7 +174,7 @@
                         <c:forEach var="incoming" items="${requestScope['displayPerson'].incomingInvitations}">  
                             
                             <li id="incoming_friend_request">
-                                <a href="${pageContext.servletContext.contextPath}/person?user_name=${incoming.requestor.userName}">
+                                <a href="${pageContext.servletContext.contextPath}/person?user_name=${incoming.requestor.userName}&actionType=display_person">
                                 ${incoming.requestor.firstName}&nbsp;${incoming.requestor.lastName}</a>
                                 <div id="approve_friend"><input type="button" value="Approve Friendship" 
                                     onclick="approveFriendship('${userBean.loggedInPerson.userName}','${incoming.requestor.userName}')" /></div>
@@ -194,7 +194,7 @@
                         <c:forEach var="outgoing" items="${requestScope['displayPerson'].outgoingInvitations}">  
                         
                         <li id="outgoing_friend_request">
-                                          <a href="${pageContext.servletContext.contextPath}/person?user_name=${outgoing.candidate.userName}">
+                                          <a href="${pageContext.servletContext.contextPath}/person?user_name=${outgoing.candidate.userName}&actionType=display_person">
                                 ${outgoing.candidate.firstName}&nbsp;${outgoing.candidate.lastName}</a>                                          
                             
                            
