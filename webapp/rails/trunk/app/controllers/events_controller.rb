@@ -353,11 +353,14 @@ class EventsController < ApplicationController
   end
   
   def new_image?
-    return (params[:event_image] == '') ? false : true
+##    return (params[:event_image] == '') ? false : true
+# Fix for rails 2.3.2
+	return !(params[:event_image].blank?)
   end
   
   def new_document?
-    return (params[:event_document] == '') ? false : true
+#    return (params[:event_document] == '') ? false : true
+	return !(params[:event_document].blank?)
   end
 
   def attendee_list(event, max)

@@ -227,7 +227,9 @@ class UsersController < ApplicationController
   private ###################################################
   
   def new_image?
-    return (params[:user_image] == '') ? false : true
+##    return (params[:user_image] == '') ? false : true
+# Fix for rails 2.3.2
+	return !(params[:user_image].blank?)
   end
   
   def invites_for_friend_links(user)
