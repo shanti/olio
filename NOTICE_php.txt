@@ -43,3 +43,6 @@ This product includes the Whalin memcached client:
 * Copyright (c) 2007, Greg Whain
 * All rights reserved.
 
+This software uses the 'fastimagecopyresampled' function from Tim Eckel:
+Author: Tim Eckel - Date: 09/07/07 - Version: 1.1 - Project: FreeRingers.net - Freely distributable - These comments must remain.
+
