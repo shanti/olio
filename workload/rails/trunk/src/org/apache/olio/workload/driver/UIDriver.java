@@ -511,6 +511,12 @@ public class UIDriver {
             driverMetrics.tagSearchImages += images.size();
     }
 
+    @NegativeExponential (
+        cycleType = CycleType.CYCLETIME,
+        cycleMean = 5000,
+		cycleMin = 1000,
+        cycleDeviation = 2
+    )
     @BenchmarkOperation (
         name    = "AddEvent",
         max90th = 4,
@@ -580,6 +586,12 @@ public class UIDriver {
         ++driverMetrics.addEventTotal;
     }
 
+    @NegativeExponential (
+        cycleType = CycleType.CYCLETIME,
+        cycleMean = 5000,
+		cycleMin = 1000,
+        cycleDeviation = 2
+    )
     @BenchmarkOperation (
         name    = "AddPerson",
         max90th = 3,
