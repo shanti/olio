@@ -33,7 +33,7 @@ class Geocoder {
         $stream = $this->curl_string($url);
         $xmlBegin= strpos($stream, '<?xml');
         if(!$xmlBegin)
-            throw new Exception('Did not find xml part in: $stream');
+            throw new Exception("Did not find xml part in: $stream");
         $xmlString = substr($stream, $xmlBegin);
         $xml = simplexml_load_string($xmlString);
         $this->latitude = $xml->Result->Latitude;
