@@ -221,7 +221,7 @@ if ($image_name != "") {
         throw new Exception("Error moving uploaded file to $modified_image_name");
     }
     $thumb_location = $resourcedir . $imagethumb;
-    ImageUtil::createThumb($user_image_location, $thumb_location, 133, 99);
+    ImageUtil::createThumb($user_image_location, $thumb_location, 120, 120);
     if (!isset($fs))
     $fs = FileSystem::getInstance();
     if (!$fs->create($user_image_location, "NO_OP", "NO_OP")) {

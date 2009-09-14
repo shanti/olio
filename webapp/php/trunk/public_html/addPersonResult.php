@@ -128,7 +128,7 @@ if ($image_name != "") {
 
     // 6. Generate the thumbnails.
     $thumb_location = $resourcedir . $imagethumb;
-    ImageUtil::createThumb($user_image_location, $thumb_location, 133, 99);
+    ImageUtil::createThumb($user_image_location, $thumb_location, 120, 120);
 
     // 7. Store the image.
     $fs = FileSystem::getInstance();
