@@ -22,9 +22,6 @@
     <head>
       <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
       <title>Web2.0 Php Application: index</title>    
-<!--
-      <script src="js/tiny_mce/tiny_mce.js" type="text/javascript"></script>
--->
       <script src="js/prototype.js" type="text/javascript"></script>
       <script src="js/effects.js" type="text/javascript"></script>
       <script src="js/dragdrop.js" type="text/javascript"></script>

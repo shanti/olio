@@ -29,14 +29,6 @@
 ?>
 <script src="js/validateform.js" type="text/javascript"></script>
 <script src="js/httpobject.js" type="text/javascript"></script>
-<script type="text/javascript">
-//<![CDATA[
-tinyMCE.init({
-mode : 'textareas',
-theme : 'simple'
-});
-//]]>
-</script>
 
 <h1>New user</h1>
 <form name="addperson" action="addPersonResult.php" method="POST" enctype="multipart/form-data" onsubmit="return checkUserFields()" >

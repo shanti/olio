@@ -29,14 +29,6 @@
  * 
  */
 ?>
-<script type="text/javascript">
-//<![CDATA[
-tinyMCE.init({
-mode : 'textareas',
-theme : 'simple'
-});
-//]]>
-</script>
 <script src="js/validateform.js" type="text/javascript"></script>
 <script src="js/httpobject.js" type="text/javascript"></script>
 <h1>New event</h1>
