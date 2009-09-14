@@ -538,6 +538,12 @@ public class JavaUIDriver {
         max90th = 4,
         timing  = Timing.MANUAL
     )
+    @NegativeExponential (
+        cycleType = CycleType.CYCLETIME,
+        cycleMean = 5000,
+        cycleMin = 1000,
+        cycleDeviation = 2
+    )
     public void doAddEvent() throws IOException {
         logger.finer("doAddEvent");
         ctx.recordTime();
@@ -597,6 +603,12 @@ public class JavaUIDriver {
         name    = "AddPerson",
         max90th = 3,
         timing  = Timing.MANUAL
+    )
+    @NegativeExponential (
+        cycleType = CycleType.CYCLETIME,
+        cycleMean = 5000,
+        cycleMin = 1000,
+        cycleDeviation = 2
     )
     public void doAddPerson() throws IOException {
         logger.finer("doAddPerson");
