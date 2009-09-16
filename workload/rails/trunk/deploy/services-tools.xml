@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Document   : service-tools.xml
+    Created on : April 6, 2009, 1:26 PM
+    Author     : Sheetal Patil
+    Description:
+        Purpose of the document follows.
+-->
+<services-tools>
+    <service id="RailsService">
+        <class>org.apache.olio.services.RailsService</class>
+    </service>
+    <service id="NginxService">
+        <class>org.apache.olio.services.NginxService</class>
+    </service>
+</services-tools>
