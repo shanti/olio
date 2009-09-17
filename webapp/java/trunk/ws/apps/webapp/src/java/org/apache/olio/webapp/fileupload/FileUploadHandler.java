@@ -230,7 +230,10 @@ public class FileUploadHandler {
                         if (bDebug) {
                             System.out.println("\n*** other default locationDir=" + serverLocationDir);
                         }
-                        fileDir = (File) request.getAttribute("javax.servlet.context.tempdir");
+                        //fileDir = (File) request.getAttribute("javax.servlet.context.tempdir");
+                        // we don't need the tmp directory since we are avoiding writing twice - once to /tmp and then to filestore
+                        // pick this up from the system environment(or web.xml) that WebappUtil sets
+                        serverLocationDir = WebappConstants.WEBAPP_IMAGE_DIRECTORY;
                         serverLocationDir = fileDir.toString();
                     }
                 } else {
