@@ -3,7 +3,7 @@
     <!-- Note: Most of these fields are not needed for a benchmark
     implemented using the Faban driver framework.  -->
     <name>Java Olio Workload</name>
-    <version>0.1</version>
+    <version>0.2</version>
     <config-form>config.xhtml</config-form>
     <config-file-name>run.xml</config-file-name>
     <benchmark-class>org.apache.olio.workload.harness.OlioBenchmark</benchmark-class>

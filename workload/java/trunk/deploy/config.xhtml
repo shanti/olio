@@ -11,7 +11,7 @@
         <xforms:model id="benchmark-model">
             <xforms:instance id="benchmark-instance" src="{benchmark.template}"/>
             <xforms:submission xforms:action="schedule-run.jsp" xforms:replace="all" id="submission-debug" xforms:method="post"/>
-            <xforms:bind id="bind-web20" xforms:nodeset="/web20">
+            <xforms:bind id="bind-olio" xforms:nodeset="/olio">
                 <xforms:bind id="bind-jvmConfig" xforms:nodeset="fh:jvmConfig">
                     <xforms:bind id="bind-javaHome" xforms:nodeset="fh:javaHome"/>
                     <xforms:bind id="bind-jvmOptions" xforms:nodeset="fh:jvmOptions"/>
@@ -35,7 +35,7 @@
                         <xforms:bind id="bind-simultaneous" xforms:nodeset="fd:simultaneous"/>
                         <xforms:bind id="bind-parallel" xforms:nodeset="fd:parallel"/>
                     </xforms:bind>
-                    <xforms:bind id="bind-webServer" xforms:nodeset="fd:driverConfig[@name='JavaUIDriver']">
+                    <xforms:bind id="bind-webServer" xforms:nodeset="fd:driverConfig[@name='UIDriver']">
                         <xforms:bind id="bind-driver-agents" xforms:nodeset="fd:agents" xforms:type="positiveInteger"/>
                         <xforms:bind id="bind-driver-statsInterval" xforms:nodeset="fd:stats/fd:interval" xforms:type="positiveInteger"/>
                         <xforms:bind id="bind-driver-properties" xforms:nodeset="fd:properties">
@@ -52,13 +52,15 @@
                     </xforms:bind>
                     <!-- addition here -->
                     <xforms:bind id="bind-webServer-type" xforms:nodeset="type"/>
-                    <xforms:bind id="bind-webServer-binPath" xforms:nodeset="hostBinPath"/>
-                    <xforms:bind id="bind-webServer-logPath" xforms:nodeset="hostLogPath"/>
-                    <xforms:bind id="bind-webServer-confPath" xforms:nodeset="hostConfPath"/>
-                    <xforms:bind id="bind-webServer-phpIniPath" xforms:nodeset="phpIniPath"/>
-                    <xforms:bind id="bind-webServer-manualStart" xforms:nodeset="manualStart"/>                    
+                    <xforms:bind id='bind-webServer-service' xforms:nodeset='fh:service'>
+                        <xforms:bind id='bind-webServer-restart' xforms:nodeset='fh:restart' xforms:type="boolean"/>
+                        <xforms:bind id='bind-webServer-service-config' xforms:nodeset='fh:config'  >
+                            <xforms:bind id='bind-webServer-cmdPath' xforms:nodeset='cmdPath'/>
+                            <xforms:bind id='bind-webServer-logsDir' xforms:nodeset='logsDir'/>
+                            <xforms:bind id='bind-webServer-configDir' xforms:nodeset='configDir'/>
+                        </xforms:bind>
+                    </xforms:bind>
                 </xforms:bind>
-
 
                 <xforms:bind id="bind-dbServer" xforms:nodeset="dbServer">
                     <xforms:bind id="bind-dbServer-hostConfig" xforms:nodeset="fa:hostConfig">
@@ -69,12 +71,15 @@
                     <xforms:bind id="bind-dbDriver" xforms:nodeset="dbDriver"/>
                     <xforms:bind id="bind-connectURL" xforms:nodeset="connectURL"/>
                     <xforms:bind id="bind-reloadDB" xforms:nodeset="reloadDB" xforms:type="boolean"/>
-                    <xforms:bind id="bind-autoCommit" xforms:nodeset="autoCommit" xforms:type="boolean"/>
                     <xforms:bind id="bind-load-scale" xforms:nodeset="scale" xforms:type="positiveInteger"/>
-                    <!-- addition here -->
-                    <xforms:bind id="bind-db-homePath" xforms:nodeset="dbHomePath" />
-                    <xforms:bind id="bind-db-confPath" xforms:nodeset="dbConfPath" />
+                    <xforms:bind id='bind-dbServer-service' xforms:nodeset='fh:service'>
+                        <xforms:bind id='bind-dbServer-service-config' xforms:nodeset='fh:config'>
+                            <xforms:bind id='bind-db-serverHome' xforms:nodeset='serverHome'/>
+                            <xforms:bind id="bind-db-confPath" xforms:nodeset="confPath" />
+                        </xforms:bind>
+                    </xforms:bind>
                 </xforms:bind>
+
                 <xforms:bind id="bind-dataStorage" xforms:nodeset="dataStorage">
                     <xforms:bind id="bind-dataStorage-hostConfig" xforms:nodeset="fa:hostConfig">
                         <xforms:bind id="bind-dataStorage-host" xforms:nodeset="fa:host"/>
@@ -84,23 +89,20 @@
                     <xforms:bind id="bind-reloadMedia" xforms:nodeset="reloadMedia" xforms:type="boolean"/>
                     <xforms:bind id="bind-mediaDir" xforms:nodeset="mediaDir"/>
                 </xforms:bind>
-<!-- change here -->
+
                 <xforms:bind id="bind-cacheServers" xforms:nodeset="cacheServers">
                     <xforms:bind id="bind-cacheServers-hostConfig" xforms:nodeset="fa:hostConfig">
                         <xforms:bind id="bind-cacheServers-hostPorts" xforms:nodeset="fa:hostPorts"/>
                         <xforms:bind id="bind-cacheServers-tools" xforms:nodeset="fh:tools"/>
                         <xforms:bind id="bind-cacheServers-userCommands" xforms:nodeset="fh:userCommands"/>
                     </xforms:bind>
-                    <xforms:bind id="bind-cache-binPath" xforms:nodeset="cacheBinPath"/>
-                </xforms:bind>
-                <!-- Shanti - comenting for now, as not used
-                <xforms:bind id="bind-otherServers" xforms:nodeset="otherServers">
-                    <xforms:bind id="bind-otherServers-hostConfig" xforms:nodeset="fa:hostConfig">
-                        <xforms:bind id="bind-otherServers-host" xforms:nodeset="fa:host"/>
-                        <xforms:bind id="bind-otherServers-tools" xforms:nodeset="fh:tools"/>
+                    <xforms:bind id='bind-cacheServers-service' xforms:nodeset='fh:service'  >
+                        <xforms:bind id='bind-cacheServers-service-config' xforms:nodeset='fh:config'  >
+                            <xforms:bind id="bind-cache-cmdPath" xforms:nodeset="cmdPath"/>
+                            <xforms:bind id='bind-cache-serverMemSize' xforms:nodeset='serverMemSize' xforms:type="positiveInteger"/>
+                        </xforms:bind>
                     </xforms:bind>
                 </xforms:bind>
-                -->
             </xforms:bind>
         </xforms:model>
         <xforms:model id="benchmark-labels">
@@ -114,7 +116,6 @@
                     <description>Description</description>
                     <scale>Concurrent Users</scale>
                     <loadScale>Loaded for Concurrent Users</loadScale>
-                    <autoCommit>AutoCommit</autoCommit>
                     <runControl>Run Control</runControl>
                     <unit>Unit</unit>
                     <time>Time (sec)</time>
@@ -139,14 +140,12 @@
                     <reloadDB>Reload Database</reloadDB>
                     <reloadMedia>Reload Images</reloadMedia>
                     <dbHomePath>Path for Database Home</dbHomePath>
-                    <webserverType>Web Server</webserverType>
+                    <webserverType>Application Server</webserverType>
                     <webserverBinPath>Webserver bin Directory</webserverBinPath>
                     <webserverLogPath>Webserver logs Directory</webserverLogPath>
-                    <webserverConfPath>Webserver config files Directory</webserverConfPath>
+                    <serverConfPath>Server Config Direcotry</serverConfPath>
                     <mediaDir>Media Directory</mediaDir>
-                    <phpIniPath>php.ini Directory</phpIniPath>
-                    <dbConfPath>DB config file Directory</dbConfPath>
-                    <otherServers>Cache, Storage, or Other Servers</otherServers>
+                    <dbConfPath>DB config file</dbConfPath>
                     <agents>Agents</agents>
                     <statsInterval>Stats Collection Interval</statsInterval>
                     <serverConfig>Server Information</serverConfig>
@@ -156,7 +155,8 @@
                     <hostPorts>Host:Port Pairs</hostPorts>
                     <port>Port</port>
                     <cacheHostPorts>Memcached Hosts:Ports</cacheHostPorts>
-                    <cacheBinPath>Memcached bin Directory</cacheBinPath>
+                    <cacheCmdPath>Path to Memcached command</cacheCmdPath>
+                    <serverMemSize>Server Memory Size</serverMemSize>
                     <pathConfig>URL Path Configurations</pathConfig>
                     <java>Java</java>
                     <php>PHP</php>
@@ -170,6 +170,7 @@
                     <true>true</true>
                     <manualStart>Manual Start</manualStart>
                     <cancel>Cancel</cancel>
+					<restart>Restart Server? </restart>
                 </labels>
             </xforms:instance>
         </xforms:model>
@@ -315,80 +316,6 @@
                             <xforms:hint>The server host names or IP addresses and ports in the form host:port, space separated</xforms:hint>
                             <xforms:help>Enter the server host names or IP addresses and ports in the form host:port, space separated</xforms:help>
                         </xforms:input>
-                        <xforms:select1 id="select1-webServer-type" xforms:bind="bind-webServer-type">
-                             <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/webserverType"/>
-                             <xforms:choices>
-                                 <xforms:item>
-                                     <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/apache"/>
-                                     <xforms:value>apache</xforms:value>
-                                 </xforms:item>
-                                 <xforms:item>
-                                     <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/lighttpd"/>
-                                     <xforms:value>lighttpd</xforms:value>
-                                 </xforms:item>
-                                 <xforms:item>
-                                     <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/glassfish"/>
-                                     <xforms:value>glassfish</xforms:value>
-                                 </xforms:item>
-                                 <xforms:item>
-                                     <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/glassfish"/>
-                                     <xforms:value>tomcat</xforms:value>
-                                 </xforms:item>
-                                 <xforms:hint>Choose the web server type.</xforms:hint>
-                                 <xforms:help>Choose the web server type.</xforms:help>
-                             </xforms:choices>
-                         </xforms:select1>
-                        <xforms:input id="input-webServer-binPath" xforms:bind="bind-webServer-binPath">
-                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/webserverBinPath"/>
-                            <xforms:hint>Enter the path to the webserver bin directory</xforms:hint>
-                            <xforms:help>Enter the path to the webserver bin directory</xforms:help>
-                        </xforms:input>
-                        <xforms:input id="input-webServer-logPath" xforms:bind="bind-webServer-logPath">
-                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/webserverLogPath"/>
-                            <xforms:hint>Enter the path to the webserver logs directory</xforms:hint>
-                            <xforms:help>Enter the path to the webserver logs directory</xforms:help>
-                        </xforms:input>
-                        <xforms:input id="input-webServer-confPath" xforms:bind="bind-webServer-confPath">
-                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/webserverConfPath"/>
-                            <xforms:hint>Enter the path to the webserver config files directory</xforms:hint>
-                            <xforms:help>Enter the path to the webserver config files directory</xforms:help>
-                        </xforms:input>
-                        <xforms:input id="input-webServer-phpIniPath" xforms:bind="bind-webServer-phpIniPath">
-                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/phpIniPath"/>
-                            <xforms:hint>Enter the path to the directory containing php.ini</xforms:hint>
-                            <xforms:help>Enter the path to the directory containing php.ini</xforms:help>
-                        </xforms:input>
-
-                       <xforms:select1 id="select1-serverType" xforms:bind="bind-driver-serverType">
-                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/serverType"/>
-                            <xforms:choices>
-                                <xforms:item>
-                                    <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/java"/>
-                                    <xforms:value>jsp</xforms:value>
-                                </xforms:item>
-                                <xforms:item>
-                                    <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/php"/>
-                                    <xforms:value>php</xforms:value>
-                                </xforms:item>
-                                <xforms:hint>Choose the server architecture type.</xforms:hint>
-                                <xforms:help>Choose the server architecture type.</xforms:help>
-                            </xforms:choices>
-                        </xforms:select1>
-                        <xforms:select1 id="select1-manualStart" xforms:bind="bind-webServer-manualStart">
-                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/manualStart"/>
-                            <xforms:choices>
-                                <xforms:item>
-                                    <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/false"/>
-                                    <xforms:value>false</xforms:value>
-                                </xforms:item>
-                                <xforms:item>
-                                    <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/true"/>
-                                    <xforms:value>true</xforms:value>
-                                </xforms:item>
-                                <xforms:hint>Manual Override of Glassfish start/stop</xforms:hint>
-                                <xforms:help>Manual Override of Glassfish start/stop</xforms:help>
-                            </xforms:choices>
-                        </xforms:select1>
                        <xforms:input id="input-webServer-tools" xforms:bind="bind-webServer-tools">
                             <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/tools"/>
                             <xforms:hint>Enter tool commands to collect statistics, separated by semi-colon</xforms:hint>
@@ -399,6 +326,51 @@
                             <xforms:hint>Enter any extra command or script to execute</xforms:hint>
                             <xforms:help>Enter any extra command or script to execute</xforms:help>
                         </xforms:input>
+                        <xforms:select1 id="select1-webServer-type" xforms:bind="bind-webServer-type">
+                             <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/webserverType"/>
+                             <xforms:choices>
+                                <xforms:item>
+                                     <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/glassfish"/>
+                                     <xforms:value>glassfish</xforms:value>
+                                 </xforms:item>
+                                 <xforms:item>
+                                     <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/weblogic"/>
+                                     <xforms:value>weblogic</xforms:value>
+                                 </xforms:item>
+                                 <xforms:hint>Choose the application server</xforms:hint>
+                                 <xforms:help>Choose the application server</xforms:help>
+                             </xforms:choices>
+                         </xforms:select1>
+                        <xforms:input id="input-webServer-cmdPath" xforms:bind="bind-webServer-cmdPath">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/webserverBinPath"/>
+                            <xforms:hint>Enter the path to the webserver bin directory</xforms:hint>
+                            <xforms:help>Enter the path to the webserver bin directory</xforms:help>
+                        </xforms:input>
+                        <xforms:input id="input-webServer-logPath" xforms:bind="bind-webServer-logsDir">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/webserverLogPath"/>
+                            <xforms:hint>Enter the path to the webserver logs directory</xforms:hint>
+                            <xforms:help>Enter the path to the webserver logs directory</xforms:help>
+                        </xforms:input>
+                        <xforms:input id="input-webServer-configDir" xforms:bind="bind-webServer-configDir">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/serverConfPath"/>
+                            <xforms:hint>Enter the app server config directory</xforms:hint>
+                            <xforms:help>Enter the app server config directory</xforms:help>
+                        </xforms:input>
+                       <xforms:select1 id="select1-restart" xforms:bind="bind-webServer-restart">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/restart"/>
+                            <xforms:choices>
+                                <xforms:item>
+                                    <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/false"/>
+                                    <xforms:value>false</xforms:value>
+                                </xforms:item>
+                                <xforms:item>
+                                    <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/true"/>
+                                    <xforms:value>true</xforms:value>
+                                </xforms:item>
+                                <xforms:hint>Restart the app server before run starts ?</xforms:hint>
+                                <xforms:help>Restart the application server before the run starts ?</xforms:help>
+                            </xforms:choices>
+                        </xforms:select1>
                     </xforms:group>
                 </xforms:case>
                 <xforms:case id="case-servers">
@@ -434,21 +406,6 @@
                                 <xforms:help>Yes to reload the database, otherwise database not reloaded.</xforms:help>
                             </xforms:choices>
                         </xforms:select1>
-                        <xforms:select1 id="select1-autoCommit" xforms:bind="bind-autoCommit">
-                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/autoCommit"/>
-                            <xforms:choices>
-                                <xforms:item>
-                                    <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/yes"/>
-                                    <xforms:value>true</xforms:value>
-                                </xforms:item>
-                                <xforms:item>
-                                    <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/no"/>
-                                    <xforms:value>false</xforms:value>
-                                </xforms:item>
-                                <xforms:hint>Yes if the database autocommits, otherwise loader commits.</xforms:hint>
-                                <xforms:help>Yes if the database autocommits, otherwise loader commits.</xforms:help>
-                            </xforms:choices>
-                        </xforms:select1>
                         <xforms:input id="input-load-scale" xforms:bind="bind-load-scale">
                             <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/loadScale"/>
                             <xforms:hint>Enter the number of concurrent users data is loaded for</xforms:hint>
@@ -464,15 +421,15 @@
                             <xforms:hint>Enter any extra command or script to execute</xforms:hint>
                             <xforms:help>Enter any extra command or script to execute</xforms:help>
                         </xforms:input>
-                         <xforms:input id="input-db-homePath" xforms:bind="bind-db-homePath">
+                         <xforms:input id="input-db-homePath" xforms:bind="bind-db-serverHome">
                             <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/dbHomePath"/>
                             <xforms:hint>Enter the path to $DATABASE_HOME</xforms:hint>
                             <xforms:help>Enter the path to $DATABASE_HOME</xforms:help>
                         </xforms:input>
                          <xforms:input id="input-db-confPath" xforms:bind="bind-db-confPath">
                             <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/dbConfPath"/>
-                            <xforms:hint>Enter DB conf file directory</xforms:hint>
-                            <xforms:help>Enter DB conf file directory (e.g /etc)</xforms:help>
+                            <xforms:hint>Enter the path to the DB config file </xforms:hint>
+                            <xforms:help>Enter the path to the DB config file</xforms:help>
                         </xforms:input>
                     </xforms:group>
                     <xforms:group id="group-dataStorage">
@@ -530,10 +487,15 @@
                             <xforms:hint>Enter any extra command or script to execute</xforms:hint>
                             <xforms:help>Enter any extra command or script to execute</xforms:help>
                         </xforms:input>
-                        <xforms:input id="input-cacheServers-binPath" xforms:bind="bind-cache-binPath">
-                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/cacheBinPath"/>
-                            <xforms:hint>Enter the path to the cache server bin directory</xforms:hint>
-                            <xforms:help>Enter the path to the cache server bin directory</xforms:help>
+                        <xforms:input id="input-cacheServers-binPath" xforms:bind="bind-cache-cmdPath">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/cacheCmdPath"/>
+                            <xforms:hint>Enter path to the memcached command</xforms:hint>
+                            <xforms:help>Enter path to the memcached command</xforms:help>
+                        </xforms:input>
+                       <xforms:input id="input-cacheServers-serverMemSize" xforms:bind="bind-cache-serverMemSize">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/serverMemSize"/>
+                            <xforms:hint>Enter max. size of memcached cache (in MB)</xforms:hint>
+                            <xforms:help>Enter max. size of memcached cache (in MB)</xforms:help>
                         </xforms:input>
                     </xforms:group>
                     <!-- Shanti - commenting for now, as not used
