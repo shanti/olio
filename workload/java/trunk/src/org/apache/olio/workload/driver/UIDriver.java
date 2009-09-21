@@ -1,36 +1,31 @@
-/* The contents of this file are subject to the terms
- * of the Common Development and Distribution License
- * (the License). You may not use this file except in
- * compliance with the License.
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * You can obtain a copy of the License at
- * http://www.sun.com/cddl/cddl.html or
- * install_dir/legal/LICENSE
- * See the License for the specific language governing
- * permission and limitations under the License.
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * When distributing Covered Code, include this CDDL
- * Header Notice in each file and include the License file
- * at install_dir/legal/LICENSE.
- * If applicable, add the following below the CDDL Header,
- * with the fields enclosed by brackets [] replaced by
- * your own identifying information:
- * "Portions Copyrighted [year] [name of copyright owner]"
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
- * $Id: UIDriver.java,v 1.14 2007/07/27 19:03:05 akara Exp $
- *
- * Copyright 2005 Sun Microsystems Inc. All Rights Reserved
  */
 package org.apache.olio.workload.driver;
 
 import com.sun.faban.driver.*;
 import com.sun.faban.common.Utilities;
 import com.sun.faban.common.NameValuePair;
+import com.sun.faban.driver.transport.hc3.ApacheHC3Transport;
 import org.apache.olio.workload.util.RandomUtil;
 import org.apache.olio.workload.util.ScaleFactors;
 import org.apache.olio.workload.util.UserName;
 import java.util.logging.Level;
-import org.apache.commons.httpclient.methods.MultipartPostMethod;
 
 import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
@@ -39,37 +34,30 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Logger;
+import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.multipart.FilePart;
+import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
+import org.apache.commons.httpclient.methods.multipart.Part;
+import org.apache.commons.httpclient.methods.multipart.StringPart;
 
 @BenchmarkDefinition (
-    name    = "Java Web 2.0 Workload",
+    name    = "Olio Java Workload",
     version = "0.2",
     scaleName = "Concurrent Users"
 
 )
 @BenchmarkDriver (
-    name           = "JavaUIDriver",
+    name           = "UIDriver",
     threadPerScale    = 1
 )
         // 90/10 Read/Write ratio
        
 @MatrixMix (
-//    operations = {"HomePage", "Login", , "TagSearch", "EventDetail", "PersonDetail",
-//                  "Logout", "AddEvent",  "AddPerson"},    
-/*
-    operations = { "HomePage", "Login", "TagSearch", "EventDetail", "PersonDetail", "AddPerson", "AddEvent" },
-    mix = { @Row({  0, 10, 50, 35,  0, 1,  0 }),
-            @Row({  0,  0, 60, 20,  0, 0, 20 }),
-            @Row({ 20,  5, 40, 30,  0, 1,  0 }),
-            @Row({ 70, 20,  0,  0,  5, 1,  0 }),
-            @Row({ 50,  5,  0, 30, 10, 0,  0 }),
-            @Row({ 30, 65,  0,  0,  5, 0,  0 }),
-            @Row({  0,  0, 25, 75,  0, 0,  0 })
-          }
-*/
-   //updated matrix from Olio 
-operations = { "HomePage", "Login", "TagSearch", "EventDetail", "PersonDetail", "AddPerson", "AddEvent" },
+operations = { "HomePage", "Login", "TagSearch", "EventDetail", "PersonDetail",
+    "AddPerson", "AddEvent" },
 
     mix = { @Row({  0, 11, 52, 36,  0, 1,  0 }),
             @Row({  0,  0, 60, 20,  0, 0, 20 }),
@@ -79,17 +67,6 @@ operations = { "HomePage", "Login", "TagSearch", "EventDetail", "PersonDetail", 
             @Row({ 0, 0,  0,  0,  100, 0,  0 }),
             @Row({  0,  0, 0, 100,  0, 0,  0 })
           }
-    // Binu's mix for testing
-    /*
-    mix = { @Row({  0, 11, 52, 36,  0, 0,  0 }),
-            @Row({  0,  0, 60, 20,  0, 0, 20 }),
-            @Row({ 21,  6, 41, 31,  0, 0,  0 }),
-            @Row({ 72, 21,  0,  0,  0, 0,  0 }),
-            @Row({ 52,  6,  0, 31, 0, 0,  0 }),
-            @Row({ 100, 0,  0,  0,  0, 0,  0 }),
-            @Row({  0,  0, 0, 100,  0, 0,  0 })
-          }   
-     */
 )
 @NegativeExponential (
     cycleType = CycleType.CYCLETIME,
@@ -97,7 +74,7 @@ operations = { "HomePage", "Login", "TagSearch", "EventDetail", "PersonDetail", 
     cycleDeviation = 2
 )
 
-public class JavaUIDriver {
+public class UIDriver {
     // These are the common static files present in all pages.
     public static final String[] SITE_STATICS = {       
         "/css/scaffold.css",
@@ -201,15 +178,12 @@ public class JavaUIDriver {
     private String personDetailURL;
     private String homepageURL, logoutURL, loginURL;
     private String tagSearchURL;
-    private String addEventURL, addPersonURL, eventDetailURL;
-    private String addEventResultURL, fileUploadStatusURL,
-            fileUploadPersonURL, fileUploadPersonFinalURL, fileUploadEventURL,
-            fileUploadEventFinalURL;
+    private String addEventURL, addPersonURL, eventDetailURL, addEventResultURL;
+    private String fileUploadPersonURL, fileUploadEventURL;
     private String addAttendeeURL, fileServiceURL; //GET update.php?id=$eventid
-    private String[] homepageStatics, personStatics, personGets,
+    private String[] homepageStatics, personStatics,
             tagSearchStatics, eventDetailStatics, addPersonStatics, addEventStatics;
     File eventImg, eventThumb, eventPdf, personImg, personThumb;
-    private List<NameValuePair<String>> personPosts;
     private boolean isLoggedOn = false;
     private int loginTime;
     private String username;
@@ -225,6 +199,7 @@ public class JavaUIDriver {
     private HashSet<String> cachedURLs = new HashSet<String>();
     private LinkedHashMap<String, String> loginHeaders =
             new LinkedHashMap<String, String>();
+    private LinkedHashMap<String, String> cachedHeaders;
     private UIDriverMetrics driverMetrics;
     private long imgBytes = 0;
     private int imagesLoaded = 0;
@@ -234,26 +209,27 @@ public class JavaUIDriver {
     
     private boolean firstTime = true; // Work around for EclipseLink issue (under investigation)
 
-    public JavaUIDriver() throws XPathExpressionException {
+    public UIDriver() throws XPathExpressionException {
         ctx = DriverContext.getContext();
         int scale = ctx.getScale();
         ScaleFactors.setActiveUsers(scale);
-        http = new HttpTransport();
+        HttpTransport.setProvider("com.sun.faban.driver.transport.hc3.ApacheHC3Transport");
+        http = HttpTransport.newInstance();
         logger = ctx.getLogger();
         random = ctx.getRandom();
         driverMetrics = new UIDriverMetrics();
         ctx.attachMetrics(driverMetrics);        
         String hostPorts = ctx.getXPathValue(
-                                "/web20/webServer/fa:hostConfig/fa:hostPorts");
+                                "/olio/webServer/fa:hostConfig/fa:hostPorts");
         List<NameValuePair<Integer>> hostPortList =
                                             Utilities.parseHostPorts(hostPorts);
         /*
         String host = ctx.getXPathValue(
-                                    "/web20/webServer/fa:hostConfig/fa:host");
-        String port = ctx.getXPathValue("/web20/webServer/port");
+                                    "/olio/webServer/fa:hostConfig/fa:host");
+        String port = ctx.getXPathValue("/olio/webServer/port");
         */
         int loadedScale = Integer.parseInt(
-                                    ctx.getXPathValue("/web20/dbServer/scale"));
+                                    ctx.getXPathValue("/olio/dbServer/scale"));
         loadedUsers = ScaleFactors.USERS_RATIO * loadedScale;
         if (scale > loadedScale)
             throw new FatalException("Data loaded only for " + loadedScale +
@@ -263,11 +239,6 @@ public class JavaUIDriver {
 
         String type = ctx.getProperty("serverType");
         String resourcePath = ctx.getResourceDir();
-        // TEMP START -- DELETE
-        if (resourcePath.startsWith("null"))
-            resourcePath="/export/web20_repository/olio/javaee/web2.0driver/resources";
-        //System.out.println ("resourcePath = " + resourcePath);
-        // DELETE END
         if (!resourcePath.endsWith(File.separator))
             resourcePath += File.separator;
         eventImg = new File(resourcePath + "event.jpg");
@@ -359,6 +330,10 @@ public class JavaUIDriver {
         loginHeaders.put("Accept", "text/xml.application/xml,application/" +
                 "xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;" +
                 "q=0.5");
+
+        // We don't want the rest of the loginHeaders for cachedHeaders
+		cachedHeaders = (LinkedHashMap)(loginHeaders.clone());
+
         loginHeaders.put("Accept-Language", "en-us,en;q=0.5");
         loginHeaders.put("Accept-Encoding", "gzip,deflate");
         loginHeaders.put("Accept-Charset", "ISO-8859-1,utf-8;q=0.7,*;q=0.7");
@@ -367,17 +342,21 @@ public class JavaUIDriver {
         loginHeaders.put("Referer", homepageURL);
 
         isLoggedOn = false;
+
+		// Create headers for if-modified-since
+		String ifmod = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z").format(BASE_DATE);
+		cachedHeaders.put("If-Modified-Since", ifmod);
         isCached = cached();
         
         // If all the client accessEclipsElink at the same time, this cause
         // throws the Exception - invalide operator: 
         //This is a work around while the problem is ebing investigated
-        synchronized (JavaUIDriver.class) {
+        synchronized (UIDriver.class) {
             if (firstTime) {
                 try {
                     http.fetchURL(homepageURL);
                 } catch (IOException ex) {
-                    Logger.getLogger(JavaUIDriver.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(UIDriver.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 firstTime = false;
             }
@@ -402,10 +381,9 @@ public class JavaUIDriver {
 
         Set<String> images = parseImages(responseBuffer);
         //logger.info("The size of the set of images loaded is " + images.size() );
-        if (!isCached) {
-            // Fetch the CSS/JS files
-            loadStatics(homepageStatics);
-        }
+        // Fetch the CSS/JS files
+        loadStatics(homepageStatics);
+
         loadImages(images);
         selectedEvent = RandomUtil.randomEvent(random, responseBuffer);
         validateEvent ("doHomePage", selectedEvent);
@@ -493,10 +471,10 @@ public class JavaUIDriver {
             cachedURLs.clear();
             isCached = cached();
             isLoggedOn=false;
-            http = new HttpTransport(); // clear all state
+            http = HttpTransport.newInstance(); // clear all state
         }
-              //if (ctx.isTxSteadyState()) ++driverMetrics.logoutTotal;
-              ++driverMetrics.logoutTotal;
+        //if (ctx.isTxSteadyState()) ++driverMetrics.logoutTotal;
+        ++driverMetrics.logoutTotal;
     }
 
 
@@ -538,12 +516,6 @@ public class JavaUIDriver {
         max90th = 4,
         timing  = Timing.MANUAL
     )
-    @NegativeExponential (
-        cycleType = CycleType.CYCLETIME,
-        cycleMean = 5000,
-        cycleMin = 1000,
-        cycleDeviation = 2
-    )
     public void doAddEvent() throws IOException {
         logger.finer("doAddEvent");
         ctx.recordTime();
@@ -551,45 +523,54 @@ public class JavaUIDriver {
         loadStatics(addEventStatics);
 
         StringBuilder buffer = new StringBuilder(256);
-        MultipartPostMethod post = new MultipartPostMethod(fileUploadEventURL);
+        //MultipartPostMethod post = new MultipartPostMethod(fileUploadEventURL);
         if(isLoggedOn) {
-            post.addParameter("title", RandomUtil.randomText(random, 15, 20)); //title
-            post.addParameter("summary", RandomUtil.randomText(random, 20, 100)); // summary
-            post.addParameter("description", RandomUtil.randomText(random, 50, 495)); // description
-            post.addParameter("submitter_user_name", UserName.getUserName(random.random(1, ScaleFactors.users)));
-            post.addParameter("telephone", RandomUtil.randomPhone(random, buffer)); //phone
+            ArrayList<Part> params = new ArrayList<Part>();
+
+            params.add(new StringPart("title", RandomUtil.randomText(random, 15, 20))); //title
+            params.add(new StringPart("summary", RandomUtil.randomText(random, 20, 100))); // summary
+            params.add(new StringPart("description", RandomUtil.randomText(random, 50, 495))); // description
+            params.add(new StringPart("submitter_user_name", UserName.getUserName(random.random(1, ScaleFactors.users))));
+            params.add(new StringPart("telephone", RandomUtil.randomPhone(random, buffer))); //phone
             DateFormat dateFormat = getDateFormat(); // eventtimestamp
             String strDate = dateFormat.format( 
                 random.makeDateInInterval(BASE_DATE, 0, 540));                
             StringTokenizer tk = new StringTokenizer(strDate,"-");
             // The tokens are in order: year, month, day, hour, minute
-            post.addParameter("year", tk.nextToken());
-            post.addParameter("month", tk.nextToken());
-            post.addParameter("day", tk.nextToken());
-            post.addParameter("hour", tk.nextToken());
-            post.addParameter("minute", tk.nextToken());
-            post.addParameter("upload_event_image", eventImg);
-            post.addParameter("upload_event_literature",eventPdf);
-            post.addParameter("submit", "Create");
+            params.add(new StringPart("year", tk.nextToken()));
+            params.add(new StringPart("month", tk.nextToken()));
+            params.add(new StringPart("day", tk.nextToken()));
+            params.add(new StringPart("hour", tk.nextToken()));
+            params.add(new StringPart("minute", tk.nextToken()));
+            params.add(new FilePart("upload_event_image", eventImg));
+            params.add(new FilePart("upload_event_literature",eventPdf));
+            params.add(new StringPart("submit", "Create"));
             
             int numTags = random.random(1, 7); // Avg is 4 tags per event
             for (int i = 0; i < numTags; i++)
-                while (!tagSet.add(RandomUtil.randomTagId(random, 0.1d)));
+                tagSet.add(RandomUtil.randomTagId(random, 0.1d));
 
             for (int tagId : tagSet)
                 tags.append(UserName.getUserName(tagId)).append(' ');
             tags.setLength(tags.length() - 1);
-            post.addParameter("tags", tags.toString());
+            params.add(new StringPart("tags", tags.toString()));
             tags.setLength(0);
             tagSet.clear();
 
             String[] addressArr = prepareAddress();
-            post.addParameter("street1",addressArr[0]);
-            post.addParameter("street2",addressArr[1]);
-            post.addParameter("city", addressArr[2]);
-            post.addParameter("state", addressArr[3]);
-            post.addParameter("zip", addressArr[4]);
-            post.addParameter("country", addressArr[5]);
+            params.add(new StringPart("street1",addressArr[0]));
+            params.add(new StringPart("street2",addressArr[1]));
+            params.add(new StringPart("city", addressArr[2]));
+            params.add(new StringPart("state", addressArr[3]));
+            params.add(new StringPart("zip", addressArr[4]));
+            params.add(new StringPart("country", addressArr[5]));
+
+            Part[] parts = new Part[params.size()];
+            parts = params.toArray(parts);
+
+            PostMethod post = new PostMethod(fileUploadEventURL);
+            post.setRequestEntity(
+                        new MultipartRequestEntity(parts, post.getParams()));
             doMultiPartPost(post);            
         }
         else {
@@ -604,12 +585,6 @@ public class JavaUIDriver {
         max90th = 3,
         timing  = Timing.MANUAL
     )
-    @NegativeExponential (
-        cycleType = CycleType.CYCLETIME,
-        cycleMean = 5000,
-        cycleMin = 1000,
-        cycleDeviation = 2
-    )
     public void doAddPerson() throws IOException {
         logger.finer("doAddPerson");
         if (isLoggedOn)
@@ -618,37 +593,44 @@ public class JavaUIDriver {
         ctx.recordTime();
         http.readURL(addPersonURL);
        // http.readURL(fileUploadStatusURL);        
-        loadStatics(addPersonStatics);        
+        loadStatics(addPersonStatics);
+
+        // Prepare the parts for the request.
+        ArrayList<Part> params = new ArrayList<Part>();
         String[] parameters = preparePerson();
-        MultipartPostMethod post = new MultipartPostMethod(fileUploadPersonURL+"?user_name="+parameters[0]);
         
         // Debug
         if (parameters[0] == null || parameters[0].length() == 0)
             logger.warning("Username is null!");
         
         //logger.info("Username being added is " + parameters[0]);
-        post.addParameter("user_name", parameters[0]);
-        post.addParameter("password", parameters[1]);
-        post.addParameter("passwordx", parameters[1]);
-        post.addParameter("first_name", parameters[2]);
-        post.addParameter("last_name", parameters[3]);
-        post.addParameter("email",parameters[4]);
-        post.addParameter("telephone",parameters[5]);
+        params.add(new StringPart("user_name", parameters[0]));
+        params.add(new StringPart("password", parameters[1]));
+        params.add(new StringPart("passwordx", parameters[1]));
+        params.add(new StringPart("first_name", parameters[2]));
+        params.add(new StringPart("last_name", parameters[3]));
+        params.add(new StringPart("email",parameters[4]));
+        params.add(new StringPart("telephone",parameters[5]));
         String[] addressArr = prepareAddress();
-        post.addParameter("street1",addressArr[0]);
-        post.addParameter("street2",addressArr[1]);
-        post.addParameter("city", addressArr[2]);
-        post.addParameter("state", addressArr[3]);
-        post.addParameter("zip", addressArr[4]);
-        post.addParameter("country", addressArr[5]);
-        post.addParameter("summary", parameters[6]);
-        post.addParameter("timezone", parameters[7]);
-        post.addParameter("upload_person_image", personImg);
-        //post.addParameter("user_thumbnail",personThumb);
-       
+        params.add(new StringPart("street1",addressArr[0]));
+        params.add(new StringPart("street2",addressArr[1]));
+        params.add(new StringPart("city", addressArr[2]));
+        params.add(new StringPart("state", addressArr[3]));
+        params.add(new StringPart("zip", addressArr[4]));
+        params.add(new StringPart("country", addressArr[5]));
+        params.add(new StringPart("summary", parameters[6]));
+        params.add(new StringPart("timezone", parameters[7]));
+        params.add(new FilePart("upload_person_image", personImg));
+        //params.add(new StringPart("user_thumbnail",personThumb);
+
+        Part[] parts = new Part[params.size()];
+        parts = params.toArray(parts);
+
+        PostMethod post = new PostMethod(fileUploadPersonURL+"?user_name="+parameters[0]);
+        post.setRequestEntity(
+                        new MultipartRequestEntity(parts, post.getParams()));
         doMultiPartPost(post);        
-        //http.readURL(fileUploadPersonFinalURL);
-	ctx.recordTime();
+	    ctx.recordTime();
         ++driverMetrics.addPersonTotal;
 
     }
@@ -846,8 +828,12 @@ public class JavaUIDriver {
     }
 
     private void loadStatics(String[] urls) throws IOException {
-        if (!isCached) {
-            for (String url : urls) {
+        for (String url : urls) {
+		// If we are simulating browser caching, send if-modified-since
+		// header.
+			if (isCached)
+				http.readURL(url, cachedHeaders);
+            else {
                 if (cachedURLs.add(url)) {
                     logger.finer("Loading URL " + url);
                     http.readURL(url);
@@ -912,17 +898,25 @@ public class JavaUIDriver {
     
       
     
-    public void doMultiPartPost(MultipartPostMethod post) throws IOException {
-
-        HttpClient client = new HttpClient();
-        client.setConnectionTimeout(5000);
+    public void doMultiPartPost(PostMethod post) throws IOException {
+        HttpClient client = ((ApacheHC3Transport) http).getHttpClient();
+        client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
         // Olio uses redirect on success of add Event/Person
-  	post.setFollowRedirects (true);
+  	    // post.setFollowRedirects (true);
+        // Need to manually follow redirects in HttpClient 3.0.1
         int status = client.executeMethod(post);
-        if(status != HttpStatus.SC_OK) {
-            throw new IOException("Multipart Post did not work - status = " + status);
+        Header locationHeader = post.getResponseHeader("location");
+        if (locationHeader != null) {
+            String redirectLocation = locationHeader.getValue();
+            // Release the connection after we get the location, etc.
+            post.releaseConnection();
+            http.fetchURL(baseURL + '/' + redirectLocation);
+        } else if(status != HttpStatus.SC_OK){
+            post.releaseConnection();
+            throw new IOException("Multipart Post did not work, returned status code: " + status);
         }
     }
+
     public String[] prepareEvent()  {
         String fields[]  = new String[12];
         StringBuilder buffer = new StringBuilder(256);

@@ -36,7 +36,7 @@ DB_HOST=$1
 
 BINDIR=`dirname $0`
 
-# This script is in $FABAN_HOME/benchmarks/JavaOlioDriver/bin
+# This script is in $FABAN_HOME/benchmarks/OlioDriver/bin
 # we need to go up 4 levels to get to $FABAN_HOME.
 if [ -n "$BINDIR" ]
 then
@@ -48,9 +48,8 @@ echo  faban home is $FABAN_HOME
 echo benchhome is $BENCH_HOME
 B=$BENCH_HOME/lib
 L=$FABAN_HOME/lib
-CLASSPATH=$B/mysql-connector-java-5.0.6-bin.jar:$B/JSON.jar:$B/JavaOlioDriver.jar:\
-$L/commons-httpclient-2.0.1.jar:$L/fabancommon.jar:$L/commons-logging.jar:\
-$L/fabandriver.jar:$L/fabanagents.jar
+CLASSPATH=$B/mysql-connector-java-5.0.6-bin.jar:$B/JSON.jar:$B/OlioDriver.jar:\
+$L/fabancommon.jar:$L/commons-logging.jar:$L/fabandriver.jar:$L/fabanagents.jar
 export CLASSPATH
 
 $JAVA_HOME/bin/java -server org.apache.olio.workload.loader.LoadController com.mysql.jdbc.Driver \
