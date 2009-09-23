@@ -389,10 +389,11 @@ public class UIDriver {
         validateEvent ("doHomePage", selectedEvent);
         logger.finest("Images loaded: " + imagesLoaded);
         logger.finest("Image bytes loaded: " + imgBytes);
-        if (ctx.isTxSteadyState())
+        if (ctx.isTxSteadyState()) {
             driverMetrics.homePageImages += images.size();
             driverMetrics.homePageImagesLoaded += imagesLoaded;
             driverMetrics.homePageImageBytes += imgBytes;
+		}
     }
 
     @BenchmarkOperation (
