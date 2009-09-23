@@ -375,10 +375,11 @@ public class UIDriver {
         selectedEvent = RandomUtil.randomEvent(random, responseBuffer);
         logger.finer("Images loaded: " + imagesLoaded);
         logger.finer("Image bytes loaded: " + imgBytes);
-        if (ctx.isTxSteadyState())
+        if (ctx.isTxSteadyState()) {
             driverMetrics.homePageImages += images.size();
             driverMetrics.homePageImagesLoaded += imagesLoaded;
             driverMetrics.homePageImageBytes += imgBytes;
+        }
     }
 
     @BenchmarkOperation (
@@ -479,7 +480,8 @@ public class UIDriver {
     @NegativeExponential(
         cycleType = CycleType.CYCLETIME,
         cycleMean = 5000,
-        cycleMin = 1000,
+        cycleMin = 3000,
+        truncateAtMin = false,
         cycleDeviation = 2
     )
     public void doAddEvent() throws IOException {
@@ -539,7 +541,8 @@ public class UIDriver {
     @NegativeExponential(
         cycleType = CycleType.CYCLETIME,
         cycleMean = 5000,
-        cycleMin = 1000,
+        cycleMin = 2000,
+        truncateAtMin = false,
         cycleDeviation = 2
     )
     public void doAddPerson() throws IOException {
