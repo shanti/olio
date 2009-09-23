@@ -39,7 +39,11 @@
   <target name="bpp-package-persistence-unit-war" if="is.war.module">
     <mkdir dir="${war.build.dir}/WEB-INF/classes/META-INF"/>
     <copy file="${src.conf}/persistence.xml" todir="${pu.build.dir}/WEB-INF/" failonerror="false" />
+  <copy file="${src.conf}/persistence.xml" todir="${war.build.dir}/WEB-INF/" failonerror="false" />
     <copy file="${src.conf}/persistence.xml" todir="${war.build.dir}/WEB-INF/classes/META-INF" failonerror="false" />
+<!-- adding orm.xml too -->
+    <copy file="${src.conf}/orm.xml" todir="${pu.build.dir}/WEB-INF/" failonerror="false" />
+    <copy file="${src.conf}/orm.xml" todir="${war.build.dir}/WEB-INF/classes/META-INF" failonerror="false" />
   </target>
 
   <target name="bpp-package-persistence-unit-ejb-jar" if="is.ejb-jar.module">

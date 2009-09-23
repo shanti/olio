@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+<entity-mappings version="1.0" xmlns="http://java.sun.com/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_1_0.xsd">
+-->
+<entity-mappings xsi:schemaLocation="http://www.eclipse.org/eclipselink/xsds/persistence/orm xsd/eclipselink_orm_1_0.xsd" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0">
+<!--
+  <persistence-unit-metadata>
+    <xml-mapping-metadata-complete />
+  </persistence-unit-metadata>
+-->
+    <entity name="SocialEvent" class="org.apache.olio.webapp.model.SocialEvent">
+        <named-query name="fetchComments">
+          <query>SELECT c FROM CommentsRating c JOIN FETCH c.userName WHERE c.socialEvent.socialEventID = :id</query>
+          <hint name="eclipselink.query-results-cache" value="true"/>
+          <hint name="eclipselink.query-results-cache.size" value="1000"/>
+        </named-query>
+        <named-query name="getAllSocialEvents">
+          <query>SELECT i FROM SocialEvent i WHERE i.eventTimestamp >= CURRENT_TIMESTAMP ORDER BY i.eventTimestamp ASC</query>
+          <hint name="eclipselink.query-results-cache" value="true"/>
+          <hint name="eclipselink.query-results-cache.size" value="100"/>
+        </named-query>
+        <named-query name="getAllSocialEventsCount">
+          <query>SELECT COUNT(i) FROM SocialEvent i WHERE i.eventTimestamp >= CURRENT_TIMESTAMP</query>
+          <hint name="eclipselink.query-results-cache" value="true"/>
+          <hint name="eclipselink.query-results-cache.size" value="100"/>
+        </named-query>
+    </entity> 
+    <entity name="SocialEventTag" class="org.apache.olio.webapp.model.SocialEventTag">
+        <named-query name="getAllTags">
+          <query>SELECT t FROM SocialEventTag t ORDER BY t.refCount DESC</query>
+          <hint name="eclipselink.query-results-cache" value="true"/>
+          <hint name="eclipselink.query-results-cache.size" value="1000"/>
+        </named-query>
+        <named-query name="getSocialEventTag">
+          <query>SELECT t FROM SocialEventTag t WHERE t.tag = :tag</query>
+          <hint name="eclipselink.query-results-cache" value="true"/>
+          <hint name="eclipselink.query-results-cache.size" value="1000"/>
+        </named-query>
+    </entity>
+    <entity name="Person" class="org.apache.olio.webapp.model.Person">
+        <named-query name="getPostedEvents">
+          <query>SELECT s FROM SocialEvent s WHERE s.submitterUserName = :submitter</query>
+          <hint name="eclipselink.query-results-cache" value="true"/>
+          <hint name="eclipselink.query-results-cache.size" value="500"/>
+        </named-query>
+        <named-query name="getIncomingInvitations">
+          <query>SELECT i FROM Invitation i WHERE i.candidate.userName = :candidate</query>
+          <hint name="eclipselink.query-results-cache" value="true"/>
+          <hint name="eclipselink.query-results-cache.size" value="500"/>
+        </named-query>
+        <named-query name="getOutgoingInvitations">
+          <query>SELECT i FROM Invitation i WHERE i.requestor.userName = :requestor</query>
+          <hint name="eclipselink.query-results-cache" value="true"/>
+          <hint name="eclipselink.query-results-cache.size" value="500"/>
+        </named-query>
+    </entity>
+    <entity name="Address" class="org.apache.olio.webapp.model.Address"/>
+    <entity name="Invitation" class="org.apache.olio.webapp.model.Invitation"/>
+    <entity name="CommentsRating" class="org.apache.olio.webapp.model.CommentsRating"/>
+</entity-mappings>

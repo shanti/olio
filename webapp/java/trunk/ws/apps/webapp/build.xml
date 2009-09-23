@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0"?>
 <!--
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -17,93 +17,61 @@
  * limitations under the License.
  *
 -->
-<project name="webapp" default="default" basedir=".">
-    <description>Builds, tests, and runs the project webapp</description>
-
-    <property name="is.war.module" value="true"/>
-    <property name="dojo.zip" value="../../lib/dojo/dojo-0.4.1-ajax.zip" />
-    <property name="mvc.dir" value="../../commons/mvc"/>
-    <available property="mvc_jar.present" file="${file.reference.mvc.jar}"/>
-    <property name="webapp.lib" value="${basedir}/../../lib"/> 
-    <target name="-pre-compile" depends="init"/>
- 
-    <target name="-post-compile" depends="init, include-jmaki-local">
-        <!-- copy property files into build directory -->
-        <copy todir="${build.classes.dir}" overwrite="true">
-            <fileset dir="src/java">
-                <include name="**/*.properties"/>
-            </fileset>
-        </copy>
-       
-        <mkdir dir="${build.web.dir}/WEB-INF/lib"/>
-        <copy todir="${build.web.dir}/WEB-INF/lib">
-            <!-- fileset file="${file.reference.mvc.jar}"/ -->
-            <fileset file="${webapp.lib}/jdom.jar"/>
-            <fileset file="${webapp.lib}/rome-0.9.jar"/>
-            <fileset file="${webapp.lib}/rome-fetcher-0.9.jar"/>
-            <fileset file="${webapp.lib}/commons-fileupload-1.2.jar"/>
-            <fileset file="${webapp.lib}/commons-io-1.2.jar"/>
-            <fileset file="${webapp.lib}/java_memcached-release_1.5.1.jar"/>
-            <fileset file="${webapp.lib}/ajax-wrapper-comp-1.8.1.jar"/>
-            <fileset file="${webapp.lib}/JSON.jar"/>
-            <!-- add jersey files -->
-            <fileset file="${webapp.lib}/jersey/asm-3.1.jar"/>
-            <fileset file="${webapp.lib}/jersey/jackson-lgpl-0.9.4.jar"/>
-            <fileset file="${webapp.lib}/jersey/jersey-client-1.1.0-ea.jar"/>
-            <fileset file="${webapp.lib}/jersey/jersey-json-1.1.0-ea.jar"/>
-            <fileset file="${webapp.lib}/jersey/jettison-1.1.jar"/>
-            <fileset file="${webapp.lib}/jersey/jackson-lgpl-0.9.4.jar"/>
-            <fileset file="${webapp.lib}/jersey/jersey-core-1.1.0-ea.jar"/>
-            <fileset file="${webapp.lib}/jersey/jersey-server-1.1.0-ea.jar"/>
-            <fileset file="${webapp.lib}/jersey/jsr311-api-1.1.jar"/>
-            <fileset file="${webapp.lib}/jersey/jersey-multipart-1.0.2.jar"/>
-
-
-        </copy>
-
-        <available file="${build.dir}/web/dojo.js" type="file" property="dojo.already.exists"/>        
-        <antcall target="dojo"/>
-
-        <antcall target="insert-proxy-settings"/>
-    </target>        
+<project name="live" default="build" basedir=".">
     
+    <target name="build">
+        <ant dir="apps" inheritAll="false" inheritRefs="false"/>
+    </target>
     
-    <target name="insert-proxy-settings">
-        <copy todir="${build.web.dir}/WEB-INF/" file="web/WEB-INF/web.xml"/>
-        <concat destfile="${build.dir}/proxy.properties">proxy.host=${proxy.host}
-            proxy.port=${proxy.port}
-            <filterchain>
-                <expandproperties/>
-            </filterchain>
-        </concat>
-        <!-- Replace value of the proxy settings in web.xml for Google maps -->
-        <replace file="${build.web.dir}/WEB-INF/web.xml" propertyFile="${build.dir}/proxy.properties">          
-            <replacefilter token="@@proxy.host@@" property="proxy.host"/>
-            <replacefilter token="@@proxy.port@@" property="proxy.port"/>
-        </replace>        
+    <target name="compile" depends="build"></target>
+    
+    <target name="deploy" depends="build">
+        <ant dir="apps" target="deploy" inheritAll="false" inheritRefs="false"/>
+        <ant dir="apps" target="deploy" inheritAll="false" inheritRefs="false"/>
+    </target>
+    
+    <target name="undeploy">
+        <ant dir="apps" target="undeploy" inheritAll="false" inheritRefs="false"/>
+        <ant dir="apps" target="undeploy" inheritAll="false" inheritRefs="false"/>
+    </target>
+    
+    <target name="run" depends="deploy">
+        <ant dir="apps" target="run" inheritAll="false" inheritRefs="false"/>
+    </target>
+    
+    <target name="setup">
+        <ant dir="apps" target="setup" inheritAll="false" inheritRefs="false"/>
+    </target>
+    
+    <target name="unsetup">
+        <ant dir="apps" target="unsetup" inheritAll="false" inheritRefs="false"/>
+    </target>
+    
+    <target name="clean">
+        <delete dir="dist"/>
+        <ant dir="apps" target="clean" inheritAll="false" inheritRefs="false"/>
     </target>
     
     <target name="checkLines">
-        <fixcrlf srcdir="./src" tab="remove" tablength="4" eol="unix" includes="**/*.properties,**/*.jsp,**/*.html,**/*.sh,**/*.java,**/*.xml" excludes="**/ja/**" />
+        <fixcrlf srcdir="./apps" tab="remove" tablength="4" eol="unix" includes="**/*.properties,**/*.jsp,**/*.html,**/*.sh,**/*.java,**/*.xml" excludes="**/ja/**" />
+        <fixcrlf srcdir="./docs" tab="remove" tablength="4" eol="unix" includes="**/*.properties,**/*.jsp,**/*.html,**/*.sh,**/*.java,**/*.xml" excludes="**/ja/**" />
     </target>
-    
-    <target name="dojo" unless="dojo.already.exists" description="Unzips the dojo.zip to the right place">
-        <echo message="Unzipping dojo framework..."/>
-        <unzip src="${dojo.zip}" dest="${build.dir}/web" >
-            <patternset>
-                <include name="**/dojo.js"/>
-                <include name="**/iframe_history.html"/>
-                <include name="**/src/**"/>
-            </patternset>
-        </unzip>
+        
+    <target name="include-jmaki">
+        <echo>Copying jMaki Runtime to ${target.dir}</echo>
+        <mkdir dir="${target.dir}/temp"/>
+        <unzip src="${jmaki.zip}" dest="${target.dir}/temp" />
+        <mkdir dir="${target.dir}/resources"/>
+        <!--
+        <copy todir="${target.dir}/resources">
+            <fileset dir="${target.dir}/temp/jmaki-core/web/resources" excludes="**/config.json,**/hello**,**/xsl**, **/xhp.json"/>      
+        </copy>
+        <mkdir dir="${target.dir}/WEB-INF/lib"/>
+        <copy todir="${target.dir}/WEB-INF/lib">
+            <fileset dir="${target.dir}/temp/jmaki-core/web/WEB-INF/lib" includes="**/**"/>      
+        </copy>      
+        -->
+        <delete dir="${target.dir}/temp"/>
     </target>
- 
-   <target name="include-jmaki-local">
-        <ant dir="../../" inheritAll="true" target="include-jmaki">
-            <property name="jmaki.zip" value="lib/ajax-wrapper-comp-1.8.1.jar" />
-            <property name="target.dir" value="${basedir}/${build.dir}/web"/>
-        </ant>
-    </target>
-    <import file="../../bp-project.xml"/>
     
 </project>
