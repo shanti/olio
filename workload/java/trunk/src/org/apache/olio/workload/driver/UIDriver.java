@@ -30,6 +30,7 @@ import java.util.logging.Level;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -178,7 +179,7 @@ public class UIDriver {
     private String personDetailURL;
     private String homepageURL, logoutURL, loginURL;
     private String tagSearchURL;
-    private String addEventURL, addPersonURL, eventDetailURL, addEventResultURL;
+    private String addEventURL, addPersonURL, eventDetailURL;
     private String fileUploadPersonURL, fileUploadEventURL;
     private String addAttendeeURL, fileServiceURL; //GET update.php?id=$eventid
     private String[] homepageStatics, personStatics,
@@ -271,8 +272,7 @@ public class UIDriver {
         
         /*adding context root */
         String contextRoot = "/webapp";
-        
-        
+               
         // hostURL = "http://" + hostPort.name + ":" + port;
         baseURL = hostURL + contextRoot;
         personDetailURL = baseURL + "/person?actionType=display_person&user_name=";
@@ -280,7 +280,7 @@ public class UIDriver {
         tagCloudURL = baseURL + "/tag/display";
         addEventURL = baseURL + "/event/addEvent";
         //should this go to Event Detail?
-        addEventResultURL = baseURL + "/event/detail";
+        //addEventResultURL = baseURL + "/event/detail";
         addPersonURL = baseURL + "/site.jsp?page=addPerson.jsp";        
         fileUploadPersonURL = baseURL + "/api/person/fileuploadPerson";        
         fileUploadEventURL = baseURL + "/api/event/addEvent";
@@ -348,9 +348,9 @@ public class UIDriver {
 		cachedHeaders.put("If-Modified-Since", ifmod);
         isCached = cached();
         
-        // If all the client accessEclipsElink at the same time, this cause
-        // throws the Exception - invalide operator: 
-        //This is a work around while the problem is ebing investigated
+        // If all the clients access EclipsElink at the same time, this may cause
+        // the Exception - invalide operator: 
+        //This is a work around while the problem is being investigated
         synchronized (UIDriver.class) {
             if (firstTime) {
                 try {
@@ -371,7 +371,6 @@ public class UIDriver {
     public void doHomePage() throws IOException {
         logger.finer("HomePage: Accessing " + homepageURL);
         http.fetchURL(homepageURL);
-        //logger.info("doHomePage - cachedURLs size is " + cachedURLs.size() );
         imgBytes = 0;
         imagesLoaded = 0;
 
@@ -393,7 +392,7 @@ public class UIDriver {
             driverMetrics.homePageImages += images.size();
             driverMetrics.homePageImagesLoaded += imagesLoaded;
             driverMetrics.homePageImageBytes += imgBytes;
-		}
+        }
     }
 
     @BenchmarkOperation (
@@ -401,46 +400,20 @@ public class UIDriver {
         max90th = 1,
         timing  = Timing.AUTO
     )
-    public void doLogin() throws IOException {
+    public void doLogin() throws IOException, Exception {
+        logger.finer("In doLogin");
         int randomId = 0; //use as password
         username = null;
 
         if (!isLoggedOn) {
             randomId = selectUserID();
             username = UserName.getUserName(randomId);
-            // TEMP
-            //String lurl = loginURL + "?user_name=" + username + "&password=" +
-             //       randomId;
-            try {
+            logger.fine("Logging in as " + username + ", " + randomId);
             http.readURL(loginURL, constructLoginPost(randomId), loginHeaders);
-                //http.readURL(url);
-                http.fetchURL(homepageURL);
-            }
-            catch (Exception e) {
-               logger.severe("logging in: url = " + constructLoginPost(randomId));
-               e.printStackTrace();
-            }
-            //loginTime = ctx.getTime();
             // This redirects to home.
-            // TEMP
-            //????http.fetchURL(homepageURL);           
-            //http.fetchURL(loginURL, constructLoginPost(randomId),
-            //        loginHeaders);            
-            /*******
-            if (http.getResponseBuffer().indexOf("Not logged in") != -1) {                                
-                //logger.warning(http.getResponseBuffer().toString());
-                throw new RuntimeException("Login as " + username + ", " +
-                                                        randomId + " failed.");
-            } else if (http.getResponseBuffer().indexOf("Logout") == -1) {
-                logger.severe("Neither logged in or not logged in.");
-                logger.severe ("loginURL = " + loginURL + " post msg = " + constructLoginPost(randomId));
-                System.exit(1);
-                //logger.warning(http.getResponseBuffer().toString());
-            }
-            ********/
-            //logger.info("response buffer is " + http.getResponseBuffer());
+            http.fetchURL(homepageURL);
+
             int loginIdx = http.getResponseBuffer().indexOf("Username");
-            //logger.info("loginIdx is " + loginIdx);
             if (loginIdx != -1){
                 throw new RuntimeException("Found login prompt at index " + loginIdx + ", Login as " + username + ", " +
                                                         randomId + " failed.");
@@ -488,11 +461,7 @@ public class UIDriver {
         String tag = RandomUtil.randomTagName(random);
         String post = "tag=" + tag + "&tagsearchsubmit=Submit";
         logger.finer("TagSearch: " + tagSearchURL + " Post: " + post);
-        
-        //logger.info("TagSearch: " + tagSearchURL + "Post: " + post);
         http.readURL(tagSearchURL, post);
-        
-        //no recirection for Java
         //if (http.getResponseCode() != 302)
         //    logger.warning("Tag search response not redirecting.");
         //for java, tagCloudURL and tagSearchURL are the same
@@ -521,7 +490,7 @@ public class UIDriver {
         cycleType = CycleType.CYCLETIME,
         cycleMean = 5000,
         cycleMin = 3000,
-		truncateAtMin = false,
+        truncateAtMin = false,
         cycleDeviation = 2
     )
     public void doAddEvent() throws IOException {
@@ -529,49 +498,39 @@ public class UIDriver {
         ctx.recordTime();
         http.readURL(addEventURL);
         loadStatics(addEventStatics);
-
-        StringBuilder buffer = new StringBuilder(256);
-        //MultipartPostMethod post = new MultipartPostMethod(fileUploadEventURL);
         if(isLoggedOn) {
+            // Prepare the parts for the request.
             ArrayList<Part> params = new ArrayList<Part>();
+            String[] parameters = prepareEvent();
+            if (parameters[0] == null || parameters[0].length() == 0)
+                logger.warning("Socialevent title is null!");
+            else
+                logger.finer("addEvent adding event title: " + parameters[0]);
 
-            params.add(new StringPart("title", RandomUtil.randomText(random, 15, 20))); //title
-            params.add(new StringPart("summary", RandomUtil.randomText(random, 20, 100))); // summary
-            params.add(new StringPart("description", RandomUtil.randomText(random, 50, 495))); // description
-            params.add(new StringPart("submitter_user_name", UserName.getUserName(random.random(1, ScaleFactors.users))));
-            params.add(new StringPart("telephone", RandomUtil.randomPhone(random, buffer))); //phone
-            DateFormat dateFormat = getDateFormat(); // eventtimestamp
-            String strDate = dateFormat.format( 
-                random.makeDateInInterval(BASE_DATE, 0, 540));                
-            StringTokenizer tk = new StringTokenizer(strDate,"-");
-            // The tokens are in order: year, month, day, hour, minute
-            params.add(new StringPart("year", tk.nextToken()));
-            params.add(new StringPart("month", tk.nextToken()));
-            params.add(new StringPart("day", tk.nextToken()));
-            params.add(new StringPart("hour", tk.nextToken()));
-            params.add(new StringPart("minute", tk.nextToken()));
-            params.add(new FilePart("upload_event_image", eventImg));
-            params.add(new FilePart("upload_event_literature",eventPdf));
-            params.add(new StringPart("submit", "Create"));
+            params.add(new StringPart("title", parameters[0])); //title
+            params.add(new StringPart("summary", parameters[1])); // summary
+            params.add(new StringPart("description", parameters[2])); // description
+            params.add(new StringPart("submitter_user_name", parameters[3]));
+            params.add(new StringPart("telephone", parameters[4])); //phone
+            params.add(new StringPart("year", parameters[6]));
+            params.add(new StringPart("month", parameters[7]));
+            params.add(new StringPart("day", parameters[8]));
+            params.add(new StringPart("hour", parameters[9]));
+            params.add(new StringPart("minute", parameters[10]));
+            params.add(new StringPart("tags", parameters[11]));
             
-            int numTags = random.random(1, 7); // Avg is 4 tags per event
-            for (int i = 0; i < numTags; i++)
-                tagSet.add(RandomUtil.randomTagId(random, 0.1d));
-
-            for (int tagId : tagSet)
-                tags.append(UserName.getUserName(tagId)).append(' ');
-            tags.setLength(tags.length() - 1);
-            params.add(new StringPart("tags", tags.toString()));
-            tags.setLength(0);
-            tagSet.clear();
-
+            //add the address
             String[] addressArr = prepareAddress();
-            params.add(new StringPart("street1",addressArr[0]));
-            params.add(new StringPart("street2",addressArr[1]));
+            params.add(new StringPart("street1", addressArr[0]));
+            params.add(new StringPart("street2", addressArr[1]));
             params.add(new StringPart("city", addressArr[2]));
             params.add(new StringPart("state", addressArr[3]));
             params.add(new StringPart("zip", addressArr[4]));
             params.add(new StringPart("country", addressArr[5]));
+
+            params.add(new FilePart("upload_event_image", eventImg));
+            params.add(new FilePart("upload_event_literature",eventPdf));
+            params.add(new StringPart("submit", "Create"));
 
             Part[] parts = new Part[params.size()];
             parts = params.toArray(parts);
@@ -593,11 +552,11 @@ public class UIDriver {
         max90th = 3,
         timing  = Timing.MANUAL
     )
-    @NegativeExponential (
+    @NegativeExponential(
         cycleType = CycleType.CYCLETIME,
         cycleMean = 5000,
         cycleMin = 2000,
-		truncateAtMin = false,
+        truncateAtMin = false,
         cycleDeviation = 2
     )
     public void doAddPerson() throws IOException {
@@ -607,9 +566,7 @@ public class UIDriver {
 
         ctx.recordTime();
         http.readURL(addPersonURL);
-       // http.readURL(fileUploadStatusURL);        
         loadStatics(addPersonStatics);
-
         // Prepare the parts for the request.
         ArrayList<Part> params = new ArrayList<Part>();
         String[] parameters = preparePerson();
@@ -617,18 +574,19 @@ public class UIDriver {
         // Debug
         if (parameters[0] == null || parameters[0].length() == 0)
             logger.warning("Username is null!");
+        else
+            logger.finer("addPerson adding user: " + parameters[0]);
         
-        //logger.info("Username being added is " + parameters[0]);
         params.add(new StringPart("user_name", parameters[0]));
         params.add(new StringPart("password", parameters[1]));
         params.add(new StringPart("passwordx", parameters[1]));
         params.add(new StringPart("first_name", parameters[2]));
         params.add(new StringPart("last_name", parameters[3]));
-        params.add(new StringPart("email",parameters[4]));
+        params.add(new StringPart("email", parameters[4]));
         params.add(new StringPart("telephone",parameters[5]));
         String[] addressArr = prepareAddress();
-        params.add(new StringPart("street1",addressArr[0]));
-        params.add(new StringPart("street2",addressArr[1]));
+        params.add(new StringPart("street1", addressArr[0]));
+        params.add(new StringPart("street2", addressArr[1]));
         params.add(new StringPart("city", addressArr[2]));
         params.add(new StringPart("state", addressArr[3]));
         params.add(new StringPart("zip", addressArr[4]));
@@ -636,7 +594,6 @@ public class UIDriver {
         params.add(new StringPart("summary", parameters[6]));
         params.add(new StringPart("timezone", parameters[7]));
         params.add(new FilePart("upload_person_image", personImg));
-        //params.add(new StringPart("user_thumbnail",personThumb);
 
         Part[] parts = new Part[params.size()];
         parts = params.toArray(parts);
@@ -647,7 +604,6 @@ public class UIDriver {
         doMultiPartPost(post);        
 	    ctx.recordTime();
         ++driverMetrics.addPersonTotal;
-
     }
 
     @BenchmarkOperation (
@@ -662,15 +618,13 @@ public class UIDriver {
             return;
         
         http.fetchURL(eventDetailURL + selectedEvent);
-        
         StringBuilder responseBuffer = http.getResponseBuffer();
-        
         if (responseBuffer.length() == 0)
             throw new IOException("Received empty response");
         boolean canAddAttendee = false;
         if (!jMakiComponentsUsed) {
             canAddAttendee = isLoggedOn &&
-                                responseBuffer.indexOf("Attend") != -1;
+                       responseBuffer.indexOf("Attend") != -1;
             if (!canAddAttendee && isLoggedOn) {
                 if (responseBuffer.indexOf("Login:") != -1) {
                     isLoggedOn = false;
@@ -683,7 +637,7 @@ public class UIDriver {
         }
         
         Set<String> images = parseImages(responseBuffer);
-	loadStatics(eventDetailStatics);
+	    loadStatics(eventDetailStatics);
         loadImages(images);
         // If using jmaki components, we need to make two additional calls to polulate these
         // components
@@ -698,7 +652,8 @@ public class UIDriver {
                 responseBuffer = http.getResponseBuffer();
                 // Creating the JSON object and checking the status is quite expensive
                 // So using a simpler approach.
-                if (responseBuffer.indexOf("not_attending") != -1 || responseBuffer.indexOf("deleted") != -1)
+                if (responseBuffer.indexOf("not_attending") != -1 ||
+                        responseBuffer.indexOf("deleted") != -1)
                     canAddAttendee = true;
             }
             else {
@@ -719,9 +674,8 @@ public class UIDriver {
             driverMetrics.eventDetailImages += images.size();
             if (canAddAttendee) {
                 ++driverMetrics.addAttendeeReadyCount;
-                if (card == 0) {
+                if (card == 0)
                     ++driverMetrics.addAttendeeCount;
-                }
             }
         }
     }
@@ -734,6 +688,7 @@ public class UIDriver {
     public void doPersonDetail() throws IOException {
         logger.finer("doPersonDetail");
         StringBuilder buffer = new StringBuilder(fileServiceURL.length() + 20);
+
 // TODO: account for new users when loading images, too.
         buffer.append(fileServiceURL).append("/p");
         int id = random.random(1, ScaleFactors.users);
@@ -745,11 +700,6 @@ public class UIDriver {
             throw new IOException("Received empty response");
         Set<String> images = parseImages(responseBuffer);
         loadStatics(personStatics);
-        //logger.info("The buffer is before appending is " + buffer.toString() );
-        //logger.info("readURL is: " + buffer.toString() + id +".jpg"); 
-		/**
-        http.readURL(buffer.append(id).append(".jpg").toString());
-		*/
 		loadImages(images);
     }
 
@@ -764,8 +714,6 @@ public class UIDriver {
 
     public Set<String> parseImages(StringBuilder buffer) {
         LinkedHashSet<String> urlSet = new LinkedHashSet<String>();
-        //String elementStart = "<img src=\"";
-        //int elementStartLen = elementStart.length();
         String elStart = "<img ";
         String attrStart = " src=\"";
         int elStartLen = elStart.length() - 1; // Don't include the trailing space
@@ -809,6 +757,11 @@ public class UIDriver {
         return urlSet;
     }
 
+    /*
+	 * We assume that the application has set an expiry far into the future.
+	 * As such the browser would not re-fetch these images within the same
+	 * session.
+	 */
     private void loadImages(Set<String> images) throws IOException {
         if (images != null)
             for (String image : images) {
@@ -893,25 +846,10 @@ public class UIDriver {
         return list.toArray(sa);
     }
 
-    private List<NameValuePair<String>> populatePosts(String[][] posts) {
-        List<NameValuePair<String>> returnList =
-                                    new ArrayList<NameValuePair<String>>();
-        for (String[] post : posts) {
-            NameValuePair<String> nvPair = new NameValuePair<String>();
-            nvPair.name = baseURL + post[0];
-            nvPair.value = post[1];
-            returnList.add(nvPair);
-        }
-        return returnList;
-    }
-
-    
     private String constructLoginPost(int randomId) {
         return "user_name=" + username + "&password=" +
                 String.valueOf(randomId);
     }
-    
-      
     
     public void doMultiPartPost(PostMethod post) throws IOException {
         HttpClient client = ((ApacheHC3Transport) http).getHttpClient();
@@ -921,6 +859,7 @@ public class UIDriver {
         // Need to manually follow redirects in HttpClient 3.0.1
         int status = client.executeMethod(post);
         Header locationHeader = post.getResponseHeader("location");
+
         if (locationHeader != null) {
             String redirectLocation = locationHeader.getValue();
             // Release the connection after we get the location, etc.
@@ -938,8 +877,8 @@ public class UIDriver {
         
         int counter=0;
         fields[counter++] = RandomUtil.randomText(random, 15, 20); //title
-        fields[counter++] = RandomUtil.randomText(random, 50, 495); // summary
-        fields[counter++] = RandomUtil.randomText(random, 50, 495); // description
+        fields[counter++] = RandomUtil.randomText(random, 50, 100); // summary
+        fields[counter++] = RandomUtil.randomText(random, 100, 495); // description
         fields[counter++]= UserName.getUserName(random.random(1, ScaleFactors.users));
         fields[counter++]= RandomUtil.randomPhone(random, buffer); //phone
         fields[counter++]= RandomUtil.randomTimeZone(random); // timezone
@@ -951,14 +890,14 @@ public class UIDriver {
             fields[counter++]=tk.nextToken();                        
         }
         //based on DateFormat,
-        //fields[5]=year
-        //fields[6]=month
-        //fields[7]=day
-        //fields[8]=hours
-        //fields[9]=minutes        
+        //fields[6]=year
+        //fields[7]=month
+        //fields[8]=day
+        //fields[9]=hours
+        //fields[10]=minutes
           int numTags = random.random(1, 7); // Avg is 4 tags per event
         for (int i = 0; i < numTags; i++)
-            while (!tagSet.add(RandomUtil.randomTagId(random, 0.1d)));
+            tagSet.add(RandomUtil.randomTagId(random, 0.1d));
 
         for (int tagId : tagSet)
             tags.append(UserName.getUserName(tagId)).append(' ');
@@ -1014,7 +953,6 @@ public class UIDriver {
         int id = loadedUsers + personsAdded++ * ScaleFactors.activeUsers +
                                                         ctx.getThreadId() + 1;
         fields[0] = UserName.getUserName(id);
-        //logger.info("in prepare person - the id is "+ id + " for the username " + fields[0]);
         //use the same field for repeating the password field.
         fields[1] = String.valueOf(id);
         fields[2] = RandomUtil.randomName(random, b, 2, 12).toString();
