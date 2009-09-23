@@ -265,7 +265,8 @@ public class UIDriver {
     private String checkNameURL;
     // private String updatePageURL; //POST gettextafterinsert.php list=attendees
     private String fileServiceURL;
-    private String[] homepageStatics,  personStatics,  personGets,  tagSearchStatics,  eventDetailStatics,  addPersonStatics,  addEventStatics;
+    private String[] homepageStatics, tagSearchStatics, personStatics, personGets,
+            eventDetailStatics, addPersonStatics, addEventStatics;
     File eventImg, eventThumb, eventPdf, personImg, personThumb;
     private boolean isLoggedOn = false;
     private String username;
@@ -506,9 +507,16 @@ public class UIDriver {
         }
     }
 
-    @BenchmarkOperation(name = "AddEvent",
-    max90th = 4,
-    timing = Timing.MANUAL)
+    @BenchmarkOperation(
+        name = "AddEvent",
+        max90th = 4,
+        timing = Timing.MANUAL)
+    @NegativeExponential(
+        cycleType = CycleType.CYCLETIME,
+        cycleMean = 5000,
+        cycleMin = 3000,
+        truncateAtMin = false,
+        cycleDeviation = 2)
     public void doAddEvent() throws Exception {
         logger.finer("entering doAddEvent()");
         if (!isLoggedOn) {
@@ -583,6 +591,12 @@ public class UIDriver {
     @BenchmarkOperation(name = "AddPerson",
     max90th = 3,
     timing = Timing.MANUAL)
+    @NegativeExponential(
+        cycleType = CycleType.CYCLETIME,
+        cycleMean = 5000,
+        cycleMin = 2000,
+        truncateAtMin = false,
+        cycleDeviation = 2)
     public void doAddPerson() throws Exception {
         logger.finer("doAddPerson");
         if (isLoggedOn) {
