@@ -63,7 +63,6 @@ public class SocialEvent implements java.io.Serializable {
     private String imageThumbURL;
     private String literatureURL;
     private String telephone;
-    private String timezone;
     private Address address;
     private int totalScore;
     private int numberOfVotes;
@@ -86,7 +85,6 @@ public class SocialEvent implements java.io.Serializable {
         this.imageThumbURL = imageThumbURL;
         this.literatureURL = literatureURL;
         this.telephone = telephone;
-        //this.timezone = timezone;
         this.eventTimestamp = eventTimestamp;
         this.disabled = 0;
         this.createdTimestamp=new Timestamp(new Date().getTime());
@@ -220,10 +218,6 @@ public class SocialEvent implements java.io.Serializable {
         this.telephone=telephone;
     }
 
-    public void setTimezone(String timezone) {
-        this.timezone=timezone;
-    }
-    
     
     @ManyToMany(mappedBy = "socialEvents")
     public List<SocialEventTag> getTags() {
