@@ -1,5 +1,5 @@
-bench.shortname=JavaOlioDriver
-faban.home=/Users/klichong/projects/faban_062508/faban
+bench.shortname=OlioDriver
+faban.home=/opt/faban
 faban.url=http://localhost:9980
 deploy.user=deployer
 deploy.password=adminadmin
