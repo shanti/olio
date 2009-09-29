@@ -998,7 +998,7 @@ public class UIDriver {
             cnt = r.getOpsCountSteady("TagSearch");
             el[5] = new Element();
             el[5].description = "Average images on Tag Search Results";
-            //el[5].target = "&gt;= 3.6";
+            el[5].target = "&gt; 0";
             if (cnt > 0) {
                 double avgImgs = tagSearchImages / (double) cnt;
                 el[5].result = String.format("%.2f", avgImgs);
