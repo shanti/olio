@@ -35,6 +35,7 @@ import org.apache.olio.webapp.util.WebappUtil;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.olio.webapp.cache.CacheFactory;
 
 /**
  * Handles action for the event - update of comments and ratings.
@@ -69,17 +70,17 @@ public class EventAction implements Action {
         if (path.equals("/detail")) {
             SocialEvent se = mf.getSocialEvent(eid);
             if (se == null)
-               throw new RuntimeException("Could not find event. eventID = " + eid);
-            
+                throw new RuntimeException("Could not find event. eventID = " + eid);
+
             request.setAttribute("socialEvent", se);
             boolean attending = false;
-            Person user=SecurityHandler.getInstance().getLoggedInPerson(request);
-            
-            if (user != null)
+            Person user = SecurityHandler.getInstance().getLoggedInPerson(request);
+
+            if (user != null) 
                 attending = se.isAttending(user);
-            
+
             request.setAttribute("isAttending", attending);
-            
+
             // If the user is looged in get the comment if there is any
             if (user != null) {
                 CommentsRating cr = mf.getCommentRating(user, se);
@@ -91,15 +92,15 @@ public class EventAction implements Action {
         }
         if (path.equals("/delete"))
             return deleteEvent(eid, request, response);
-        
+
         Person person=SecurityHandler.getInstance().getLoggedInPerson(request);
         String comments = request.getParameter("comments");
-        
+
         SocialEvent event = mf.updateSocialEventComment(person, eid, comments, 0);
-        
+            
         return "/site.jsp?page=event.jsp&socialEventID=" + eventID;
-    }
-    
+        }
+
     private String deleteEvent (int eid, HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelFacade mf= (ModelFacade) context.getAttribute(MF_KEY);
         mf.deleteEvent(eid);
@@ -108,7 +109,7 @@ public class EventAction implements Action {
         response.sendRedirect(request.getContextPath() + "/event/list");
         return null;
     }
-    
+
     private String addEvent (HttpServletRequest request, HttpServletResponse response) throws IOException {
         String eventID = request.getParameter("socialEventID");
         Person person=SecurityHandler.getInstance().getLoggedInPerson(request);
@@ -206,56 +207,84 @@ public class EventAction implements Action {
         if (cache != null) {
             String cacheKey = WebappUtil.getCacheKey("/event/list", queryMap);
             if (cacheKey != null) {
-                if (cache.isLocal()) {
-                    Object cobj = null;
-                    CachedList cl = (CachedList) cache.get(cacheKey);
-                    if (cl == null) {
-                        cl = new CachedList(cacheKey);
-                        cache.put(cacheKey, cl, WebappUtil.getCacheTimeToLiveInSecs());
+
+                Object cobj = null;
+
+                CachedList cl = (CachedList)cache.get(cacheKey);
+
+                if (cl == null) {
+                    // nothing in cache
+                    cl = new CachedList(cacheKey);
+
+                    // get a new cacheable page/partial
+                    cobj = createCachePageObject(queryMap, response, request, mf);
+                    cl.put(index, cobj); 
+
+
+                    if (cache.needsRefresh(false, cacheKey)) {
+                        cache.put(cacheKey, cl, CacheFactory.getInstance().getCacheExpireInSeconds());
+                        cache.doneRefresh(cacheKey, CacheFactory.getInstance().getCacheLockExpireInSeconds());
                     }
-                    cobj = cl.get(index);
-                    if (cobj== null) {
-                        // Fill the cache
-                        List<SocialEvent> list = mf.getSocialEvents(queryMap);
-                        int numPages = 1;
-                        if (list != null) {
-                            Object o = queryMap.get("listSize");
-                            if (o != null) {
-                                Long l = (Long) o;
-                                numPages = WebappUtil.getNumPages(l);
-                            }
-                        }
-                            
-                        request.setAttribute("itemList", list);
-                        request.setAttribute("numPages", numPages);
-                        cobj = WebappUtil.acquirePageContent("/eventList.jsp", request, response);
-                        cl.put(index, cobj);
-                        //System.out.println ("Put content in cache - key = " + cacheKey +
-                          //      " index = " + index);
-                    }
-                    else {
-                        //System.out.println ("Got content from cache - key = " + cacheKey +
-                          //      " index = " + index);
-                    }
-                    if (cobj != null) {
-                        request.setAttribute("content", cobj);
-                        if (pageType != null && pageType.equalsIgnoreCase("partial")) {
-                            response.getWriter().print((String) cobj);
-                            return null;
-                        }
-                        else {
-                            return "/site.jsp?cachedContent=true";
-                        }
+
+                } else {
+                    // something in the cache
+                    cobj = cl.get(index); // we are using this whatever
+
+                    Object newCobj = createCachePageObject(queryMap, response, request, mf);
+                    cl.put(index, newCobj); // replaces existing value
+                     if (cache.needsRefresh(true, cacheKey)) {
+                        cache.put(cacheKey, cl, CacheFactory.getInstance().getCacheExpireInSeconds());
+                        cache.doneRefresh(cacheKey, CacheFactory.getInstance().getCacheLockExpireInSeconds());
                     }
                 }
-                else {
-                    // TO DO -- Needs different logic for distributed caches since we
-                    // don't intent to cache heirarchical objects in that mode.
+
+                if (cobj != null) {
+                    request.setAttribute("content", cobj);
+
+                    // if it's a partial page then we can just write cobj to the response stream
+                    // But we don't cache partials at the moment
+                    if (pageType != null && pageType.equalsIgnoreCase("partial")) {
+                        response.getWriter().print((String) cobj);
+                        return null;
+                    } else {
+                        // if it's not a partial, we'll redirect and tell it that there's cached content to display
+                        return "/site.jsp?cachedContent=true";
+                    }
                 }
             }
         }
 
-        // This is not cacheable or cache is not enabled.
+        return prepNoCacheRequest(queryMap, response, request, mf);
+
+    }
+
+    private Object createCachePageObject(Map<String, Object> queryMap,
+                                         HttpServletResponse response,
+                                         HttpServletRequest request,
+                                         ModelFacade mf) throws java.io.IOException,
+                                                                javax.servlet.ServletException {
+
+        // Fill the cache
+        List<SocialEvent> list = mf.getSocialEvents(queryMap);
+        int numPages = 1;
+        if (list != null) {
+            Object o = queryMap.get("listSize");
+            if (o != null) {
+                Long l = (Long) o;
+                numPages = WebappUtil.getNumPages(l);
+            }
+        }
+
+        request.setAttribute("itemList", list);
+        request.setAttribute("numPages", numPages);
+
+        return WebappUtil.acquirePageContent("/eventList.jsp", request, response);
+    }
+
+    private String prepNoCacheRequest(Map<String, Object> queryMap, HttpServletResponse response, HttpServletRequest request, ModelFacade mf) {
+
+        String pageType = request.getParameter("displayType");
+        int index = WebappUtil.getIntProperty(request.getParameter("index"));
         List<SocialEvent> list = mf.getSocialEvents(queryMap);
 
         int numPages = 1;
@@ -305,19 +334,20 @@ public class EventAction implements Action {
         return "/site.jsp?page=eventList.jsp&index="+index;
     }
 
-    static class CachedList {
+    static class CachedList implements java.io.Serializable {
+
         public String cacheKey;
         public HashMap<Integer, Object> valueMap;
-        
-        public CachedList (String key) {
+
+        public CachedList(String key) {
             this.cacheKey = key;
             valueMap = new HashMap<Integer, Object>();
         }
-        
+
         public void put(int index, Object value) {
             valueMap.put(index, value);
         }
-        
+
         public Object get(int index) {
             return valueMap.get(index);
         }

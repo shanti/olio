@@ -78,10 +78,7 @@ public class ModelFacade implements ServletContextListener {
     /** Creates a new instance of ModelFacade */
     public ModelFacade() {
         calendar = GregorianCalendar.getInstance();
-        // Default the jMaki usage to true
-        ServiceLocator sloc = ServiceLocator.getInstance();
-        jmakiUsage = Boolean.parseBoolean(sloc.getString("webapp.jmakiUsage", "true"));
-        useCache = Boolean.parseBoolean(sloc.getString("useLocalCache", "true"));
+
         /*
         try {
             FileSystem fs = ServiceLocator.getInstance().getFileSystem();  
@@ -107,6 +104,10 @@ public class ModelFacade implements ServletContextListener {
         context = sce.getServletContext();
         getContext().setAttribute(WebConstants.MF_KEY, this);
         WebappUtil.setContext(getContext().getContextPath());
+
+        ServiceLocator sloc = ServiceLocator.getInstance();
+        jmakiUsage = Boolean.parseBoolean(sloc.getString("webapp.jmakiUsage", "false"));
+        useCache = Boolean.parseBoolean(sloc.getString("useLocalCache", "true"));
     }
 
     //public String addPerson(Person person, UserSignOn userSignOn){

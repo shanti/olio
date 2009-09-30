@@ -46,8 +46,21 @@ public interface Cache {
      * @param timeToLive Time to cache this object in seconds
      */
     void put(String key, Object value, long timeToLive);
-    
-    boolean needsRefresh (String key);
+
+    /**
+     * Invalidates a cached item using a key
+     * @param key
+     * @return success
+     */
+    boolean invalidate(String key);
+
+    /*
+     * Check if cache needs refresh based on existence cached object and of Semaphore
+     * @param key The key
+     * @param cacheObjPresent false if the cache object for this key exists
+     * @return true if the cache object needs a refresh
+     */
+    boolean needsRefresh (boolean cacheObjPresent, String key);
     
     void doneRefresh (String key, long timeToNextRefresh) throws CacheException;
     

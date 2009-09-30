@@ -171,7 +171,11 @@ public abstract class CacheFactory {
         public void put(String key, Object value, long timeToLive) {
         }
 
-        public boolean needsRefresh(String key) {
+        public boolean invalidate(String key) {
+            return false;
+        }
+
+        public boolean needsRefresh(boolean cachObjPresent, String cacheKey) {
             return false;
         }
 

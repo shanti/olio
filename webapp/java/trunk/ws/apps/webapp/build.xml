@@ -45,7 +45,7 @@
             <fileset file="${webapp.lib}/rome-fetcher-0.9.jar"/>
             <fileset file="${webapp.lib}/commons-fileupload-1.2.jar"/>
             <fileset file="${webapp.lib}/commons-io-1.2.jar"/>
-            <fileset file="${webapp.lib}/java_memcached-release_1.5.1.jar"/>
+            <fileset file="${webapp.lib}/java_memcached-release_2.0.1.jar"/>
             <fileset file="${webapp.lib}/ajax-wrapper-comp-1.8.1.jar"/>
             <fileset file="${webapp.lib}/JSON.jar"/>
             <!-- add jersey files -->

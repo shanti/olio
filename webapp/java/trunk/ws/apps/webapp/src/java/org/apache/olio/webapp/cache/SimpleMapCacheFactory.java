@@ -28,6 +28,8 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class SimpleMapCacheFactory extends CacheFactory {
 
+    private int cacheExpireInSeconds = 120; // in seconds
+
     private static final ConcurrentHashMap<String,SoftReference<Object>> CACHE =
                                     new ConcurrentHashMap<String, SoftReference<Object>>();
 
@@ -36,8 +38,14 @@ public class SimpleMapCacheFactory extends CacheFactory {
      * @return The cache instance
      * @param type
      */
+    @Override
     public Cache createCache(String type) {
         return new MapCache(type);
+    }
+
+    @Override
+    public int getCacheExpireInSeconds() {
+        return cacheExpireInSeconds;
     }
 
     static class MapCache implements Cache {
@@ -87,16 +95,26 @@ public class SimpleMapCacheFactory extends CacheFactory {
             }
         }
 
-        // This is not implemented for now.
-        public boolean needsRefresh(String key) {
+        public boolean needsRefresh(boolean cacheObjPresent, String key) {
+           if (!cacheObjPresent || (expiryTime > 0 && System.currentTimeMillis() > expiryTime))
+                return true;
+
             return false;
         }
 
         public void doneRefresh(String key, long timeToNextRefresh) throws CacheException {
+            // no-op
         }
 
         public boolean isLocal() {
             return true;
+        }
+
+        public boolean invalidate(String key) {
+            put(key, null);
+            if (expiryTime == -1)
+                return true; // well we live in hope right?
+            return false;
         }
     }
 }

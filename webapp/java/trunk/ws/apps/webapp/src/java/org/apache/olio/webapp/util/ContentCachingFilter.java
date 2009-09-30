@@ -157,7 +157,7 @@ public class ContentCachingFilter implements Filter {
         
         if (obj != null) {
             // The page is cached. But does it need a refresh?
-            if (cache.needsRefresh(key)) {
+            if (cache.needsRefresh(true, key)) {
                 // We own the lock, so we need to refresh it
                 String str = acquirePageContent (path, request, response, chain);
                 if (str != null) {
@@ -189,7 +189,7 @@ public class ContentCachingFilter implements Filter {
             int attemptCount = 1;
             while (true) {
                 System.out.println ("needsRefreshAttempt = " + attemptCount++);
-                if (cache.needsRefresh(key)) {
+                if (cache.needsRefresh(false, key)) {
                     // We have the lock, refresh the content
                     String str = acquirePageContent (path, request, response, chain);
                     if (str != null) {

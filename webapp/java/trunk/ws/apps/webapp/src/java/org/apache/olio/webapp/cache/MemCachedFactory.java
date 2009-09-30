@@ -17,6 +17,7 @@
  */
 package org.apache.olio.webapp.cache;
 
+import com.danga.MemCached.Logger;
 import com.danga.MemCached.MemCachedClient;
 import com.danga.MemCached.SockIOPool;
 import java.util.Date;
@@ -65,6 +66,7 @@ public class MemCachedFactory extends CacheFactory {
             pool.initialize();
 
             cache = new MemCachedClient();
+            MemCachedClient.getLogger().setLevel(Logger.LEVEL_WARN);
             
             // Set thelog level to WARNING -- The defautl is INFO which causes unecessary logging
             
@@ -138,43 +140,48 @@ public class MemCachedFactory extends CacheFactory {
                                         key + ", value=" + value + " to cache");
         }
 
-        public boolean needsRefresh(String key) {
-            // Double checked lock. We first set the lock, then check whether we own the lock
-            // If updateSema is not null, then we don't need to updatet he cache. 
-            // updateSema is stroed with a timeout, so it will expire based on 
+        /** Invalidates a cached item using a key
+         *
+         * @param key The key
+         * @return success
+         */
+        public boolean invalidate(String key) {
+            // Only remove the Semaphore
+            return cache.delete(prefix + key + ".UpdateSema");
+        }
+
+        /*
+         * Check if cache needs refresh based on existence cached object and of Semaphore
+         * @param key The key
+         * @param cacheObjPresent false if the cache object for this key exists
+         * @return true if the object needs a refresh and if we have the lock
+         */
+        public boolean needsRefresh(boolean cacheObjPresent, String key) {
+            // Was a double checked lock. First set the lock, then check  we own the lock
+            // Now using memcached's add which is an atomic get/set
+            // If updateSema is not null, then we don't need to update the cache.
+            // updateSema is stored with a timeout, so it will expire based on
             // cache expiry time
             String updateSema = prefix + key + ".UpdateSema";
             String updateLock = prefix + key + ".UpdateLock";
-            if (cache.get(updateSema) == null) {
+            if (!cacheObjPresent || cache.get(updateSema) == null) {
+               // the lockId is based on the threadId
                String lockId = CacheFactory.getInstance().getLockId();
-               if (cache.get(updateLock) == null) {
-                   Date expiryTime = new Date (System.currentTimeMillis() 
+
+               Date expiryTime = new Date (System.currentTimeMillis()
                    + CacheFactory.getInstance().getCacheLockExpireInSeconds()*1000);
-                   
-                   //if (!cache.set(updateLock, lockId, expiryTime)) {
-                   if (!cache.set(updateLock, lockId, expiryTime)) {
-                       throw new CacheException("Error setting updateLock - key = " + 
-                               updateLock +" lockId = " + lockId);
-                   }
-                   else {
-                       System.out.println ("Set updateLock = " + updateLock + 
-                               " with lockID = " + lockId);
-                   }
-               
-                   // Now that we have set the lock. Check whether anyone has overwritten it.
-                   if (cache.get(updateLock) != null) {
-                       if (cache.get(updateLock).equals(lockId))
-                            return true;
-                   }
-                   else {
-                       System.out.println ("Get updateLock = " + updateLock + 
-                               " return null" );
-                       throw new CacheException("Error getting updateLock - key = " + 
-                               updateLock + " lockId = " + lockId);
-                       
-                   } 
+
+               // Memcached's add is an atomic get/set and can be used for locking
+               if (!cache.add(updateLock, lockId, expiryTime)) {
+                   // someone else has the lock, hopefully they are doing
+                   // what we are trying to do
+                   return false;
                }
+               else
+                   // we got the lock
+                   return true;
             }
+            // no refresh required
             return false;
         }
 

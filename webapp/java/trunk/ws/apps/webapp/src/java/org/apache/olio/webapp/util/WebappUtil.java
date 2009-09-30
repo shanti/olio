@@ -86,9 +86,7 @@ public class WebappUtil {
          monthMap.put("nov", 11);
          monthMap.put("dec", 12);
          
-         String useCache = ServiceLocator.getInstance().getString("useLocalCache", "true");
-         if (Boolean.parseBoolean(useCache))
-             cache = CacheFactory.getCache("Olio");
+         cache = CacheFactory.getCache("Olio");
     }
 
     /** Creates a new instance of WebappUtil */
@@ -539,7 +537,8 @@ public class WebappUtil {
             return;
         String key = getCacheKey(path, map);
         if (key != null) {
-            cache.put(key, null);
+            System.out.println("WebappUtil.clearCache(): " + key);
+            cache.invalidate(key);
         }
     }
     
