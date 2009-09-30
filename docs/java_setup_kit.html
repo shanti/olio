@@ -12,7 +12,7 @@
 </head>
 <body style="direction: ltr;" lang="en-US">
 <h1 align="center">Olio/Java<br>
-Install and Setup Guide From Source<br>
+Install and Setup Guide From Tarball<br>
 </h1>
 <h2>Overview</h2>
 <p>Java Olio is a macro-level benchmark consisting of the
@@ -64,9 +64,9 @@ bulk of cpu is spent in the application server component. <br>
 <br>
 In the following sections, we'll go over the steps
 needed to configure each component :</p>
-<a href="#Prerequisite_Software:">Prerquisite Software<br>
-</a><br>
-<a href="#Downloading_The_Source">Downloading the Source</a>
+<a href="#Extracting_the_Contents">Extracting the Contents</a><br>
+<br>
+<a href="#Prerequisite_Software:">Prerquisite Software</a><br>
 <p><a href="#setupDriver">Setting up the Driver</a></p>
 <p><a href="#setupDB">Setting up the Database</a></p>
 <p><a href="#loadDB">Loading the Database</a></p>
@@ -96,45 +96,62 @@ a facility for developing and running benchmarks.</li>
   <li>Database server - e.g. MySQL(minimum 5.0)<br>
   </li>
 </ul>
-<h2><a name="Downloading_The_Source"></a>Downloading The Source</h2>
-The Olio source is available in the source package
-(apache-olio-java-src-&lt;version&gt;.tar) from the Olio <a
- href="http://incubator.apache.org/olio/downloads">Downloads</a> page
-or via SVN at <a
- href="https://svn.apache.org/repos/asf/incubator/olio/">https://svn.apache.org/repos/asf/incubator/olio/</a>.
-The source kit offers a stable release and the SVN repository has the
-latest code. If you choose to use SVN, please see the <a
- href="http://www.apache.org/dev/version-control.html#anon-svn">instructions</a>
-for downloading the source. We will use $OLIO_HOME to designate the
-directory where the source is downloaded. The source is organized as
-follows :<br>
+<h2><a name="Extracting_the_Contents"></a>Extracting the Contents</h2>
+The Olio/Java kit is packaged as a gzipped tar file. The first task is
+to unzip the file and untar it to extract it's contents. Because of the
+long pathnames, please use gtar to extract. This is the default tar on
+Linux but on Solaris, use '/usr/sfw/bin/gtar'. This can be done as
+follows:<br>
+<br>
+<font face="Courier New, monospace"><font style="font-size: 11pt;"
+ size="2">#
+tar -xvzf </font></font><font face="Courier New, monospace"><font
+ style="font-size: 11pt;" size="2"><i>olio-java-&lt;version&gt;</i>.tar.gz
+(on Linux)<br>
+# </font></font><font face="Courier New, monospace"><font
+ style="font-size: 11pt;" size="2">gzcat <i>olio-java-&lt;version&gt;</i>.tar.gz
+| /usr/sfw/bin/gtar xvf - (on Solaris)</font></font><br>
+<br>
+This will cause a directory named olio-java-&lt;version&gt; to be
+created whose contents should look like:<br>
+<br>
+<code># ls olio-java-0.2*<br>
+<br>
+LICENSE OlioDriver.jar RELEASE-NOTES-java-0.2.txt geocoder.war
+Java_setup.html<br>
+<br>
+NOTICE olioJava/ release<br>
+<br>
+#</code>
+<br>
+<br>
+We will use $OLIO_HOME to designate the name of this directory. A
+description of the contents follows :<br>
 <ul>
-  <li>The <span style="font-style: italic;">webapp</span> directory
-contains the web application. The <span style="font-style: italic;">java/trunk
-    </span>sub-directory
-contains the workspace for the Java application. The java source
-directory resides in j<span style="font-style: italic;">ava/trunk/ws/apps/webapp/src/java</span>.
-&nbsp;We
-will refer to <span style="font-style: italic;">webapp/java/trunk</span>
-as $WEBAPP in this document.</li>
-</ul>
-<ul>
-  <li>The <span style="font-style: italic;">workload</span>
-directory contains the code for the load
-generator/driver (which we typically refer to simply as driver). The
-driver is implemented using <a href="http://faban.sunsource.net/">Faban</a>,
-an open source benchmarking toolkit. The <span
- style="font-style: italic;">java/trunk</span> sub-directory has
-the faban driver code to drive the php application. In future, we'd
-like to integrate the driver source for all implementations of the
-application. The $OLIO_HOME/workload/java/trunk directory is referred
-to as
-$WORKLOAD in this document.</li>
-</ul>
-<ul>
-  <li>The <span style="font-style: italic;">geocoder</span> directory
-contains the code for the geocoder emulator. This code is shared across
-all implementations of Olio.<br>
+  <li>&nbsp;<span style="font-style: italic;">webapp.war</span>
+contains the web application. This
+application will be deployed on the webserver. <br>
+    <br>
+  </li>
+  <li>&nbsp;<span style="font-style: italic;">OlioDriver.jar</span>
+contains the load generator/driver
+(which we typically refer to simply as <span
+ style="font-style: italic;">driver</span>). The driver is
+implemented using <a href="http://sunsource.faban.net">Faban</a>, an
+open source benchmarking toolkit.<br>
+    <br>
+  </li>
+  <li><span style="font-style: italic;">geocoder.war</span> contains
+the simple servlet used to emulate the geocoder.<br>
+    <br>
+  </li>
+  <li><span style="font-style: italic;">java_setup_kit.html</span> is
+this
+document.<br>
+    <br>
+  </li>
+  <li><span style="font-style: italic;">release</span> contains the
+release name. LICENSE and NOTICE contain the licenses.<br>
   </li>
 </ul>
 <h2><a name="setupDriver"></a>Setting up the Driver</h2>
@@ -166,51 +183,26 @@ services&nbsp; (if using Glassfish)<br>
 services</code></li>
     <li><code>cp
 samles/services/MemcachedService/build/MemcachedService.jar
-services&nbsp; (if using Memcached)</code><br>
-    </li>
+services&nbsp; (if using Memcached)</code></li>
   </ul>
-  <li>
-    <p align="left">To build the driver, do the following:<br>
-    </p>
-    <ul>
-      <li><code>cd $WORKLOAD; cp build.properties.template
-build.properties</code><br>
-        <br>
-      </li>
-      <li>Edit build.properties and set faban.home to
-$FABAN_HOME, faban.url to <span style="font-family: monospace;">http://<span
- style="font-style: italic;">driver_host</span>:9980 </span>where <span
- style="font-style: italic;">driver_host</span>
-is the name of the machine where the Faban master will run. This is
-usually the driver system.<br>
-        <br>
-      </li>
-      <li>Set the environment variable JAVA_HOME to point to your
-JDK1.6 installation.</li>
-    </ul>
-    <br>
-    <ul>
-      <li><a href="http://dev.mysql.com/downloads/connector/j/5.0.html">Download</a>
-MySQL Connector/J (JDBC Driver for MySQL) and install
-the jar in the <code>$WORKLOAD/lib</code> directory.<br>
-        <br>
-      </li>
-      <li>Build the driver using the command: <code>ant deploy.jar</code>.
-If
-successful, you should see the file OlioDriver.jar in the <span
- style="font-style: italic;">build</span>
-sub-directory.</li>
-      <br>
-    </ul>
-  </li>
+  <br>
+  <li>Copy $OLIO_HOME/Olio<span style="">Driver</span><i><span style="">.</span></i><span
+ style="font-style: normal;"><span style="">jar</span></span> to the
+$FABAN_HOME/benchmarks directory. Also copy the OlioDriver.jar file to
+the $FABAN_HOME/benchmarks directory on the web server system.</li>
+  <br>
   <li> For the driver to work, you will need
 JDK 1.6. Set JAVA_HOME to the path of the JDK in the faban user's
-environment.</li>
-  <li>
-    <p align="left">Start the faban master on the master driver machine
-:</p>
-    <p align="left">$FABAN_HOME/master/bin/startup.sh</p>
+environment. <br>
   </li>
+  <br>
+  <li>Start the faban master on the master driver machine
+:</li>
+  <ul>
+    <li>
+      <p align="left">$FABAN_HOME/master/bin/startup.sh</p>
+    </li>
+  </ul>
   <li>
     <p align="left">Test that you can connect to the
 master by pointing your browser at http://<i>&lt;driver_machine&gt;</i>:9980.
@@ -222,8 +214,9 @@ Workload"</p>
     <p>Copy&nbsp; MySQL Connector/J (JDBC Driver for MySQL) jar to
 $FABAN_HOME/benchmarks/OlioDriver/lib. </p>
   </li>
-  <li>To deploy the Faban driver, you can
-either copy $WORKLOAD/build/OlioDriver.jar to the
+  <br>
+  <li>To deploy the Faban driver, you can either copy
+$WORKLOAD/build/OlioDriver.jar to the
 $FABAN_HOME/benchmarks directory, or execute <span
  style="font-family: monospace;">ant deploy</span>.
 &nbsp;Executing the deploy target will deploy the build jar file on
@@ -383,20 +376,13 @@ Emulator</font></a></h2>
 can deploy on Glassfish or Tomcat. It is typically run on a driver
 machine. The
 following steps describe how to install it.</p>
-<p>To build the geocoder:</p>
-<ul>
-  <li>Build the geocoder.war file by going to the 'geocoder'
-directory and following the instructions in the README file.</li>
-</ul>
-<p>
-For Glassfish:</p>
+<p>For Glassfish:</p>
 <ol>
   <li>Download and install Glassfish V2 from <a
  href="https://glassfish.dev.java.net/public/downloadsindex.html">https://glassfish.dev.java.net/public/downloadsindex.html.</a>
     <br>
   </li>
-  <li>Copy the geocoder.war from the geocoder directory
-($OLIO_HOME/geocoder) to
+  <li>Copy $OLIO_HOME/geocoder.war from&nbsp; to
 $GLASSFISH_HOME/domains/domain1/autodeploy (domain1 is the default
 domain created with Glassfish)</li>
   <li>Start Glassfish by using $GLASSFISH_HOME/bin/asadmin
@@ -409,11 +395,7 @@ For Tomcat:
 on the driver machine. The install directory doesn't matter &#8211;
 we will refer to it as $TOMCAT_HOME. </p>
   </li>
-  <li>
-    <p>Build the geocoder.war file by going to the 'geocoder' directory
-and following the instructions in the README file.</p>
-  </li>
-  <li>Copy the geocoder.war file from the geocoder/dist directory to
+  <li>Copy $OLIO_HOME/geocoder.war to
 $TOMCAT_HOME/webapps.</li>
   <li>
     <p>Start Tomcat using $TOMCAT_HOME/bin/startup.sh.</p>
@@ -462,8 +444,7 @@ uses TopLink as the default JPA implementation so you will have to
 the eclipselink.jar,
 and &nbsp;put this in $GLASSFISH_HOME/lib directory.&nbsp;&nbsp;
 an issue with running with the latest EclipseLink, so you will need to
-get EclipseLink 1.1.0.
-  </li>
+get EclipseLink 1.1.0. </li>
   <br>
   <li>Instructions on how to use the Glassfish admin
 interface is <a
@@ -567,116 +548,29 @@ jdbc:mysql://&lt;dbhost&gt;:3306/bpwebapp<br>
 o Keep the rest of properties created.<br>
     <br>
 6.&nbsp; Create the JDBC resource with the JNDI name
-jdbc/BPWebappDB pointing to new resource created above.<br>
-  </li>
+jdbc/BPWebappDB pointing to new resource created above.</li>
 </ol>
-<h2><a name="Building_the_codebase"></a>Building the web application<br>
-</h2>
-<ol>
-  <li>Before building the WAR file to deploy on the application server,
-you
-will first have to edit the web descriptors to point to your database
-and geocoder that you set up in the previous steps. &nbsp;<br>
-  </li>
-  <ul>
-    <li>Edit the <span style="font-style: italic;">env-entry</span>
-for Geocoder URL in
-$WEBAPP/ws/apps/webapp/web/WEB-INF/web.xml to point to where
-your geocoder application is deployed.</li>
-  </ul>
-  <li>Set JAVA_HOME, ANT_HOME accordingly in your environment.<br>
-  </li>
-  <li>In the $WEBAPP/ws/bp-project directory, copy the
-build.properties.template to build.properties. &nbsp;Edit the
-build.properties for the relevant build details.
-&nbsp;Note that $WEBAPP was introduced in the section "Downloading the
-Source":<br>
-    <span style="font-family: monospace;">$ vi
-&lt;$WEBAPP&gt;/ws/bp-project/build.properties<br>
-    <br>
-    </span>Note that javaee.home needs to be pointed to the
-your Java EE 5 application server home directory, or if you're using
-GlassFish, the $GLASSFISH_HOME directory. &nbsp;It will look for the
-necessary Java EE jars expecting it to be in the javaee.home/lib
-directory.<br>
-  </li>
-  <li>Change directories to the level of the webapp directory:<br>
-    <span style="font-family: monospace;">$ cd
-&lt;$WEBAPP&gt;/ws/apps/webapp<br>
-    </span></li>
-  <li>Compile and jar the WAR file by executing the default
-"ant"command. &nbsp;You should see messages that the build is
-compiling:<br>
-    <span style="font-family: monospace;"><br>
-$ ant<br>
-Buildfile: build.xml<br>
-    <br>
-build:<br>
-    <br>
-default:<br>
-    <br>
-default-ear:<br>
-    <br>
-init:<br>
-    <br>
--pre-compile:<br>
-    <br>
-bpp-actual-compilation:<br>
-&nbsp;&nbsp;&nbsp;&nbsp; [echo] Compiling webapp<br>
-&nbsp;&nbsp;&nbsp; [javac] Compiling 49 source files to
-/Users/klichong/projects/java_testOlio/JavaOlio/webapp/java/trunk/ws/apps/webapp/build/classes<br>
-&nbsp;&nbsp;&nbsp; [javac] Note: Some input files use unchecked or
-unsafe operations.<br>
-&nbsp;&nbsp;&nbsp; [javac] Note: Recompile with -Xlint:unchecked for
-details.<br>
-    <br>
-include-jmaki-local:<br>
-    <br>
-include-jmaki:<br>
-&nbsp;&nbsp;&nbsp;&nbsp; [echo] Copying jMaki Runtime to
-/Users/klichong/projects/java_testOlio/JavaOlio/webapp/java/trunk/ws/apps/webapp/./build/web<br>
-&nbsp;&nbsp;&nbsp; [mkdir] Created dir:
-/Users/klichong/projects/java_testOlio/JavaOlio/webapp/java/trunk/ws/apps/webapp/build/web/temp<br>
-&nbsp;&nbsp;&nbsp; [unzip] Expanding:
-/Users/klichong/projects/java_testOlio/JavaOlio/webapp/java/trunk/ws/lib/ajax-wrapper-comp-1.8.1.jar
-into
-/Users/klichong/projects/java_testOlio/JavaOlio/webapp/java/trunk/ws/apps/webapp/build/web/temp<br>
-&nbsp;&nbsp;&nbsp; [mkdir] Created dir:
-/Users/klichong/projects/java_testOlio/JavaOlio/webapp/java/trunk/ws/apps/webapp/build/web/resources<br>
-&nbsp;&nbsp; [delete] Deleting directory
-/Users/klichong/projects/java_testOlio/JavaOlio/webapp/java/trunk/ws/apps/webapp/build/web/temp<br>
-    <br>
--post-compile:<br>
-&nbsp;&nbsp;&nbsp;&nbsp; [copy] Copying 3 files to
-/Users/klichong/projects/java_testOlio/JavaOlio/webapp/java/trunk/ws/apps/webapp/build/classes<br>
-&nbsp;&nbsp;&nbsp; [mkdir] Created dir:
-/Users/klichong/projects/java_testOlio/JavaOlio/webapp/java/trunk/ws/apps/webapp/build/web/WEB-INF/lib<br>
-&nbsp;&nbsp;&nbsp;&nbsp; [copy] Copying 7 files to
-/Users/klichong/projects/java_testOlio/JavaOlio/webapp/java/trunk/ws/apps/webapp/build/web/WEB-INF/lib<br>
-    <br>
-......<br>
-......<br>
-    <br>
-bpp-copy-dist:<br>
-&nbsp;&nbsp;&nbsp; [mkdir] Created dir:
-/Users/klichong/projects/java_testOlio/JavaOlio/webapp/java/trunk/ws/apps/webapp/dist<br>
-&nbsp;&nbsp;&nbsp;&nbsp; [copy] Copying 1 file to
-/Users/klichong/projects/java_testOlio/JavaOlio/webapp/java/trunk/ws/apps/webapp/dist<br>
-    <br>
-default-not-ear:<br>
-    <br>
-default:<br>
-    <br>
-BUILD SUCCESSFUL<br>
-    </span></li>
-  <li>The resulting <span style="font-weight: bold;">webapp.wa</span>r
-file should be located in the&nbsp;<span style="font-family: monospace;">&lt;$OLIO_HOME&gt;</span><span
- style="font-family: monospace;">/ws/apps/webapp/dist </span>directory.</li>
-</ol>
+<h2>Deploying the Web Application</h2>
+Deploy
+the $OLIO_HOME/webapp.war file to your
+Java EE 5 application server. &nbsp;
 <br>
-<h3><span style="font-weight: bold;">Note to WebLogic Application
-Server Users</span></h3>
-If you are deploying Olio to Oracle WebLogic Server 11g Release 1
+If you are using GlassFish, you can do so by
+either dropping the war file in the
+$GLASSFISH_HOME/domains/domain1/autodeploy directory. &nbsp;You can
+also
+deploy via different methods by referring to <a
+ href="https://glassfish.dev.java.net/downloads/quickstart/index.html#Packaging_and_Deploying_Applications">https://glassfish.dev.java.net/downloads/quickstart/index.html#Packaging_and_Deploying_Applications</a>.&nbsp;
+<br>
+<br>
+You must set the geocoderURL property to point to the URL where the
+geocoder is deployed. The default value for this property is
+http://localhost:8080/geocoder/geocode. Set
+'-DgeocoderURL="http://&lt;host&gt;:&lt;port&gt;/geocoder/geocode"' in
+the application server's configuration. For glassfish, you can do this
+by editing the domain.xml file (in domains/domain1/config/domain.xml).<br>
+<br>
+NOTE: If you are deploying Olio to Oracle WebLogic Server 11g Release 1
 (10.3.1), there is a WebLogic bug (8448313) that results in a JPA
 exception because lazy fetching is being used. &nbsp; The Exception
 stack trace will appear:<br>
@@ -710,96 +604,10 @@ org.apache.olio.webapp.model.Person._persistence_getaddress_vh()</span><br>
 <br>
 This bug is&nbsp; related to loading classes before the weaver has a
 chance to execute that has been fixed in later editions and is
-available through support. &nbsp;As a workaround, you will have to
-statically weave the application classes after building but before
-deploying the application on WebLogic.<br>
-<br>
-There is an existing ant target "weave" that will perform the static
-weaving after compilation but before packaging the WAR file. &nbsp;You
-will just have to add the target 'weave' in the -post-compile step.<br>
-<div style="margin-left: 40px;">
-<ol>
-  <li>Open build.xml in the&nbsp;<span style="font-family: monospace;">&lt;$WEBAPP&gt;/ws/apps/webapp
-    </span>directory. &nbsp;</li>
-  <li>&nbsp;Comment line 30 of build.xml :<br>
-    <span style="font-family: monospace;">30 &nbsp; &nbsp;
-&nbsp;&lt;target name="-post-compile" depends="init,
-include-jmaki-local"&gt;</span></li>
-  <li>Uncomment line 32 which has already added the target "weave" to
-the -post-compile target.<br>
-    <span style="font-family: monospace;">&nbsp;31&nbsp;&nbsp;&nbsp;&nbsp;
-&lt;!-- uncomment this line below to do static weaving for weblogic bug
---&gt;</span><br style="font-family: monospace;">
-    <span style="font-family: monospace;">&nbsp;32&nbsp;&nbsp;&nbsp;&nbsp;
-&lt;!--target name="-post-compile" depends="init, include-jmaki-local,
-weave"--&gt;</span></li>
-  <li>Since the 'weave' target calls an ant task
-(org.eclipse.persistence.tools.weaving.jpa.StaticWeaveAntTask), it
-needs class files from the javax.persistence_1.0.0.0_1-0-2.jar and
-eclipselink.jar to complete the task.</li>
-  <li>Copy &nbsp;the eclipselink.jar to the <span
- style="font-family: monospace;">$WEBAPP_HOME/ws/lib</span> directory
-(see step 3 of <a
- href="java_setup.html#GlassFish_Installation_and_Configuration">GlassFish
-Installation and Configuration</a>)</li>
-  <li>Specify the weblogic.lib environment variable in the ant call so
-that appropriate jar files can be found:<br>
-    <br>
-eg.<span style="font-family: monospace;"> ant
--Dweblogic.lib=$my_weblogic_path/oracle/middleware/modules<br>
-    </span>Note that the <span style="font-family: monospace;">weblogic.lib</span>
-environment variable needs to be specified on the command line because
-of the call to the&nbsp;StaticWeaveAntTask and cannot read the
-variables within the build.xml or its imported build files.<br>
-  </li>
-  <li>You should note that the <span style="font-family: monospace;">copy-persistence-config,
-define.weave</span> and <span style="font-family: monospace;">weave</span>
-steps has taken place in the output. &nbsp;You can deploy the resulting
-WAR file to WebLogic.<br>
-...<br>
-    <span style="font-family: monospace;">include-jmaki-local:</span><br
- style="font-family: monospace;">
-    <br style="font-family: monospace;">
-    <span style="font-family: monospace;">include-jmaki:</span><br
- style="font-family: monospace;">
-    <span style="font-family: monospace;">copy-persistence-config:</span><br
- style="font-family: monospace;">
-    <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;
-[copy] Copying 1 file to
-/Users/klichong/projects/olio/webapp/java/trunk/ws/apps/webapp/build/classes/META-INF</span><br
- style="font-family: monospace;">
-    <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;
-[copy] Copying 1 file to
-/Users/klichong/projects/olio/webapp/java/trunk/ws/apps/webapp/build/classes/META-INF</span><br
- style="font-family: monospace;">
-    <br style="font-family: monospace;">
-    <span style="font-family: monospace;">define.weave:</span><br
- style="font-family: monospace;">
-    <br style="font-family: monospace;">
-    <span style="font-family: monospace;">weave:</span><br
- style="font-family: monospace;">
-    <br style="font-family: monospace;">
-    <span style="font-family: monospace;">-post-compile:</span><br
- style="font-family: monospace;">
-    <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;
-[copy] Copying 3 files to
-/Users/klichong/projects/olio/webapp/java/trunk/ws/apps/webapp/build/classes</span></li>
-</ol>
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; ....</div>
-<h2>Deploying the Web Application</h2>
-Deploy
-the webapp.war from the $WEBAPP/ws/apps/webapp/dist directory to your
-Java EE 5 application server. &nbsp;
-<ol>
-  <li>If you are using GlassFish, you can do so by
-either dropping the war file in the
-$GLASSFISH_HOME/domains/domain1/autodeploy directory. &nbsp;You can
-also
-deploy via different methods by referring to <a
- href="https://glassfish.dev.java.net/downloads/quickstart/index.html#Packaging_and_Deploying_Applications">https://glassfish.dev.java.net/downloads/quickstart/index.html#Packaging_and_Deploying_Applications</a>.&nbsp;
-    <br>
-  </li>
-</ol>
+available through support.&nbsp; <br>
+You can workaround the issue by build the web application yourself from
+the Olio source kit. See the documentation in the source kit for
+details.<br>
 <h2><a name="installWebApp"></a><font size="4">Tuning Glassfish</font></h2>
 <ol>
   <li>Go to the administration interface, eg. http://localhost:4848.</li>
@@ -831,7 +639,10 @@ is in domains/domain1/config/domain.xml) :<br>
 this
 case, set <code>-DcacheOlio=false.</code></li>
   <li><code></code> MapCache. This is the default and doesn't require
-any setting. It does a good job of off-loading the database.</li>
+any additional setting. It does a good job of off-loading the database.
+It is activated by the <code>cacheFactorClass=org.apache.olio.webapp.cache.SimpleMapCacheFactory</code>
+property.<br>
+  </li>
   <li>Memcache. In this case, the home page contents are cached in
 memcached. Set <code>-DcacheFactoryClass=org.apache.olio.webapp.cache.MemCachedFactory</code>
 and <code>-DmemcachedInstances=&lt;host&gt;:&lt;port&gt;</code>
