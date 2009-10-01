@@ -354,13 +354,6 @@ the Faban master driver. Only this machine has the loader at this time.</font></
 of this for the runs, but since we have not yet started the first run,
 we will need to change that ourselves:<br>
     <span style="font-family: monospace;"># chmod +x dbloader.sh</span></li>
-  <li>You may have to edit the dbloader.sh to reflect your version of
-the JDBC Driver for MySQL that you downloaded and placed in the&nbsp;
-$FABAN_HOME/benchmarks/OlioDriver/lib in step 3 of <a
- href="#setupDriver">Setting Up the Driver</a> section. &nbsp;On line
-51 of dbloader.sh, the CLASSPATH is currently set to MySQL JDBC driver
-version 5.0.6. &nbsp;<br>
-Eg. <span style="font-family: monospace;">CLASSPATH=$B/mysql-connector-java-5.0.6-bin.jar</span></li>
   <li>Run the loader script:<br>
     <span style="font-family: monospace;"># ./dbloader.sh <span
  style="font-style: italic;">&lt;dbserver&gt;
@@ -438,12 +431,11 @@ named your domain).</p>
   <li>The benchmark utilizes JPA (Java Persistence API) and has been
 benchmarked
 with the EclipseLink implementation. &nbsp;GlassFish v2
-uses TopLink as the default JPA implementation so you will have to
-    <a
+uses TopLink as the default JPA implementation so you will have to <a
  href="http://www.eclipse.org/eclipselink/downloads/previous_releases.php">download</a>
 the eclipselink.jar,
-and &nbsp;put this in $GLASSFISH_HOME/lib directory.&nbsp;&nbsp;
-an issue with running with the latest EclipseLink, so you will need to
+and &nbsp;put this in $GLASSFISH_HOME/lib directory. An issue was found
+with the latest EclipseLink (1.1.2), so you will need to
 get EclipseLink 1.1.0. </li>
   <br>
   <li>Instructions on how to use the Glassfish admin
