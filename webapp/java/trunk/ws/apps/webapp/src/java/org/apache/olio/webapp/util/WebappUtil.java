@@ -50,9 +50,9 @@ import javax.servlet.http.HttpServletResponse;
 
 public class WebappUtil {
     
-    private static final Logger _logger=getBaseLogger();
+    //private static final Logger logger=getBaseLogger();
+    private static Logger logger = Logger.getLogger(WebappUtil.class.getName());
     private static final PropertyResourceBundle _resBundle=getBaseBundle();
-    private static boolean bDebug=false;
     public static String context = "/";
     private static HashMap<String, Integer> monthMap;
     private static Cache cache = null;
@@ -121,7 +121,7 @@ public class WebappUtil {
 
 
         } catch (IOException ex) {
-            Logger.getLogger(WebappUtil.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, null, ex);
         }
 
         if (isLocal) {
@@ -153,17 +153,17 @@ public class WebappUtil {
     
         FileOutputStream fos = new FileOutputStream (imagePath);
         WriteThroughInputStream wis = new WriteThroughInputStream (is, fos);
-        System.out.println(" the imagePath in saveImageWithThumbnail is "+ imagePath);
+        // logger.finer(" the imagePath in saveImageWithThumbnail is "+ imagePath);
         try {
             scaler.customLoad(wis);
         } catch (Exception ex) {
-            Logger.getLogger(WebappUtil.class.getName()).log(Level.SEVERE, null, ex);
-            ex.printStackTrace();
+            logger.log(Level.SEVERE, null, ex);
+            //ex.printStackTrace();
         }
         if (thumbnailPath != null) {
             scaler.resizeWithGraphics(thumbnailPath);
         }
-        System.out.println(" the thumbNailPath in saveImageWithThumbnail is "+ thumbnailPath);
+        // logger.finer(" the thumbNailPath in saveImageWithThumbnail is "+ thumbnailPath);
         wis.closeOutputStream();
         return true;
     } 
@@ -181,7 +181,7 @@ public class WebappUtil {
             imgScaler.keepAspectWithWidth();
             imgScaler.resizeWithGraphics(thumbPath);
         } catch (Exception e) {
-            getLogger().log(Level.SEVERE, "ERROR in generating thumbnail", e);
+            logger.log(Level.SEVERE, "ERROR in generating thumbnail", e);
         }
         // remove path info and just return the thumb file name
         thumbPath=thumbPath.substring(thumbPath.lastIndexOf("/") + 1);
@@ -189,9 +189,6 @@ public class WebappUtil {
         return thumbPath;
     }
     
-    public static Logger getLogger() {
-        return _logger;
-    }
     
     /**
      * This method returns the default logger for the Webapp application
@@ -206,7 +203,7 @@ public class WebappUtil {
         try {
             return new PropertyResourceBundle(WebappUtil.class.getResourceAsStream("MessageStrings.properties"));
         } catch(IOException io) {
-            getLogger().log(Level.WARNING, "resource_bundle_does_not_exist", io);
+            logger.log(Level.WARNING, "resource_bundle_does_not_exist", io);
             return null;
         }
         
@@ -297,22 +294,18 @@ public class WebappUtil {
         }
         */
        } catch (UnsupportedEncodingException e) {
-            if (getLogger().isLoggable(Level.WARNING)) {
-                getLogger().log(Level.WARNING, "geoCoder.encodeLocation", e);
-            }
+            logger.log(Level.WARNING, "geoCoder.encodeLocation ", e);
             throw new IllegalArgumentException(e.getMessage());
         }
-        
         if(street2 == null) street2="";
-        
-        
-        WebappUtil.getLogger().log(Level.FINE, "*****Ready to Set proxyHost:proxyPort to " + proxyHost + ":" + proxyPort + ". ");
+        logger.finer("Ready to set proxyHost:proxyPort to " + proxyHost + ":" + proxyPort + ". ");
         // get latitude & longitude
         GeoCoder geoCoder=new GeoCoder();
         //if(proxyHost != null && proxyPort != null)
         if(proxyHost != null && !proxyHost.equals("") && proxyPort != null && proxyPort.equals("")) {
             // set proxy host and port if it exists
-            WebappUtil.getLogger().log(Level.FINE, "Setting proxyHost:proxyPort to " + proxyHost + ":" + proxyPort + ".  Make sure server.policy is updated to allow setting System Properties");
+            logger.finer("Setting proxyHost:proxyPort to " + proxyHost + ":" + proxyPort + 
+                ".  Make sure server.policy is updated to allow setting System Properties");
             geoCoder.setProxyHost(proxyHost);
             try {
                 geoCoder.setProxyPort(Integer.parseInt(proxyPort));
@@ -320,7 +313,7 @@ public class WebappUtil {
                 ee.printStackTrace();
             }
         } else {
-            WebappUtil.getLogger().log(Level.FINE, "A \"proxyHost\" and \"proxyPort\" isn't set as a web.xml context-param. A proxy server may be necessary to reach the open internet.");
+            logger.finer("A \"proxyHost\" and \"proxyPort\" isn't set as a web.xml context-param. A proxy server may be necessary to reach the open internet.");
         }
         
         // use component to get points based on location (this uses Yahoo's map service
@@ -331,9 +324,9 @@ public class WebappUtil {
             try {
                 GeoPoint points[]=geoCoder.geoCode(totAddr);
                 if ((points == null) || (points.length < 1)) {
-                    WebappUtil.getLogger().log(Level.FINE, "No addresses for location - " + totAddr);
+                    logger.fine("No addresses for location - " + totAddr);
                 } else if(points.length > 1) {
-                    WebappUtil.getLogger().log(Level.FINE, "Matched " + points.length + " locations, taking the first one");
+                    logger.fine("Matched " + points.length + " locations, taking the first one");
                 }
                 
                 // grab first address in more that one came back
@@ -343,7 +336,7 @@ public class WebappUtil {
                     longitude = points[0].getLongitude();
                 }
             } catch (Exception ee) {
-                WebappUtil.getLogger().log(Level.WARNING, "geocoder.lookup.exception", ee);
+                logger.log(Level.WARNING, "geocoder.lookup.exception", ee);
             }
         }
         Address addr = new Address(street1,street2,city,state,zip,country,latitude,longitude);
@@ -537,7 +530,7 @@ public class WebappUtil {
             return;
         String key = getCacheKey(path, map);
         if (key != null) {
-            System.out.println("WebappUtil.clearCache(): " + key);
+            logger.finer("WebappUtil.clearCache(): " + key);
             cache.invalidate(key);
         }
     }
@@ -568,7 +561,7 @@ public class WebappUtil {
               if (token.contains(parameterName)) {
                   int quoteIndex = token.indexOf("\"");
                   parameterValue = token.substring(quoteIndex+1,token.length()-1);
-                  System.out.println("parameter " + parameterName + " is "+ parameterValue);
+                  // logger.finer("parameter " + parameterName + " is "+ parameterValue);
                   break;
               }
           }

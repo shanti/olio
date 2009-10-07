@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.olio.webapp.util;
 
 import java.io.File;
@@ -47,23 +46,23 @@ import javax.servlet.http.HttpServletResponse;
  * By default, the filter is not enabled. 
  */
 public class CacheControlFilter implements Filter {
+
     private FilterConfig config;
     private Map<String, String> mimeMap = new HashMap<String, String>();
     boolean isWildCardSpecified = false;
-    
-    private boolean cacheEnabled = true; // Provide a System property based over ride mechanism 
-    
+    private boolean cacheEnabled = true; // Provide a System property based over ride mechanism
+    Logger logger = Logger.getLogger(CacheControlFilter.class.getName());
+
     public void init(FilterConfig config) throws ServletException {
         this.config = config;
         // Populate the map. 
         configureCache();
-        
+
         if (!cacheEnabled) {
-            System.out.println ("static content caching is disabled");
+            logger.info("static content caching is disabled");
             return;
-        }
-        else {
-            System.out.println ("static content caching is enabled");
+        } else {
+            logger.info("static content caching is enabled");
         }
     }
 
@@ -80,7 +79,7 @@ public class CacheControlFilter implements Filter {
                 if (isWildCardSpecified) {
                     int index = mimeType.indexOf("/");
                     if (index != -1) {
-                        String mime = mimeType.substring(0, index+1);
+                        String mime = mimeType.substring(0, index + 1);
                         if (mimeMap.containsKey(mime)) {
                             hres.addHeader("Cache-Control", mimeMap.get(mime));
                             found = true;
@@ -92,11 +91,10 @@ public class CacheControlFilter implements Filter {
                 }
             }
         }
-        chain.doFilter(request, response);      
+        chain.doFilter(request, response);
     }
 
     public void destroy() {
-        
     }
 
     private void configureCache() {
@@ -105,11 +103,12 @@ public class CacheControlFilter implements Filter {
         // 2. If caching is enabled, check the file specified by the System property first
         //    This is an over ride mechanism that allows the deployer to modify the behavior
         // 3. Default behavior is taken from the Filter init params (web.xml)
-        
+
         cacheEnabled = !Boolean.getBoolean("disableStaticContentCaching");
-        if (!cacheEnabled) 
+        if (!cacheEnabled) {
             return;
-        
+        }
+
         // Overwrite the default if specified
         String str = System.getProperty("staticContentCachingConfigurationFile");
         if (str != null && new File(str).exists()) {
@@ -119,46 +118,47 @@ public class CacheControlFilter implements Filter {
                     Properties props = new Properties();
                     props.load(is);
                     is.close();
-                    
+
                     // Parse the properties
                     Set<String> keys = props.stringPropertyNames();
                     Iterator<String> iter = keys.iterator();
                     while (iter.hasNext()) {
                         String key = iter.next();
-                        processMimeType (key, props.getProperty(key));
+                        processMimeType(key, props.getProperty(key));
                     }
                     return;
                 }
-            }
-            catch (IOException ex) {
+            } catch (IOException ex) {
                 Logger.getLogger(CacheControlFilter.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
-        else {
+        } else {
             Enumeration<String> emimes = config.getInitParameterNames();
             while (emimes.hasMoreElements()) {
                 String mime = emimes.nextElement();
                 String value = config.getInitParameter(mime);
-                processMimeType (mime, value);
+                processMimeType(mime, value);
             }
-        } 
+        }
     }
 
     private void processMimeType(String mime, String value) {
-        if (value == null)
+        if (value == null) {
             return;
-        
+        }
+
         int index = mime.indexOf("/");
-        if (index == -1 || mime.length() < 3)  // Incorrect mime specification
+        if (index == -1 || mime.length() < 3) // Incorrect mime specification
+        {
             return;
-        
+        }
+
         // Check for wild cards
-        if (mime.charAt(mime.length()-1) == '*') {
-            String wcard = mime.substring(0, index+1);
+        if (mime.charAt(mime.length() - 1) == '*') {
+            String wcard = mime.substring(0, index + 1);
             mimeMap.put(wcard, value);
             isWildCardSpecified = true;
-        }
-        else
+        } else {
             mimeMap.put(mime, value);
+        }
     }
 }

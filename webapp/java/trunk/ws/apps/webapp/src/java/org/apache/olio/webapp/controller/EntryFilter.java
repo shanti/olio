@@ -36,6 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.olio.webapp.util.WebappUtil;
 import java.util.HashSet;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletResponse;
 
@@ -50,12 +51,12 @@ public class EntryFilter implements Filter {
     // configured.
     private FilterConfig filterConfig = null;
     private HashSet<String> securePages=new HashSet<String>();
-    private static final boolean bDebug=false;
-    
+    //private static final boolean bDebug=false;
+    private static final Logger logger = Logger.getLogger(EntryFilter.class.getName());
+
     public EntryFilter() {
     }
-    
-    
+        
     /**
      *
      * @param request The servlet request we are processing
@@ -77,11 +78,11 @@ public class EntryFilter implements Filter {
             HttpServletResponse httpResponse=(HttpServletResponse)response;
             SecurityHandler securityHandler=SecurityHandler.getInstance();
             String resource=httpRequest.getServletPath();
-            if(bDebug) System.out.println("\nEntity Filter - Have servletpath = " + resource);
+            logger.finer("\nEntity Filter - Have servletpath = " + resource);
             
             if(resource.equals("/login.jsp")) {
                 // login page either being accessed or submitted
-                if(bDebug) System.out.println("Entity Filter - have login page request or submission");
+                logger.finer("Entity Filter - have login page request or submission");
                 
                 // see if parameters are submitted
                 String userName=request.getParameter(WebConstants.USER_NAME_PARAM);
@@ -118,17 +119,17 @@ public class EntryFilter implements Filter {
                     resource += pathInfo;
                     // using the rest type urls go only 3 '/' deep for security check (e.g. /xxx/xxxx/xxx)
                     resource=getSecurityURI(resource);
-                    if(bDebug) System.out.println("\nEntity Filter - checking if protect path = " + resource);
+                    logger.finer("\nEntity Filter - checking if protect path = " + resource);
                 }
                 
                 
-                WebappUtil.getLogger().log(Level.FINE,"Checking resource to see if login required " + resource);
-                if(bDebug) System.out.println("Entity Filter - Checking resource to see if login required - " + resource);
+                logger.finer("Checking resource to see if login required " + resource);
+                logger.finer("Entity Filter - Checking resource to see if login required - " + resource);
                 //resource=resource.substring(resource.lastIndexOf("/") + 1);
                 // if null page then using default welcome mechanism, assume it is an accessable page.
                 if(resource != null) {
                     if(securePages.contains(resource)) {
-                        if(bDebug) System.out.println("Entity Filter - have secure resource - " + resource);
+                        logger.finer("Entity Filter - have secure resource - " + resource);
                         
                         // set response header to alert ajax calls of a login error.
                         httpResponse.addHeader("NeedLogin", "The user needs to be logged in");
@@ -222,7 +223,7 @@ public class EntryFilter implements Filter {
         
         // read in allowed access points
         String securePagesParam=filterConfig.getServletContext().getInitParameter("securePages");
-        if(bDebug) System.out.println("\n*** entry String = " + securePagesParam);
+        logger.finer("\n*** entry String = " + securePagesParam);
         // loop through pages to see if
         StringTokenizer stPages=new StringTokenizer(securePagesParam, "|");
         int countx=stPages.countTokens();

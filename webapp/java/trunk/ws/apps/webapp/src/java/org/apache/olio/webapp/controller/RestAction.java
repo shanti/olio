@@ -18,6 +18,7 @@
 
 package org.apache.olio.webapp.controller;
 
+import java.util.logging.Logger;
 import org.apache.olio.webapp.model.ModelFacade;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,7 +28,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author Inderjeet Singh
  */
 public class RestAction implements Action {
-    
+    private Logger logger = Logger.getLogger(RestAction.class.getName());
     private ModelFacade mf;
     
     public RestAction() {
@@ -72,7 +73,7 @@ public class RestAction implements Action {
         String zip = request.getParameter(WebConstants.ZIP_PARAM);
         Address address = handleAddress(street1, city, state, zip, proxyHost, proxyPort);                  
         SocialEvent socialEvent = new SocialEvent(title, description, submitterUserName, address, 0, 0);
-        System.out.println("Event title = " + socialEvent.getTitle());
+        logger.finer("Event title = " + socialEvent.getTitle());
         int socialEventID = modelFacade.addSocialEvent(socialEvent);
         WebappUtil.getLogger().log(Level.FINE, "SocialEvent " + socialEventID + " has been persisted");       
     }

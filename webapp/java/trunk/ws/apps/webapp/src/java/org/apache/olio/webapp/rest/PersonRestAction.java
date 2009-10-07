@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.olio.webapp.rest;
 
 import org.apache.olio.webapp.controller.Action;
@@ -39,6 +38,7 @@ import org.apache.olio.webapp.model.Invitation;
 import org.apache.olio.webapp.util.UserBean;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.logging.Logger;
 
 /**
  * handles all request related to users
@@ -48,14 +48,14 @@ import java.util.Iterator;
  * @author Kim Lichong
  */
 public class PersonRestAction implements Action {
-    
+
     private ServletContext context;
-    private static final boolean bDebug=false;
-    
+    private Logger logger = Logger.getLogger(PersonRestAction.class.getName());
+
     public PersonRestAction(ServletContext context) {
         this.context = context;
     }
-    
+
     /**
      * You can test this action by putting a url in your browser such as
      * http://localhost:8080/webapp/api/person?user_name=bob123
@@ -64,14 +64,13 @@ public class PersonRestAction implements Action {
         PrintWriter out = response.getWriter();
         String actionType = request.getParameter(ACTION_TYPE_PARAM);
         String method = request.getMethod();
-        WebappUtil.getLogger().log(Level.FINE, "PERSON-REST-ACTION:process:: " + ACTION_TYPE_PARAM +"=" + actionType);
-        
+        logger.log(Level.FINER, "PERSON-REST-ACTION:process:: " + ACTION_TYPE_PARAM + "=" + actionType);
+
         if (actionType == null) { // treat it as a read
             // need to check for fileupload.  Will not have an action because it is in multi-part mime format
             String path = request.getPathInfo();
-            if (bDebug) {
-                System.out.println("\n*** pathinfo = " + path);
-            }
+            logger.finer("\n*** pathinfo = " + path);
+
             ModelFacade modelFacade = (ModelFacade) context.getAttribute(MF_KEY);
             if (path.equals("/person/fileuploadPerson")) {
                 // file upload
@@ -79,14 +78,12 @@ public class PersonRestAction implements Action {
                 Hashtable<String, String> htUpload = fuh.handleFileUpload(request, response);
                 // file is upload check for error and then write to database
                 if (htUpload != null) {
-                    if (bDebug) {
-                        StringBuilder sb = new StringBuilder();
-                        for (String key : htUpload.keySet()) {
-                            sb.append(key);
-                            sb.append(",");
-                        }
-                    //System.out.println("\n***elements  = " + sb.toString());
+                    StringBuilder sb = new StringBuilder();
+                    for (String key : htUpload.keySet()) {
+                        sb.append(key);
+                        sb.append(",");
                     }
+                    //logger.finer("\n***elements  = " + sb.toString());
 
                     //createUser(request, htUpload);
                     // just for now comment out the above line
@@ -100,7 +97,7 @@ public class PersonRestAction implements Action {
                         newEditPerson = createUser(request, htUpload, fuh);
                     }
 
-                    WebappUtil.getLogger().log(Level.FINE, "A new Person has been added and persisted");
+                    logger.log(Level.FINER, "A new Person has been added and persisted");
                     request.setAttribute("displayPerson", newEditPerson);
 
                 }
@@ -116,14 +113,14 @@ public class PersonRestAction implements Action {
                 FileUploadHandler.handleFileStatus(request, response);
                 return null;
             } else {
-                if (method.equals("GET"))
-                // default to a read action
-                actionType = AT_READ_PARAMVALUE;
+                if (method.equals("GET")) // default to a read action
+                {
+                    actionType = AT_READ_PARAMVALUE;
+                }
             }
-        }
-        else {
-            ModelFacade modelFacade=(ModelFacade)context.getAttribute(MF_KEY);
-            UserBean userBean = (UserBean)request.getSession().getAttribute("userBean");
+        } else {
+            ModelFacade modelFacade = (ModelFacade) context.getAttribute(MF_KEY);
+            UserBean userBean = (UserBean) request.getSession().getAttribute("userBean");
             Person loggedInPerson = userBean.getLoggedInPerson();
             if (loggedInPerson == null) {
                 userBean.setDisplayMessage("Log in to manage invitations");
@@ -131,23 +128,23 @@ public class PersonRestAction implements Action {
             }
             String requestorUsername = request.getParameter(USER_NAME_PARAM);
             String friendUsername = request.getParameter(FRIEND_PARAM);
-                
+
             if (actionType.equals(GET_FRIENDS)) {
-                Person p = getPerson (request);
+                Person p = getPerson(request);
                 if (p != null) {
                     out.write(p.getFriendsAsJson());
                 }
                 out.close();
                 return null;
             } else if (actionType.equals(GET_POSTED_EVENTS)) {
-                Person p = getPerson (request);
+                Person p = getPerson(request);
                 if (p != null) {
                     out.write(modelFacade.getPostedEventsAsJson(p));
                 }
                 out.close();
                 return null;
             } else if (actionType.equals(GET_ATTEND_EVENTS)) {
-                Person p = getPerson (request);
+                Person p = getPerson(request);
                 if (p != null) {
                     out.write(p.getAttendEventsAsJson());
                 }
@@ -158,8 +155,8 @@ public class PersonRestAction implements Action {
                 //Person friend = getFriend(request);
                 //String requestorUsername = request.getParameter(USER_NAME_PARAM);
                 //String friendUsername = request.getParameter(FRIEND_PARAM);
-                Invitation inv = modelFacade.findInvitation(loggedInPerson.getUserName(), friendUsername);                
-                if (inv!=null){
+                Invitation inv = modelFacade.findInvitation(loggedInPerson.getUserName(), friendUsername);
+                if (inv != null) {
                     modelFacade.deleteInvitation(loggedInPerson, inv);
                 }
                 //update outgoing invitation list
@@ -171,36 +168,35 @@ public class PersonRestAction implements Action {
                 out.close();
 
 
-            } else if (actionType.equals(APPROVE_FRIEND)) {                
+            } else if (actionType.equals(APPROVE_FRIEND)) {
                 Invitation acceptedInv = modelFacade.findInvitation(friendUsername, loggedInPerson.getUserName());
                 modelFacade.addFriend(loggedInPerson.getUserName(), friendUsername);
-                modelFacade.deleteInvitation(loggedInPerson,acceptedInv);
+                modelFacade.deleteInvitation(loggedInPerson, acceptedInv);
 
             } else if (actionType.equals(REJECT_INVITE)) {
                 //this is an incoming friendship request so the friend is the requestor
                 //Invitation revokedInv = modelFacade.findInvitation(friendUsername, loggedInPerson.getUserName());                
                 //let do this in memory
-                
-               // Invitation foundInv = null;
-               Collection <Invitation> invs = loggedInPerson.getIncomingInvitations();
-               Iterator<Invitation> invsIter = invs.iterator();
-               Invitation revokedInv = null;
-               while (invsIter.hasNext()){
-                   revokedInv = invsIter.next();
-                   //incoming
-                   if ((revokedInv.getRequestor().getUserName().equalsIgnoreCase(friendUsername)) 
-                           && (revokedInv.getCandidate().getUserName().equalsIgnoreCase(requestorUsername))){
-                       break;
-                   }
-               }
-               modelFacade.deleteInvitation(loggedInPerson, revokedInv);
+
+                // Invitation foundInv = null;
+                Collection<Invitation> invs = loggedInPerson.getIncomingInvitations();
+                Iterator<Invitation> invsIter = invs.iterator();
+                Invitation revokedInv = null;
+                while (invsIter.hasNext()) {
+                    revokedInv = invsIter.next();
+                    //incoming
+                    if ((revokedInv.getRequestor().getUserName().equalsIgnoreCase(friendUsername)) && (revokedInv.getCandidate().getUserName().equalsIgnoreCase(requestorUsername))) {
+                        break;
+                    }
+                }
+                modelFacade.deleteInvitation(loggedInPerson, revokedInv);
 
             }
         }
 
         response.setContentType("application/json;charset=UTF-8");
         response.setHeader("Cache-Control", "no-cache");
-        
+
         Person p = null;
         if (AT_CREATE_PARAMVALUE.equals(actionType)) {
             // this shouldn't be hit anymore because the person will be created by a fileupload
@@ -214,37 +210,35 @@ public class PersonRestAction implements Action {
         } else if (AT_ADD_FRIEND.equals(actionType)) {
             p = addFriend(request);
         }
-        
+
         if (p != null) {
             out.write(p.toJson());
         }
         out.close();
         return null;
     }
-    
+
     /*
      * example url = http://localhost:8080/webapp/api/person?user_name=bob123
      **/
     private Person getPerson(HttpServletRequest request) {
         String userName = request.getParameter(USER_NAME_PARAM);
-        ModelFacade mf= (ModelFacade) context.getAttribute(MF_KEY);
+        ModelFacade mf = (ModelFacade) context.getAttribute(MF_KEY);
         Person person = mf.getPerson(userName);
         return person;
     }
-    
-    
+
     /*
      * example url = http://localhost:8080/webapp/api/person?user_name=bob123
      **/
     private Person getFriend(HttpServletRequest request) {
         String userName = request.getParameter(FRIEND_PARAM);
-        ModelFacade mf= (ModelFacade) context.getAttribute(MF_KEY);
+        ModelFacade mf = (ModelFacade) context.getAttribute(MF_KEY);
         Person person = mf.getPerson(userName);
-        System.out.println("inside getFriend - the friend's username is "+ person.getUserName());
+        logger.finer("inside getFriend - the friend's username is " + person.getUserName());
         return person;
     }
-    
-    
+
 //    private Person createUser(HttpServletRequest request, Hashtable<String, String> htUpload) {
     private Person createUser(HttpServletRequest request, Hashtable<String, String> htUpload, FileUploadHandler fuh) {
         String userName = htUpload.get(USER_NAME_PARAM);
@@ -252,39 +246,40 @@ public class PersonRestAction implements Action {
         String firstName = htUpload.get(FIRST_NAME_PARAM);
         String lastName = htUpload.get(LAST_NAME_PARAM);
         String summary = htUpload.get(SUMMARY_PARAM);
-        String street1=htUpload.get(STREET1_PARAM);
-        String street2=htUpload.get(STREET2_PARAM);
-        String city=htUpload.get(CITY_PARAM);
-        String state=htUpload.get(STATE_PARAM);
-        String country=htUpload.get(COUNTRY_PARAM);
-        String zip=htUpload.get(ZIP_PARAM);
-        String timezone=htUpload.get(TIMEZONE_PARAM);
-        String telephone=htUpload.get(TELEPHONE_PARAM);
-        String email=htUpload.get(EMAIL_PARAM);
-        Address address=WebappUtil.handleAddress(context, street1, street2, city, state, zip, country);
-         
+        String street1 = htUpload.get(STREET1_PARAM);
+        String street2 = htUpload.get(STREET2_PARAM);
+        String city = htUpload.get(CITY_PARAM);
+        String state = htUpload.get(STATE_PARAM);
+        String country = htUpload.get(COUNTRY_PARAM);
+        String zip = htUpload.get(ZIP_PARAM);
+        String timezone = htUpload.get(TIMEZONE_PARAM);
+        String telephone = htUpload.get(TELEPHONE_PARAM);
+        String email = htUpload.get(EMAIL_PARAM);
+        Address address = WebappUtil.handleAddress(context, street1, street2, city, state, zip, country);
+
         // get image from fileupload
-        String imageURL=htUpload.get(UPLOAD_PERSON_IMAGE_PARAM);
+        String imageURL = htUpload.get(UPLOAD_PERSON_IMAGE_PARAM);
         String thumbImage;
         thumbImage = htUpload.get(UPLOAD_PERSON_IMAGE_THUMBNAIL_PARAM);
-        if (thumbImage == null)
+        if (thumbImage == null) {
             thumbImage = "";
-        
-        if(bDebug) System.out.println("************** data entered is*** " + "user_name*" + userName +
+        }
+
+        logger.finer("************** data entered is*** " + "user_name*" + userName +
                 " password=" + password +
                 " first_name=*" + firstName +
                 " last_name" + lastName +
                 " summary" + summary);
-        
+
         Person person = new Person(userName, password, firstName, lastName, summary, email, telephone, imageURL, thumbImage, timezone, address);
-        ModelFacade mf= (ModelFacade) context.getAttribute(MF_KEY);
+        ModelFacade mf = (ModelFacade) context.getAttribute(MF_KEY);
         //do not really need username since you set this value, not sure why it is returned
         //String userName = mf.addPerson(person, userSignOn);
         //changed above line to this since username already a variable name
         //userName = mf.addPerson(person, userSignOn);
-        
-        userName = mf.addPerson(person);        
-        WebappUtil.getLogger().log(Level.FINE, "Person " + userName + " has been persisted");
+
+        userName = mf.addPerson(person);
+        logger.log(Level.FINER, "Person " + userName + " has been persisted");
         // retrieve again ???
         //person=mf.getPerson(userName);
         // login person
@@ -292,59 +287,61 @@ public class PersonRestAction implements Action {
         return person;
     }
 
-    
-     private Person updateUser(HttpServletRequest request, Hashtable<String, String> htUpload, FileUploadHandler fuh) {
+    private Person updateUser(HttpServletRequest request, Hashtable<String, String> htUpload, FileUploadHandler fuh) {
         String userName = htUpload.get(USER_NAME_PARAM);
         String password = htUpload.get(PASSWORD_PARAM);
         String firstName = htUpload.get(FIRST_NAME_PARAM);
         String lastName = htUpload.get(LAST_NAME_PARAM);
         String summary = htUpload.get(SUMMARY_PARAM);
-        String street1=htUpload.get(STREET1_PARAM);
-        String street2=htUpload.get(STREET2_PARAM);
-        String city=htUpload.get(CITY_PARAM);
-        String state=htUpload.get(STATE_PARAM);
-        String country=htUpload.get(COUNTRY_PARAM);
-        String zip=htUpload.get(ZIP_PARAM);
-        String timezone=htUpload.get(TIMEZONE_PARAM);
-        String telephone=htUpload.get(TELEPHONE_PARAM);
-        String email=htUpload.get(EMAIL_PARAM);
-        Address address=WebappUtil.handleAddress(context, street1, street2, city, state, zip, country);
+        String street1 = htUpload.get(STREET1_PARAM);
+        String street2 = htUpload.get(STREET2_PARAM);
+        String city = htUpload.get(CITY_PARAM);
+        String state = htUpload.get(STATE_PARAM);
+        String country = htUpload.get(COUNTRY_PARAM);
+        String zip = htUpload.get(ZIP_PARAM);
+        String timezone = htUpload.get(TIMEZONE_PARAM);
+        String telephone = htUpload.get(TELEPHONE_PARAM);
+        String email = htUpload.get(EMAIL_PARAM);
+        Address address = WebappUtil.handleAddress(context, street1, street2, city, state, zip, country);
 
         // get image from fileupload
-        String imageURL=htUpload.get(UPLOAD_PERSON_IMAGE_PARAM);
+        String imageURL = htUpload.get(UPLOAD_PERSON_IMAGE_PARAM);
         String thumbImage;
         thumbImage = htUpload.get(UPLOAD_PERSON_IMAGE_THUMBNAIL_PARAM);
-        
+
         //if these fields are null, then reuse the old file information stored
-        
+
         //Person loggedInPerson = this.getPerson(request);
-        ModelFacade mf= (ModelFacade) context.getAttribute(MF_KEY);
+        ModelFacade mf = (ModelFacade) context.getAttribute(MF_KEY);
         Person loggedInPerson = mf.getPerson(userName);
-        
-        if (thumbImage == null)thumbImage = loggedInPerson.getImageThumbURL();
-        if (imageURL == null) imageURL = loggedInPerson.getImageURL();
-        
-        
-        if(bDebug) System.out.println("************** data entered is*** " + "user_name*" + userName +
+
+        if (thumbImage == null) {
+            thumbImage = loggedInPerson.getImageThumbURL();
+        }
+        if (imageURL == null) {
+            imageURL = loggedInPerson.getImageURL();
+        }
+
+
+        logger.finer("************** data entered is*** " + "user_name*" + userName +
                 " password=" + password +
                 " first_name=*" + firstName +
                 " last_name" + lastName +
                 " summary" + summary);
-        
+
         Person person = new Person(userName, password, firstName, lastName, summary, email, telephone, imageURL, thumbImage, timezone, address);
         //ModelFacade mf= (ModelFacade) context.getAttribute(MF_KEY);
         //do not really need username since you set this value, not sure why it is returned
         //String userName = mf.addPerson(person, userSignOn);
         //changed above line to this since username already a variable name
         //userName = mf.addPerson(person, userSignOn);
-        
+
         person = mf.updatePerson(person);
-        WebappUtil.getLogger().log(Level.FINE, "Person " + userName + " has been updated");
-                
+        logger.log(Level.FINER, "Person " + userName + " has been updated");
+
         return person;
     }
-    
-    
+
     // should need this method anymore, we should only create person from multi-part mime form now
     private Person createUser(HttpServletRequest request) {
         String userName = request.getParameter(USER_NAME_PARAM);
@@ -352,32 +349,32 @@ public class PersonRestAction implements Action {
         String firstName = request.getParameter(FIRST_NAME_PARAM);
         String lastName = request.getParameter(LAST_NAME_PARAM);
         String summary = request.getParameter(SUMMARY_PARAM);
-        String email="";
-        String telephone="";
-        String imageURL="";
-        String imageThumbURL="";
-        String timezone="";
-        Address address=new Address();
-        
-        if(bDebug) System.out.println("************** data entered is*** " + "user_name*" + userName +
+        String email = "";
+        String telephone = "";
+        String imageURL = "";
+        String imageThumbURL = "";
+        String timezone = "";
+        Address address = new Address();
+
+        logger.finer("************** data entered is*** " + "user_name*" + userName +
                 " password=" + password +
                 " first_name=*" + firstName +
                 " last_name" + lastName +
                 " summary" + summary);
-        
+
         Person person = new Person(userName, password, firstName, lastName, summary, email, telephone, imageURL, imageThumbURL, timezone, address);
-        
-        ModelFacade mf= (ModelFacade) context.getAttribute(MF_KEY);
-        
+
+        ModelFacade mf = (ModelFacade) context.getAttribute(MF_KEY);
+
         //do not really need username since you set this value, not sure why it is returned
         //String userName = mf.addPerson(person, userSignOn);
         //changed above line to this since username already a variable name
         //userName = mf.addPerson(person, userSignOn);
         userName = mf.addPerson(person);
-        WebappUtil.getLogger().log(Level.FINE, "Person " + userName + " has been persisted");
+        logger.log(Level.FINER, "Person " + userName + " has been persisted");
         return mf.getPerson(userName);
     }
-    
+
     private Person updateUser(HttpServletRequest request) {
         //String personId = request.getParameter(PERSON_ID_PARAM);
         String userName = request.getParameter(USER_NAME_PARAM);
@@ -385,53 +382,53 @@ public class PersonRestAction implements Action {
         String firstName = request.getParameter(FIRST_NAME_PARAM);
         String lastName = request.getParameter(LAST_NAME_PARAM);
         String summary = request.getParameter(SUMMARY_PARAM);
-        String email="";
-        String telephone="";
-        String imageURL="";
-        String imageThumbURL="";
-        String timezone="";
-        Address address=new Address();
-        
+        String email = "";
+        String telephone = "";
+        String imageURL = "";
+        String imageThumbURL = "";
+        String timezone = "";
+        Address address = new Address();
+
         Person person = new Person(userName, password, firstName, lastName, summary, email, telephone, imageURL, imageThumbURL, timezone, address);
-        
-        ModelFacade mf= (ModelFacade) context.getAttribute(MF_KEY);
+
+        ModelFacade mf = (ModelFacade) context.getAttribute(MF_KEY);
         person = mf.updatePerson(person);
-        
-        WebappUtil.getLogger().log(Level.FINE, "Person " + userName + " has been updated");
+
+        logger.log(Level.FINER, "Person " + userName + " has been updated");
         return person;
     }
-    
+
     private void deleteUser(HttpServletRequest request) {
         //String personId = request.getParameter(PERSON_ID_PARAM);
         String userName = request.getParameter(USER_NAME_PARAM);
-        ModelFacade mf= (ModelFacade) context.getAttribute(MF_KEY);
+        ModelFacade mf = (ModelFacade) context.getAttribute(MF_KEY);
         mf.deletePerson(userName);
-        WebappUtil.getLogger().log(Level.FINE, "Person " + userName + " has been deleted");
+        logger.log(Level.FINER, "Person " + userName + " has been deleted");
     }
-    
+
     /*
      * example url = http://localhost:8080/webapp/api/person?actionType=add_friend&user_name=bob123&friend_user_name=sue
      */
     private Person addFriend(HttpServletRequest request) {
         String userName = request.getParameter(USER_NAME_PARAM);
         String friendUserName = request.getParameter(FRIEND_USER_NAME_PARAM);
-        
-        if(bDebug) System.out.println("***** PERSON-REST-ACTION:addFriend: " + USER_NAME_PARAM + "=" + userName +
+
+        logger.finer("***** PERSON-REST-ACTION:addFriend: " + USER_NAME_PARAM + "=" + userName +
                 " and " + FRIEND_USER_NAME_PARAM + "=" + friendUserName);
-        
-        ModelFacade mf= (ModelFacade) context.getAttribute(MF_KEY);
+
+        ModelFacade mf = (ModelFacade) context.getAttribute(MF_KEY);
         Person person = mf.addFriend(userName, friendUserName);
-        
-        WebappUtil.getLogger().log(Level.FINE, "Person " + userName + " has been updated to add friend=" + friendUserName);
+
+        logger.log(Level.FINER, "Person " + userName + " has been updated to add friend=" + friendUserName);
         return person;
     }
 
-     private static String OutgoingInvitationsAsJson (Person loggedInPerson, String status) {
-        StringBuilder sb=new StringBuilder("{ \"result\": {\"status\":");
+    private static String OutgoingInvitationsAsJson(Person loggedInPerson, String status) {
+        StringBuilder sb = new StringBuilder("{ \"result\": {\"status\":");
         sb.append("\"" + status + "\"");
-        sb.append (", \"outgoingInvitations\":[");
+        sb.append(", \"outgoingInvitations\":[");
         if (loggedInPerson != null) {
-            for(Invitation inv : loggedInPerson.getOutgoingInvitations()) {
+            for (Invitation inv : loggedInPerson.getOutgoingInvitations()) {
                 sb.append("{\"username\":\"");
                 sb.append(WebappUtil.encodeJSONString(inv.getCandidate().getUserName()));
                 sb.append(COMMA);
@@ -444,14 +441,13 @@ public class PersonRestAction implements Action {
                 sb.append(DOUBLE_QUOTE);
                 sb.append("\"}, ");
             }
-            if(loggedInPerson.getOutgoingInvitations().size() > 0) {
-                sb.deleteCharAt(sb.length()-1);
-                sb.deleteCharAt(sb.length()-1);
+            if (loggedInPerson.getOutgoingInvitations().size() > 0) {
+                sb.deleteCharAt(sb.length() - 1);
+                sb.deleteCharAt(sb.length() - 1);
             }
         }
 
         sb.append("] } }");
         return sb.toString();
     }
-    
 }

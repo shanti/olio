@@ -17,7 +17,6 @@
  */
 package org.apache.olio.webapp.model;
 
-import javax.naming.NamingException;
 import static org.apache.olio.webapp.controller.WebConstants.*;
 import org.apache.olio.webapp.controller.WebConstants;
 import org.apache.olio.webapp.util.ServiceLocator;
@@ -74,23 +73,24 @@ public class ModelFacade implements ServletContextListener {
     private String tagCloudStr = null;
     private boolean useCache = true;
     private String artifactPath = null;
+    private Logger logger = Logger.getLogger(ModelFacade.class.getName());
 
     /** Creates a new instance of ModelFacade */
     public ModelFacade() {
         calendar = GregorianCalendar.getInstance();
 
-        /*
-        try {
-            FileSystem fs = ServiceLocator.getInstance().getFileSystem();  
-            if (fs.isLocal())
-                artifactPath = "/artifacts";
-            else
-                artifactPath = this.getContext().getContextPath() + "/access-artifacts";
-        } catch (IOException ex) {
-            Logger.getLogger(ModelFacade.class.getName()).log(Level.SEVERE, null, ex);
-            artifactPath = this.getContext().getContextPath() + "/access-artifacts";
-        }
-       */
+    /*
+    try {
+    FileSystem fs = ServiceLocator.getInstance().getFileSystem();
+    if (fs.isLocal())
+    artifactPath = "/artifacts";
+    else
+    artifactPath = this.getContext().getContextPath() + "/access-artifacts";
+    } catch (IOException ex) {
+    Logger.getLogger(ModelFacade.class.getName()).log(Level.SEVERE, null, ex);
+    artifactPath = this.getContext().getContextPath() + "/access-artifacts";
+    }
+     */
     }
 
     public void contextDestroyed(ServletContextEvent sce) {
@@ -122,8 +122,8 @@ public class ModelFacade implements ServletContextListener {
             try {
                 utx.rollback();
             } catch (Exception e) {
-                System.out.println("Rollbak Exception - " + exe);
-                throw new RuntimeException("Error persisting person", exe);
+                logger.log(Level.SEVERE, "Rollbak Exception: ", exe);
+                throw new RuntimeException("Error persisting person : ", exe);
             } finally {
                 em.close();
             }
@@ -132,45 +132,45 @@ public class ModelFacade implements ServletContextListener {
         return person.getUserName();
     }
 
-    public int addInvitation(Person loggedInUser, Invitation invitation){
+    public int addInvitation(Person loggedInUser, Invitation invitation) {
         EntityManager em = emf.createEntityManager();
         Person friend = em.find(Person.class, invitation.getCandidate().getUserName());
-        try{
+        try {
             utx.begin();
-            System.out.println("Before: size of outgoingInvitations for loggedInUser " + loggedInUser.getOutgoingInvitations().size());
+            logger.finer("Before: size of outgoingInvitations for loggedInUser " + loggedInUser.getOutgoingInvitations().size());
 
             loggedInUser.getOutgoingInvitations().add(invitation);
-            System.out.println("After:  size of outgoingInvitations for loggedInUser " + loggedInUser.getOutgoingInvitations().size());
+            logger.finer("After:  size of outgoingInvitations for loggedInUser " + loggedInUser.getOutgoingInvitations().size());
 
             //need to sync for candidate.incomingInvitations?
-            System.out.println("Before: size of incomingInvitations for friend " + friend.getIncomingInvitations().size());
+            logger.finer("Before: size of incomingInvitations for friend " + friend.getIncomingInvitations().size());
 
             friend.getIncomingInvitations().add(invitation);
-            System.out.println("After: size of incomingInvitations for friend " + friend.getIncomingInvitations().size());
+            logger.finer("After: size of incomingInvitations for friend " + friend.getIncomingInvitations().size());
 
-            System.out.println("**** ModelFacade::addFriend about to merge, person username=" + loggedInUser.getUserName() +
-                          " and friend username=" + friend.getUserName());
+            logger.finer("**** ModelFacade::addFriend about to merge, person username=" + loggedInUser.getUserName() +
+                    " and friend username=" + friend.getUserName());
             em.joinTransaction();
             loggedInUser = em.merge(loggedInUser);
             em.merge(friend);
             //Do we need to persist invite too?
             em.persist(invitation);
             utx.commit();
-            System.out.println("after committing - the size of the outgoing is " + loggedInUser.getOutgoingInvitations().size());
-        } catch(Exception exe){
+            logger.finer("after committing - the size of the outgoing is " + loggedInUser.getOutgoingInvitations().size());
+        } catch (Exception exe) {
             try {
                 utx.rollback();
-            } catch (Exception e) {}
-            System.out.println ("Rollbak Exception - " + exe);
-            throw new RuntimeException("Error persisting invitation", exe);
+            } catch (Exception e) {
+            }
+            logger.severe("Rollbak Exception: " + exe);
+            throw new RuntimeException("Error persisting invitation: ", exe);
         } finally {
             em.close();
         }
-        return  invitation.getInvitationID();
+        return invitation.getInvitationID();
     }
 
-
-    public Person findPerson(String userName) {     
+    public Person findPerson(String userName) {
         EntityManager em = emf.createEntityManager();
         Person p = null;
         try {
@@ -190,7 +190,7 @@ public class ModelFacade implements ServletContextListener {
     public List<Person> searchUsers(String query, int maxResults) {
         EntityManager em = emf.createEntityManager();
         Query q = em.createQuery("SELECT i FROM Person i WHERE i.userName LIKE " + "\'" + query + "%\'" + " ORDER BY i.userName DESC");
-        //System.out.println("the query performed is "+ "SELECT i FROM Person i WHERE i.userName LIKE " + "\'" + query +"%\'" +  " ORDER BY i.userName DESC");
+        //logger.finer("the query performed is "+ "SELECT i FROM Person i WHERE i.userName LIKE " + "\'" + query +"%\'" +  " ORDER BY i.userName DESC");
         if (maxResults > 0) {
             q.setMaxResults(maxResults);
         }
@@ -220,7 +220,7 @@ public class ModelFacade implements ServletContextListener {
 
     @SuppressWarnings("unchecked")
     public List<Person> getAllPersons() {
-       EntityManager em = emf.createEntityManager();
+        EntityManager em = emf.createEntityManager();
         List<Person> persons = em.createQuery("SELECT i FROM Person i").getResultList();
         em.close();
         return persons;
@@ -276,62 +276,62 @@ public class ModelFacade implements ServletContextListener {
         return person;
     }
 
-     @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
     public void deletePerson(String userName) {
-            EntityManager em = emf.createEntityManager();
+        EntityManager em = emf.createEntityManager();
 
-         try {
-             //try with em.remove instead
+        try {
+            //try with em.remove instead
 
-             utx.begin();
-             Person person = em.find(Person.class, userName);
-             if (person == null) // Not a valid event
-             {
-                 return;
-             }
-             em.remove(person);
-             utx.commit();
-         } catch (Exception e) {
-             e.printStackTrace();
-             try {
-                 utx.rollback();
-             } catch (Exception ex) {
-             }
-             throw new RuntimeException("Error deleting person", e);
-         } finally {
-             em.close();
-         }
-
-                /*
-                //Query q = em.createQuery("DELETE FROM Person i WHERE i.userName = :uname");
-                q.setParameter("uname", userName);
-                q.executeUpdate();
-                utx.commit();
-            } catch (Exception e) {
-                try {
-                    utx.rollback();
-                } catch (Exception ex) {
-                }
-                throw new RuntimeException("Error deleting person", e);
-            } finally {
-                em.close();
+            utx.begin();
+            Person person = em.find(Person.class, userName);
+            if (person == null) // Not a valid event
+            {
+                return;
             }
+            em.remove(person);
+            utx.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
             try {
-                utx.begin();
-                Query q = em.createQuery("DELETE FROM SocialEvent i WHERE i.socialEventID = :sid");
-                // q.setParameter("sid", id);
-                q.executeUpdate();
-                utx.commit();
-            } catch (Exception e) {
-                try {
-                    utx.rollback();
-                } catch (Exception ex) {
-                }
-                throw new RuntimeException("Error deleting person", e);
-            } finally {
-                em.close();
+                utx.rollback();
+            } catch (Exception ex) {
             }
-                 */
+            throw new RuntimeException("Error deleting person", e);
+        } finally {
+            em.close();
+        }
+
+    /*
+    //Query q = em.createQuery("DELETE FROM Person i WHERE i.userName = :uname");
+    q.setParameter("uname", userName);
+    q.executeUpdate();
+    utx.commit();
+    } catch (Exception e) {
+    try {
+    utx.rollback();
+    } catch (Exception ex) {
+    }
+    throw new RuntimeException("Error deleting person", e);
+    } finally {
+    em.close();
+    }
+    try {
+    utx.begin();
+    Query q = em.createQuery("DELETE FROM SocialEvent i WHERE i.socialEventID = :sid");
+    // q.setParameter("sid", id);
+    q.executeUpdate();
+    utx.commit();
+    } catch (Exception e) {
+    try {
+    utx.rollback();
+    } catch (Exception ex) {
+    }
+    throw new RuntimeException("Error deleting person", e);
+    } finally {
+    em.close();
+    }
+     */
     }
 
     public void deleteEvent(int id) {
@@ -363,7 +363,7 @@ public class ModelFacade implements ServletContextListener {
         } finally {
             em.close();
         }
-        
+
         // Reset tag cloud since it has been modified
         resetTagCloud();
     }
@@ -377,7 +377,7 @@ public class ModelFacade implements ServletContextListener {
             Person friend = em.find(Person.class, friendUserName);
             person = em.find(Person.class, userName);
             person.getFriends().add(friend);
-            //System.out.println("**** ModelFacade::addFriend about to merge, person username=" + person.getUserName() +
+            //logger.finer("**** ModelFacade::addFriend about to merge, person username=" + person.getUserName() +
             //              " and friend username=" + friend.getUserName());  
             person = em.merge(person);
             utx.commit();
@@ -387,7 +387,7 @@ public class ModelFacade implements ServletContextListener {
 
         /*
         for (Person f : person.getFriends()) {
-        System.out.println("**** ModelFacade::addFriend AFTER MERGE, friend =" + f.getUserName());           
+        logger.finer("**** ModelFacade::addFriend AFTER MERGE, friend =" + f.getUserName());
         }
          **/
         } catch (Exception exe) {
@@ -411,14 +411,14 @@ public class ModelFacade implements ServletContextListener {
                 String tagx = stTags.nextToken().trim().toLowerCase();
                 if (tagx.length() == 0 || hSet.contains(tagx)) {
                     // The tag is a duplicate, ignore
-                    System.out.println("Duplicate tag or empty tag -- " + tagx);
+                    logger.finer("Duplicate tag or empty tag -- " + tagx);
                     continue;
                 }
                 hSet.add(tagx);
             }
         }
         EntityManager em = emf.createEntityManager();
-        
+
         // Create a single query that returns all the existing tags
         int size = hSet.size();
         Iterator<String> iter;
@@ -432,25 +432,27 @@ public class ModelFacade implements ServletContextListener {
                 strb.append("'");
                 strb.append(tag);
                 strb.append("'");
-                if (++i < size)
+                if (++i < size) {
                     strb.append(", ");
+                }
             }
             strb.append(")");
-            q =em.createQuery(strb.toString());
+            q = em.createQuery(strb.toString());
         }
         try {
             utx.begin();
             em.joinTransaction();
             em.persist(socialEvent);
             boolean needsMerge = false;
-            
+
             List<SocialEventTag> ltags = null;
-            if (q != null)
+            if (q != null) {
                 ltags = q.getResultList();
-            
-            
+            }
+
+
             if (ltags != null) {
-                for (SocialEventTag ptag: ltags) {
+                for (SocialEventTag ptag : ltags) {
                     ptag.incrementRefCount();
                     socialEvent.addTag(ptag);
                     ptag.getSocialEvents().add(socialEvent);
@@ -459,9 +461,9 @@ public class ModelFacade implements ServletContextListener {
                     hSet.remove(ptag.getTag());
                 }
             }
-            
+
             iter = hSet.iterator();
-            while(iter.hasNext()) {
+            while (iter.hasNext()) {
                 String tag = iter.next();
                 SocialEventTag set = new SocialEventTag(tag);
                 set.getSocialEvents().add(socialEvent);
@@ -469,26 +471,28 @@ public class ModelFacade implements ServletContextListener {
                 em.persist(set);
                 needsMerge = true;
             }
-            if (needsMerge)
+            if (needsMerge) {
                 em.merge(socialEvent);
+            }
             utx.commit();
         } catch (Exception exe) {
             try {
-                System.out.println("Exception in addSE - " + exe.getMessage());
-                System.out.println("SE.id = " + socialEvent.getSocialEventID());
-                System.out.println("SE.tags = ");
                 Collection<SocialEventTag> tgs = socialEvent.getTags();
+                String tagstr = null;
                 if (tgs != null) {
                     for (SocialEventTag set : tgs) {
-                        System.out.print(set.getTag());
+                        tagstr = tagstr + set.getTag();
                     }
                     System.out.println("");
                 }
+                logger.log(Level.SEVERE, "Exception in addSE: " + exe.getMessage() +
+                        "SE.id = " + socialEvent.getSocialEventID() +
+                        "SE.tags = " + tagstr, exe);
                 utx.rollback();
-                exe.printStackTrace();
+            //exe.printStackTrace();
             } catch (Exception e) {
             }
-            throw new RuntimeException("Error persisting Social Event", exe);
+            throw new RuntimeException("Error persisting Social Event: ", exe);
         } finally {
             em.close();
         }
@@ -510,7 +514,7 @@ public class ModelFacade implements ServletContextListener {
             }
         }
         if (comment == null) {
-            Logger.getLogger(ModelFacade.class.getName()).log(Level.WARNING, "Could not find comment with commentId = " + commentId);
+            logger.warning("Could not find comment with commentId = " + commentId);
             return;
         }
         event.getComments().remove(comment);
@@ -529,7 +533,7 @@ public class ModelFacade implements ServletContextListener {
             try {
                 utx.rollback();
             } catch (Exception ex) {
-                Logger.getLogger(ModelFacade.class.getName()).log(Level.SEVERE, null, ex);
+                logger.severe(ex.toString());
             }
         } finally {
             em.close();
@@ -541,27 +545,30 @@ public class ModelFacade implements ServletContextListener {
         EntityManager em = emf.createEntityManager();
 
         SocialEvent socialEvent = em.find(SocialEvent.class, socialEventID);
-        
+
         // Since we have listed Adress, attendees, tags and comments as lazy, fetch them
         // within the same PersistenceContext.
         // These fetches are not required for EclipseLink. However, othe JPA 
         // implementations may not support the feature of accessing lazy fetched
         // items from detached objects.
-        
+
         // Iterating through the list is a work around for a EclipseLink bug
         // Remove it when the bug has been fixed.
-        
+
         if (socialEvent != null) {
             socialEvent.getAddress();
             Iterator<Person> iter = socialEvent.getAttendees().iterator();
-            while (iter.hasNext())
+            while (iter.hasNext()) {
                 iter.next().getUserName();
+            }
             Iterator<SocialEventTag> titer = socialEvent.getTags().iterator();
-            while (titer.hasNext())
+            while (titer.hasNext()) {
                 titer.next().getTag();
+            }
             Iterator<CommentsRating> citer = socialEvent.getComments().iterator();
-            while (citer.hasNext())
+            while (citer.hasNext()) {
                 citer.next().getCommentString();
+            }
         }
         em.close();
 
@@ -592,35 +599,35 @@ public class ModelFacade implements ServletContextListener {
     /* Marked for DELETE -- UNUSED
     @SuppressWarnings("unchecked")
     public SocialEventTag addSocialEventTag(String sxTag) {
-        EntityManager em = emf.createEntityManager();
-        SocialEventTag tag = null;
-        try {
-            List<SocialEventTag> tags = em.createQuery("SELECT t FROM SocialEventTag t WHERE t.tag = :tag").setParameter("tag", sxTag).getResultList();
-            if (tags.isEmpty()) {
-                // need to create tag and set flag to add reference item
-                tag = new SocialEventTag(sxTag);
-                // persist data
-                utx.begin();
-                em.joinTransaction();
-                em.persist(tag);
-                utx.commit();
-            } else {
-                // see if item already exists in tag
-                tag = tags.get(0);
-            }
+    EntityManager em = emf.createEntityManager();
+    SocialEventTag tag = null;
+    try {
+    List<SocialEventTag> tags = em.createQuery("SELECT t FROM SocialEventTag t WHERE t.tag = :tag").setParameter("tag", sxTag).getResultList();
+    if (tags.isEmpty()) {
+    // need to create tag and set flag to add reference item
+    tag = new SocialEventTag(sxTag);
+    // persist data
+    utx.begin();
+    em.joinTransaction();
+    em.persist(tag);
+    utx.commit();
+    } else {
+    // see if item already exists in tag
+    tag = tags.get(0);
+    }
 
-        } catch (Exception exe) {
-            try {
-                utx.rollback();
-            } catch (Exception e) {
-            }
-            System.out.println("Exception - " + exe);
-            exe.printStackTrace();
-            throw new RuntimeException("Error persisting tag", exe);
-        } finally {
-            em.close();
-        }
-        return tag;
+    } catch (Exception exe) {
+    try {
+    utx.rollback();
+    } catch (Exception e) {
+    }
+    System.out.println("Exception - " + exe);
+    exe.printStackTrace();
+    throw new RuntimeException("Error persisting tag", exe);
+    } finally {
+    em.close();
+    }
+    return tag;
     }
      * */
 
@@ -709,12 +716,12 @@ public class ModelFacade implements ServletContextListener {
             }
             utx.commit();
         } catch (Exception exe) {
-            exe.printStackTrace();
+            logger.severe("Error updating social event: " + exe.toString());
             try {
                 utx.rollback();
             } catch (Exception e) {
             }
-            throw new RuntimeException("Error updating social event", exe);
+            throw new RuntimeException("Error updating social event: ", exe);
         } finally {
             em.close();
         }
@@ -734,7 +741,7 @@ public class ModelFacade implements ServletContextListener {
             utx.commit();
         } catch (Exception exe) {
 
-            exe.printStackTrace();
+            logger.severe("updateSocialEvent failed: " + exe.toString());
             try {
                 utx.rollback();
             } catch (Exception e) {
@@ -773,8 +780,9 @@ public class ModelFacade implements ServletContextListener {
     }
 
     public String getTagCloud() {
-        if (useCache && tagCloudStr != null)
+        if (useCache && tagCloudStr != null) {
             return tagCloudStr;
+        }
         tagCloudStr = WebappUtil.createTagCloud(getContext().getContextPath(), getSocialEventTags());
         return tagCloudStr;
     }
@@ -844,7 +852,7 @@ public class ModelFacade implements ServletContextListener {
                 utx.rollback();
             } catch (Exception e) {
             }
-            throw new RuntimeException("Error persisting tag", exe);
+            throw new RuntimeException("Error persisting tag: ", exe);
         } finally {
             em.close();
         }
@@ -868,7 +876,7 @@ public class ModelFacade implements ServletContextListener {
                 utx.rollback();
             } catch (Exception e) {
             }
-            throw new RuntimeException("Error persisting tag", exe);
+            throw new RuntimeException("Error persisting tag: ", exe);
         } finally {
             em.close();
         }
@@ -896,19 +904,21 @@ public class ModelFacade implements ServletContextListener {
 
     public List<SocialEvent> getUpcomingEvents(Person p, int max) {
         Map<String, Object> map = new HashMap<String, Object>();
-        map.put ("eventsPerPage", max);
-        return getUpcomingEvents(p, map);    
+        map.put("eventsPerPage", max);
+        return getUpcomingEvents(p, map);
     }
-    
+
     public List<SocialEvent> getUpcomingEvents(Person p, Map<String, Object> qMap) {
         int startIndex = 0, eventsPerPage = WebappConstants.ITEMS_PER_PAGE;
-        Integer value = (Integer)qMap.get("startIndex");
-        if (value != null)
+        Integer value = (Integer) qMap.get("startIndex");
+        if (value != null) {
             startIndex = value;
-        value = (Integer)qMap.get("eventsPerPage");
-        if (value != null)
+        }
+        value = (Integer) qMap.get("eventsPerPage");
+        if (value != null) {
             eventsPerPage = value;
-        
+        }
+
         EntityManager em = emf.createEntityManager();
         try {
             //String qstr = "SELECT s FROM SocialEvent s, IN (s.attendees) a WHERE a.userName = :uname AND s.eventTimestamp >= CURRENT_TIMESTAMP ORDER BY s.eventTimestamp ASC";
@@ -921,7 +931,7 @@ public class ModelFacade implements ServletContextListener {
             }
             q.setParameter("uname", p.getUserName());
             List<SocialEvent> events = q.getResultList();
-            
+
             Long l = 0l;
             // We need a count of the events for paging.
             // However, this is not required if eventsPerPage is less than the ITEMS_PER_PAGE
@@ -932,14 +942,12 @@ public class ModelFacade implements ServletContextListener {
                     q = em.createQuery(qstr);
                     q.setParameter("uname", p.getUserName());
                     l = (Long) q.getSingleResult();
+                } else if (events != null) {
+                    l = (long) events.size();
                 }
-                else if (events != null) {
-                    l = (long)events.size();
-                }
+            } else if (events != null) {
+                l = (long) events.size();
             }
-            else if (events != null) {
-                l = (long)events.size();
-            }    
             qMap.put("listSize", l);
             return events;
         } finally {
@@ -1077,7 +1085,7 @@ public class ModelFacade implements ServletContextListener {
         EntityManager em = emf.createEntityManager();
         try {
             // Create the select query
-        
+
             Query q = em.createQuery(qstrb.toString());
 
             if (zipSet) {
@@ -1110,18 +1118,15 @@ public class ModelFacade implements ServletContextListener {
                     q.setParameter("uts", uts);
                 }
                 size = (Long) q.getSingleResult();
-            }
-            else if (socialEvents != null)
+            } else if (socialEvents != null) {
                 size = (long) socialEvents.size();
-        
+            }
+
             qMap.put("listSize", size);
             return socialEvents;
-        }
-        catch (Exception e) {
-            System.out.println ("Exception for query -- q = " + qstrb.toString());
-            e.printStackTrace();
-        }
-        finally {
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Exception for query - " + qstrb.toString(), e);
+        } finally {
             em.close();
         }
         return null;
@@ -1230,7 +1235,8 @@ public class ModelFacade implements ServletContextListener {
             em.remove(inv0);
             utx.commit();
         } catch (Exception exe) {
-            exe.printStackTrace();
+            //exe.printStackTrace();
+            logger.log(Level.SEVERE, "Error deleting invitation: ", exe);
             try {
                 utx.rollback();
             } catch (Exception e) {
@@ -1239,7 +1245,7 @@ public class ModelFacade implements ServletContextListener {
         } finally {
             em.close();
         }
-        System.out.println("after deleting invitation");
+        logger.finer("after deleting invitation");
 
     }
 
@@ -1267,40 +1273,37 @@ public class ModelFacade implements ServletContextListener {
         }
     }
 
-             @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
     public void deleteInvitation(Person loggedInUser, Invitation inv) {
-           EntityManager em = emf.createEntityManager();
-           Person requestor = null, candidate = null;
-           boolean isIncoming = false;
-           //check to see if outgoing or incoming invitation
-           if(loggedInUser.getUserName().equalsIgnoreCase(inv.getRequestor().getUserName())){
-               //outgoing
-               isIncoming = false;
-               requestor=loggedInUser;
-               candidate = em.find(Person.class, inv.getCandidate().getUserName());
-           }else if (loggedInUser.getUserName().equalsIgnoreCase(inv.getCandidate().getUserName())){
-               //incoming
-               isIncoming = true;
-               requestor = em.find(Person.class, inv.getRequestor().getUserName());
-               candidate = loggedInUser;
-           }
-           //if incoming, then requestor is the friend, and the candidate is the loggedInUser
+        EntityManager em = emf.createEntityManager();
+        Person requestor = null, candidate = null;
+        boolean isIncoming = false;
+        //check to see if outgoing or incoming invitation
+        if (loggedInUser.getUserName().equalsIgnoreCase(inv.getRequestor().getUserName())) {
+            //outgoing
+            isIncoming = false;
+            requestor = loggedInUser;
+            candidate = em.find(Person.class, inv.getCandidate().getUserName());
+        } else if (loggedInUser.getUserName().equalsIgnoreCase(inv.getCandidate().getUserName())) {
+            //incoming
+            isIncoming = true;
+            requestor = em.find(Person.class, inv.getRequestor().getUserName());
+            candidate = loggedInUser;
+        }
+        //if incoming, then requestor is the friend, and the candidate is the loggedInUser
 
 
-       try {
+        try {
             utx.begin();
 
-            if(isIncoming){
-                System.out.println("before:  size of the requestor IncomingInv is "+ candidate.getIncomingInvitations().size());
-                 System.out.println("before:  size of the candidate OutgoingInv is "+ requestor.getOutgoingInvitations().size());
-
-
+            if (isIncoming) {
+                logger.finer("before:  size of the requestor IncomingInv is " + candidate.getIncomingInvitations().size());
+                logger.finer("before:  size of the candidate OutgoingInv is " + requestor.getOutgoingInvitations().size());
                 candidate.getIncomingInvitations().remove(inv);
-
                 requestor.getOutgoingInvitations().remove(inv);
-                System.out.println("After:  size of the requestor IncomingInv is "+ requestor.getIncomingInvitations().size());
-                System.out.println("after:  size of the candidate OutgoingInv is "+ candidate.getOutgoingInvitations().size());
-            } else{
+                logger.finer("After:  size of the requestor IncomingInv is " + requestor.getIncomingInvitations().size());
+                logger.finer("after:  size of the candidate OutgoingInv is " + candidate.getOutgoingInvitations().size());
+            } else {
                 requestor.getOutgoingInvitations().remove(inv);
                 candidate.getIncomingInvitations().remove(inv);
             }
@@ -1309,33 +1312,31 @@ public class ModelFacade implements ServletContextListener {
             //inv.setRequestor(null);
             em.joinTransaction();
 
-            Invitation inv0= em.merge(inv);
+            Invitation inv0 = em.merge(inv);
             //merge the two people
             em.merge(requestor);
             em.merge(candidate);
             em.remove(inv0);
             utx.commit();
-        } catch(Exception exe){
-        exe.printStackTrace();
+        } catch (Exception exe) {
+            logger.log(Level.SEVERE, "Error deleting invitation: ", exe);
             try {
                 utx.rollback();
-            } catch (Exception e) {}
+            } catch (Exception e) {
+            }
             throw new RuntimeException("Error deleting invitation", exe);
         } finally {
             em.close();
         }
-         System.out.println("after deleting invitation");
+        logger.finer("after deleting invitation");
     }
 
     public void resetTagCloud() {
         tagCloudStr = null;
     }
-    
+
     public String getArtifactPath() {
         return WebappUtil.getArtifactPath();
-        
-    }
 
-   
-    
+    }
 }

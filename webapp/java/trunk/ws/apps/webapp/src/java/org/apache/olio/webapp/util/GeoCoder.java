@@ -44,14 +44,16 @@ import org.w3c.dom.Document;
 public class GeoCoder {
     
     private String applicationId = APPLICATION_ID;
-    private Logger logger = WebappUtil.getLogger();
+    //private Logger logger = WebappUtil.getLogger();
+    private static Logger logger = Logger.getLogger(GeoCoder.class.getName());
+
     private String proxyHost = null;
     private int proxyPort = 0;
     private boolean proxySet = false;
     
     //private static DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
     private static JAXBContext jaxbContext;
-    
+
     /**
      * <p>The URL of the geocoding service we will be using.</p>
      */
@@ -62,7 +64,7 @@ public class GeoCoder {
         SERVICE_URL = System.getProperty("webapp.geocoderURL");
         if (SERVICE_URL == null)
             SERVICE_URL = ServiceLocator.getInstance().getString("geocoderURL");
-        System.out.println ("geocoder ServiceURL = " + SERVICE_URL);
+        logger.finer ("geocoder ServiceURL = " + SERVICE_URL);
         // Fall back to default
         if (SERVICE_URL == null)
             SERVICE_URL = "http://localhost:8000/Web20Emulator/geocode";

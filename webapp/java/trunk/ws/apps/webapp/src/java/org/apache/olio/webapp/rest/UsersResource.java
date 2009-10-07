@@ -51,7 +51,7 @@ import javax.transaction.UserTransaction;
 
 import java.util.HashMap;
 import java.util.StringTokenizer;
-
+import java.util.logging.Logger;
 
 
 /**
@@ -89,6 +89,8 @@ public class UsersResource {
 
   private static final String FILE_LOCATION = "image_location";
   private static final String THUMBNAIL_LOCATION = "thumbnail_location";
+  private Logger logger = Logger.getLogger(UsersResource.class.getName());
+
     public UsersResource() {
                  
     }
@@ -102,7 +104,7 @@ public class UsersResource {
   @Produces("application/json")
     //public JSONObject getUser(@PathParam("userid") String userid) throws JSONException, Exception {
        public JSONArray getUsers() throws JSONException, Exception {
-      System.out.println(" get USERs is here !");
+      logger.finer(" get USERs is here !");
       mf = (ModelFacade)getServletContext().getAttribute(WebConstants.MF_KEY);
       List<Person> allUsers = mf.getAllPersons();
        JSONArray uriArray = new JSONArray();
@@ -171,7 +173,7 @@ public class UsersResource {
 
          Map<String,FormDataBodyPart> bodyList =multiPart.getFields();
          for (String key:bodyList.keySet()){
-             System.out.println("key is "+ key);
+             logger.finer("key is "+ key);
          }
          //if(multiPart.getField("first_name")!=null) firstName = multiPart.getField("first_name").getValue();
          userName = getFieldValue(multiPart, USERNAME, true);
@@ -185,7 +187,7 @@ public class UsersResource {
          summary = getFieldValue(multiPart, SUMMARY, false);
          telephone = getFieldValue(multiPart,TELEPHONE, false);
          email = getFieldValue(multiPart, EMAIL, false);
-         System.out.println("in POST - multipart first name is "+ firstName);
+         logger.finer("in POST - multipart first name is "+ firstName);
 
          //address
          street1 = getFieldValue(multiPart, STREET1, false);
@@ -200,7 +202,7 @@ public class UsersResource {
          //image processing
          if(multiPart.getField("imagefile")!=null){
             bpe = ((BodyPartEntity) multiPart.getField("imagefile").getEntity());
-            System.out.println("the value of the imageFile body part is "+ multiPart.getField("imagefile").getHeaders());
+            logger.finer("the value of the imageFile body part is "+ multiPart.getField("imagefile").getHeaders());
             mvMap = multiPart.getField("imagefile").getHeaders();
             headerList  =  (List)mvMap.get("Content-Disposition");
             contentHeader = headerList.get(0);
@@ -234,7 +236,7 @@ public class UsersResource {
             userName = mf.addPerson(person);
          else
             mf.updatePerson(person);
-         System.out.println("after adding/updating person " + userName);
+         logger.finer("after adding/updating person " + userName);
 
          //cleanup
          imageStream.close();
@@ -259,10 +261,10 @@ public class UsersResource {
             String ext=null;
 
              ext = WebappUtil.getFileExtension(filename);
-            System.out.println(" ext is "+ ext);
+            logger.finer(" ext is "+ ext);
             WebappUtil.setArtifactPath();
             String serverLocationDir = WebappUtil.getArtifactLocalionDir();
-            System.out.println("serverLocationDir is "+ serverLocationDir);
+            logger.finer("serverLocationDir is "+ serverLocationDir);
             
             fileName = "p" + userName;
                 thumbnailName = fileName + "_thumb" + ext;

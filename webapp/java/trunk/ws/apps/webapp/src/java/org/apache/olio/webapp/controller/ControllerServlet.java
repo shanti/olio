@@ -21,6 +21,7 @@ package org.apache.olio.webapp.controller;
 import org.apache.olio.webapp.rest.EventRestAction;
 import org.apache.olio.webapp.rest.PersonRestAction;
 import java.io.IOException;
+import java.util.logging.Logger;
 import java.util.logging.Level;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -28,7 +29,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.olio.webapp.util.WebappUtil;
 
 //import com.sun.javaee.blueprints.webapp.model.Item;
 //import com.sun.javaee.blueprints.webapp.model.Tag;
@@ -43,7 +43,7 @@ import org.apache.olio.webapp.util.WebappUtil;
  */
 public class ControllerServlet extends HttpServlet {
     
-    private static final boolean bDebug = false;
+    private static final Logger logger = Logger.getLogger(ControllerServlet.class.getName());
     private ActionMap actionMap = new ActionMap();
     
     @Override
@@ -63,7 +63,7 @@ public class ControllerServlet extends HttpServlet {
                 getServletContext().getRequestDispatcher(responseUrl).forward(request, response);
             }
         } else {
-            WebappUtil.getLogger().log(Level.SEVERE, "Action for '" + request.getRequestURI()  + "' not registered in ControllerServlet!!");
+            logger.log(Level.SEVERE, "Action for '" + request.getRequestURI()  + "' not registered in ControllerServlet!!");
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
     }

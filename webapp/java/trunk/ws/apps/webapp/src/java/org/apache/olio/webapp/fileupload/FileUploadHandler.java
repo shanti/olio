@@ -64,16 +64,13 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
  */
 public class FileUploadHandler {
 
-    private static Logger _logger = null;
+    private static Logger logger = Logger.getLogger(FileUploadHandler.class.getName());
     private FileUploadStatus fileUploadStatus = null;
-    private static final String FILE_UPLOAD_LOGGER = "org.apache.olio.webapp.fileupload";
-    private static final String FILE_UPLOAD_LOG_STRINGS = null;
     
     /**
      * Default location of upload directory is /domain_dir/lib/upload, unless the Sun Appserver system property exits, then it will
      * use the domain's lib/upload directory instead
      */
-    public static final boolean bDebug = false;
 
     /** Creates a new instance of FileUpload */
     public FileUploadHandler() {
@@ -134,12 +131,10 @@ public class FileUploadHandler {
             writer.flush();
 
         } catch (IOException iox) {
-            System.out.println("FileUploadPhaseListener error writting AJAX response : " + iox);
-            getLogger().log(Level.SEVERE, "response.exeception", iox);
+            //logger.severe("FileUploadPhaseListener error writting AJAX response : " + iox);
+            logger.log(Level.SEVERE, "FileUploadHandler Error writing AJAX response: ", iox);
         }
-        if (bDebug) {
-            System.out.println("STATUS RETURN = " + status);
-        }
+        logger.log(Level.FINE, "STATUS RETURN = " + status);
     }
 
     /**
@@ -148,9 +143,8 @@ public class FileUploadHandler {
      * faces-config.xml file.  This method is accessed through the Shale-remoting dynamic framework.
      */
     public static void handleFileUploadFinal(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        if (bDebug) {
-            System.out.println("** In Final upload for STATUS RETURN = ");
-        }
+        logger.log(Level.FINE, "** In Final upload for STATUS RETURN = ");
+
         response.setHeader("Cache-Control", "no-cache");
         response.setContentType("text/xml;charset=UTF-8");
 
@@ -169,17 +163,15 @@ public class FileUploadHandler {
      * This relationship is specified in the faces-config.xml file. This method is accessed through the Shale-remoting dynamic framework.  
      */
     public Hashtable<String, String> handleFileUpload(HttpServletRequest request, HttpServletResponse response) {
-        if (bDebug) {
-            // print out header for 
-            Enumeration enumx = request.getHeaderNames();
-            String key = "";
-            String listx = "";
-            while (enumx.hasMoreElements()) {
-                key = (String) enumx.nextElement();
-                listx += "\n" + key + ":" + request.getHeader(key);
-            }
-            System.out.println("Incoming Header Item:" + listx);
+        // print out header for
+        Enumeration enumx = request.getHeaderNames();
+        String key = "";
+        String listx = "";
+        while (enumx.hasMoreElements()) {
+            key = (String) enumx.nextElement();
+            listx += "\n" + key + ":" + request.getHeader(key);
         }
+        logger.fine("Incoming Header Item:" + listx);
 
         // enable progress bar (this managed bean that is in the session could be comp specific, but I can't create the component specific 
         // session object until I have the components name.  For now use static key through backing bean).
@@ -189,7 +181,7 @@ public class FileUploadHandler {
         FileUploadStatus status = new FileUploadStatus();
         session.setAttribute(FileUploadUtil.FILE_UPLOAD_STATUS, status);
         setFileUploadStatus(status);
-        
+
         // Create hashtable to hold uploaded data so it can be used by custom post extension
         Hashtable<String, String> htUpload = new Hashtable<String, String>();
         // set to set hashtable for final retrieval
@@ -213,9 +205,8 @@ public class FileUploadHandler {
                 status.setName(compName);
                 // get directory to dump file into
                 String serverLocationDir = htUpload.get(compName + "_" + FileUploadUtil.SERVER_LOCATION_DIR);
-                if (bDebug) {
-                    System.out.println("\n*** locationDir=" + serverLocationDir);
-                }
+                logger.fine("\n*** locationDir=" + serverLocationDir);
+
                 File fileDir = null;
                 if (serverLocationDir == null) {
                     // ??? need to fix incase other than glassfish
@@ -227,9 +218,8 @@ public class FileUploadHandler {
                         fileDir.mkdirs();
                     } else {
                         // use the standard tmp directory
-                        if (bDebug) {
-                            System.out.println("\n*** other default locationDir=" + serverLocationDir);
-                        }
+                        logger.fine("\n*** other default locationDir=" + serverLocationDir);
+
                         //fileDir = (File) request.getAttribute("javax.servlet.context.tempdir");
                         // we don't need the tmp directory since we are avoiding writing twice - once to /tmp and then to filestore
                         // pick this up from the system environment(or web.xml) that WebappUtil sets
@@ -245,7 +235,7 @@ public class FileUploadHandler {
                 if (fileDir == null || !fileDir.isDirectory() || !fileDir.canWrite()) {
                     // error, directory doesn't exist or isn't writable
                     status.setUploadError("Directory \"" + fileDir.toString() + "\" doesn't exist!");
-                    getLogger().log(Level.SEVERE, "directory.inaccessable", fileDir.toString());
+                    logger.log(Level.SEVERE, "directory.inaccessable", fileDir.toString());
                     return null;
                 }
 
@@ -267,9 +257,8 @@ public class FileUploadHandler {
                         int size = formItemFound(item, htUpload);
                         updateSessionStatus(itemName, size);
 
-                        if (bDebug) {
-                            System.out.println("Form field item:" + itemName);
-                        }
+                        logger.fine("Form field item:" + itemName);
+
                     } else {
                         String username = htUpload.get(WebConstants.SUBMITTER_USER_NAME_PARAM);
                         if (username == null) {
@@ -285,12 +274,11 @@ public class FileUploadHandler {
 
                 // put upload to 100% to handle rounding errors in status calc
                 status.setUploadComplete();
-                if (bDebug) {
-                    System.out.println("Final session status - " + status);
-                }
+                logger.fine("Final session status - " + status);
+
             } catch (Exception e) {
                 status.setUploadError("FileUpload didn't complete successfully.  Exception received:" + e.toString());
-                getLogger().log(Level.SEVERE, "file.upload.exception", e);
+                logger.log(Level.SEVERE, "file.upload.exception", e);
             }
         }
 
@@ -323,9 +311,8 @@ public class FileUploadHandler {
             String value = strb.toString();
 
             // put in Hashtable for later access
-            if (bDebug) {
-                System.out.println("Inserting form item in map " + key + " = " + value);
-            }
+            logger.fine("Inserting form item in map " + key + " = " + value);
+
             htUpload.put(key, value);
 
 
@@ -363,33 +350,26 @@ public class FileUploadHandler {
             // see if IE on windows which send full path with item, but just filename
             // check for both separators because client OS my be different that server OS
             // check for unix separator
-            if (bDebug) {
-                System.out.println("Have item - " + fileName + " - in name= " + item.getFieldName());
-            }
+            logger.fine("Have item - " + fileName + " - in name= " + item.getFieldName());
+
             int iPos = fileName.lastIndexOf("/");
             if (iPos > -1) {
                 fileName = fileName.substring(iPos + 1);
-                if (bDebug) {
-                    System.out.println("Have full path, need to truncate \n" + item.getName() + "\n" + fileName);
-                }
+                logger.fine("Have full path, need to truncate \n" + item.getName() + "\n" + fileName);
             }
             // check for windows separator
             iPos = fileName.lastIndexOf("\\");
             if (iPos > -1) {
                 fileName = fileName.substring(iPos + 1);
-                if (bDebug) {
-                    System.out.println("Have full path, need to truncate \n" + item.getName() + "\n" + fileName);
-                }
+                logger.fine("Have full path, need to truncate \n" + item.getName() + "\n" + fileName);
             }
-
             fileLocation = serverLocationDir + File.separator + fileName;
-
             DateFormat dateFormat = new SimpleDateFormat("MMMMddyyyy_hh_mm_ss");
             Date date = null;
             String thumbnailName;
             String thumbnailLocation;
             String ext = WebappUtil.getFileExtension(fileName);
-                
+
             if (item.getFieldName().equals(WebConstants.UPLOAD_PERSON_IMAGE_PARAM)) {
                 fileName = "p" + username;
                 thumbnailName = fileName + "_thumb" + ext;
@@ -427,22 +407,19 @@ public class FileUploadHandler {
                 write(item, fileLocation);
                 htUpload.put(WebConstants.UPLOAD_LITERATURE_PARAM, fileName);
             } else {
-                System.out.println("******** what is this?  item is " + item.getFieldName());
+                logger.warning("******** what is this?  item is " + item.getFieldName());
             }
-            if (bDebug) {
-                System.out.println("Writing item to " + fileLocation);
+            logger.fine("Writing item to " + fileLocation);
             // store image location in Hashtable for later access
-            }
+
             String fieldName = item.getFieldName();
-            if (bDebug) {
-                System.out.println("Inserting form item in map " + fieldName + " = " + fileName);
-            }
+            logger.fine("Inserting form item in map " + fieldName + " = " + fileName);
+
             htUpload.put(fieldName, fileName);
             // insert location
             String key = fieldName + FileUploadUtil.FILE_LOCATION_KEY;
-            if (bDebug) {
-                System.out.println("Inserting form item in map " + key + " = " + fileLocation);
-            }
+            logger.fine("Inserting form item in map " + key + " = " + fileLocation);
+
             htUpload.put(key, fileLocation);
         }
     }
@@ -459,18 +436,16 @@ public class FileUploadHandler {
     public static void writeUploadResponse(PrintWriter writer, FileUploadStatus status) {
         Hashtable<String, String> htUpload = status.getUploadItems();
         try {
-            if (bDebug) {
-                System.out.println("\n***In writeUploadResponse");
+            logger.log(Level.FINE, "\n***In writeUploadResponse");
             //  make sure session data exists
-            }
+
             if (htUpload != null) {
                 String compName = htUpload.get(FileUploadUtil.COMPONENT_NAME);
                 //FileUploadStatus status=getFileUploadStatus();
                 // check to see if user has custom post-processing method
                 String postProcessingMethod = htUpload.get(compName + "_" + FileUploadUtil.POST_PROCESSING_METHOD);
-                if (bDebug) {
-                    System.out.println("\n*** postProcessingMethod = " + postProcessingMethod);
-                }
+                logger.log(Level.FINE, "\n*** postProcessingMethod = " + postProcessingMethod);
+
                 if (postProcessingMethod != null) {
                     // call post-processing method
                     // extension mechanism
@@ -479,9 +454,8 @@ public class FileUploadHandler {
                 // see if custom response set
                 if (!status.isCustomReturnEnabled()) {
                     // return default response
-                    if (bDebug) {
-                        System.out.println("FINAL STATUS - " + status);
-                    }
+                    logger.log(Level.FINE, "FINAL STATUS - " + status);
+
                     writer.println("<response>");
                     writer.println("<message>");
                     writer.println(status.getMessage());
@@ -526,12 +500,9 @@ public class FileUploadHandler {
                 writer.flush();
             }
         } catch (Exception e) {
-            if (bDebug) {
-                System.out.println("FileUploadPhaseListener error writting AJAX response : " + e);
-            }
-            getLogger().log(Level.SEVERE, "response.exeception", e);
+            logger.log(Level.FINE, "FileUploadPhaseListener error writting AJAX response : " + e);
+            logger.log(Level.SEVERE, "response.exeception", e);
         }
-
     }
 
     /**
@@ -545,14 +516,13 @@ public class FileUploadHandler {
     public void write(FileItemStream item, String filePath) throws Exception {
         // use name for update of session
         String itemName = item.getName();
-        
+
         ServiceLocator locator = ServiceLocator.getInstance();
 
         FileSystem fs = locator.getFileSystem();
 
-        if (bDebug) {
-            System.out.println("Getting fileItem from memory - " + itemName);
-        }
+        logger.fine("Getting fileItem from memory - " + itemName);
+
         OutputStream fout = fs.create(filePath);
 
         // It would have been more efficient to use NIO if we are writing to 
@@ -562,7 +532,7 @@ public class FileUploadHandler {
 
         try {
             byte[] buf = new byte[2048];
-            int count,  size = 0;
+            int count, size = 0;
             InputStream is = item.openStream();
             while ((count = is.read(buf)) != -1) {
                 fout.write(buf, 0, count);
@@ -600,17 +570,5 @@ public class FileUploadHandler {
 
     public FileUploadStatus getFileUploadStatus() {
         return fileUploadStatus;
-    }
-
-    /**
-     * Method getLogger
-     *
-     * @return Logger - logger for the NodeAgent
-     */
-    public static Logger getLogger() {
-        if (_logger == null) {
-            _logger = Logger.getLogger(FILE_UPLOAD_LOGGER, FILE_UPLOAD_LOG_STRINGS);
-        }
-        return _logger;
     }
 }
