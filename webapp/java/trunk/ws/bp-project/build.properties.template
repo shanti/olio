@@ -17,7 +17,7 @@
 #
 
 # path to your application server installation
-javaee.home=/space/appserver/glassfishv2.1/glassfish
+javaee.home=/opt/glassfish
 
 # machine name (or the IP address) where the applications will be deployed.
 javaee.server.name=localhost
