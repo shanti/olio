@@ -53,11 +53,11 @@ public class NginxService {
     @Context public ServiceContext ctx;
     private Logger logger = Logger.getLogger(NginxService.class.getName());
     private String[] myServers = new String[1];
-    private String nginxCmd, confFile, errlogFile, acclogFile; 
+    private String nginxCmd, confFile, errlogFile = null, acclogFile = null;
 	private static String pidFile;
 	private boolean getAccLog = false;
     CommandHandle nginxHandles[];
-	private boolean skipService = false;
+	private boolean skipService = false, skipLogs = false;
 
     /**
      * Configures the service.
@@ -68,32 +68,42 @@ public class NginxService {
 	 * and set all parameters appropriately.
      */
     @Configure
-    public void configure() {
+    public void configure() throws ConfigurationException {
         myServers = ctx.getUniqueHosts();
 		if (myServers == null) {
 			skipService = true;
 			return;
         }
-
         nginxCmd = ctx.getProperty("cmdPath");
+        if (nginxCmd == null) {
+           throw new ConfigurationException("cmdPath property not set. Cannot start/stop nginx");
+        }
+        String pidDir = ctx.getProperty("pidDir");
+        if (pidDir != null && pidDir.trim().length() > 0) {
+            if (!pidDir.endsWith(File.separator))
+                pidDir = pidDir + File.separator;
+            pidFile = pidDir + "nginx.pid";
+            logger.fine("pidFile is " + pidFile);
+        } else {
+            throw new ConfigurationException("pidDir not set. Cannot start/stop nginx.");
+        }
         confFile = ctx.getProperty("confPath");
-		nginxCmd = nginxCmd + " -c " + confFile;
+        if (confFile == null) {
+            logger.warning("confPath not set. Will use system default");
+        } else
+		    nginxCmd = nginxCmd + " -c " + confFile;
 		getAccLog = Boolean.parseBoolean(ctx.getProperty("getAccLog"));
 
         String logsDir = ctx.getProperty("logsDir");
-        if (!logsDir.endsWith(File.separator)) {
-            logsDir = logsDir + File.separator;
+        if (logsDir != null && logsDir.trim().length() > 0) {
+            if (!logsDir.endsWith(File.separator))
+                logsDir = logsDir + File.separator;
+            errlogFile = logsDir + "error.log";
+            acclogFile = logsDir + "access.log";
+        } else {
+            logger.warning("logsDir not set. Cannot grab logs");
+            skipLogs = true;
         }
-        errlogFile = logsDir + "error.log";
-        acclogFile = logsDir + "access.log";
-
-        String pidDir = ctx.getProperty("pidDir");
-        if (!pidDir.endsWith(File.separator)) {
-            pidDir = pidDir + File.separator;
-        }
-        pidFile = pidDir + "nginx.pid";
-        logger.fine("pidFile is " + pidFile);
-
         nginxHandles = new CommandHandle[myServers.length];
     }
 
@@ -118,7 +128,6 @@ public class NginxService {
                 } else {
                     logger.severe("Failed to find " + pidFile + " on " + server);
                 }
-
             } catch (Exception e) {
                 logger.log(Level.WARNING, "Failed to start nginx server.", e);
             }
@@ -260,7 +269,7 @@ public class NginxService {
      */
     @ClearLogs
     public void clearLogs() {
-		if (skipService) return;
+		if (skipService || skipLogs) return;
         for (int i = 0; i < myServers.length; i++) {
             if (RunContext.isFile(myServers[i], errlogFile)) {
                 if (!RunContext.deleteFile(myServers[i], errlogFile)) {
@@ -281,17 +290,16 @@ public class NginxService {
 
     /*
      * transfer log files
-     * This method copies over the error log to the run output directory
+     * This method copies over the config file and error log to the run output directory
      * It will optionally copy over the access log if the user has
      * requested it
      */
     @GetLogs
     public void getLogs() {
-		if (skipService) return;
+		if (skipService || skipLogs) return;
         for (int i = 0; i < myServers.length; i++) {
             String outFile = RunContext.getOutDir() + "nginx_err.log." +
                     RunContext.getHostName(myServers[i]);
-
             /*
              * copy the error_log to the master
              * TODO: Truncate the error log to contain only entries for
@@ -306,6 +314,15 @@ public class NginxService {
 				RunContext.getHostName(myServers[i]);
             if (!RunContext.getFile(myServers[i], acclogFile, accFile))
                 logger.warning("Could not copy " + acclogFile + " to " + accFile);
+            }
+
+            // Copy the configuration file
+            if (confFile != null) {
+                outFile = RunContext.getOutDir() + "nginx_conf.log." +
+                        RunContext.getHostName(myServers[i]);
+                if (!RunContext.getFile(myServers[i], confFile, outFile)) {
+                    logger.warning("Could not copy " + confFile + " to " + outFile);
+                }
             }
             logger.fine("getLogs completed for " + myServers[i]);
         }

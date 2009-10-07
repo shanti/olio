@@ -48,7 +48,7 @@ import java.util.List;
 public class RailsService {
  /** Injected service context. */
     @Context public ServiceContext ctx;
-    private Logger logger = Logger.getLogger(ThinService.class.getName());
+    private Logger logger = Logger.getLogger(RailsService.class.getName());
 
     private String[] myServers;
 	private List<NameValuePair<Integer>> hostPorts;
@@ -58,9 +58,7 @@ public class RailsService {
 
 	private boolean skipService = false;
 
-    @Configure public void configure() {
-		String pidFile, errlogFile;
-
+    @Configure public void configure() throws ConfigurationException {
         myServers = ctx.getUniqueHosts();
         hostPorts = ctx.getUniqueHostPorts();
 		if (hostPorts == null || hostPorts.get(0) == null) {
@@ -68,9 +66,9 @@ public class RailsService {
 			return;
         }
 		serverType = ctx.getProperty("type");
-		if (serverType.equals("thin"))
-			thin = new Thin(ctx);
-		   
+		if (serverType.equals("thin")) {
+            thin = new Thin(ctx);
+        }
 		appDir = ctx.getProperty("appDir");
 		if (appDir == null) {
 			logger.warning("appDir property not set. Assuming /export/home/oliorails");
@@ -79,12 +77,10 @@ public class RailsService {
 
         // We need to locate rake
 		rakePath = ctx.getProperty("rakePath");
-		if (rakePath == null) {
+		if (rakePath == null || rakePath.trim().length() <= 0) {
 			logger.warning("rakePath not set. Assuming /var/ruby/1.8/gem_home/bin");
 			rakePath = "/var/ruby/1.8/gem_home/bin";
 		}
-		if (!rakePath.endsWith(File.separator))
-			rakePath = rakePath + File.separator;
 		appLogFile = appDir + File.separator + "log" + 
                 File.separator + "production.log";
         appConfFile = appDir + File.separator + "config" +

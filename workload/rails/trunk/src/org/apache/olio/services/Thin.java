@@ -53,7 +53,7 @@ import java.util.List;
  */
 public class Thin {
     private ServiceContext ctx;
-    private Logger logger = Logger.getLogger(ThinService.class.getName());
+    private Logger logger = Logger.getLogger(Thin.class.getName());
 
     private static final int PORT = 3000;
     private final String logName = "thin.log";
@@ -64,12 +64,11 @@ public class Thin {
     private String[] myServers;
 	private List<NameValuePair<Integer>> hostPorts;
     private String thinCmd, appDir, logsDir, pidsDir;
-    private String appLogFile, appConfFile;
     private static int numInstances, startPort;
     CommandHandle thinHandles[];
+    private boolean skipLogs = false;
 
-
-    public Thin(ServiceContext ctx) {
+    public Thin(ServiceContext ctx) throws ConfigurationException {
 		this.ctx = ctx;
 		String pidFile, errlogFile;
 
@@ -79,25 +78,36 @@ public class Thin {
 		if (startPort == 0)
 			startPort = PORT;
         thinCmd = ctx.getProperty("cmdPath");
-        if (!thinCmd.endsWith(" ")) {
-            thinCmd = thinCmd + " ";
+        if (thinCmd != null && thinCmd.trim().length() > 0) {
+            if (!thinCmd.endsWith(" "))
+                thinCmd = thinCmd + " ";
+        } else {
+            throw new ConfigurationException("cmdPath not set. Cannot start/stop thin");
         }
-        numInstances = Integer.parseInt(ctx.getProperty("numInstances"));
+        pidsDir = ctx.getProperty("pidsDir");
+        if (pidsDir != null && pidsDir.trim().length() > 0) {
+            if (!pidsDir.endsWith(File.separator))
+                pidsDir = pidsDir + File.separator;
+        } else {
+            throw new ConfigurationException("pidsDir not set. Cannot start/stop thin");
+        }
+
+        String ni = ctx.getProperty("numInstances");
+        if (ni != null)
+            numInstances = Integer.parseInt(ni);
 		if (numInstances == 0)
 			numInstances = 1;
 		appDir = ctx.getProperty("appDir");
-		if (appDir == null) {
+		if (appDir == null || appDir.trim().length() <= 0) {
 			logger.warning("appDir property not set. Assuming /export/home/oliorails");
 			appDir = "/export/home/oliorails";
         }
         logsDir = ctx.getProperty("logsDir");
-        if (!logsDir.endsWith(File.separator)) {
-            logsDir = logsDir + File.separator;
-        }
-
-        pidsDir = ctx.getProperty("pidsDir");
-        if (!pidsDir.endsWith(File.separator)) {
-            pidsDir = pidsDir + File.separator;
+        if (logsDir != null && logsDir.trim().length() > 0) {
+            if (!logsDir.endsWith(File.separator))
+                logsDir = logsDir + File.separator;
+        } else {
+            skipLogs = true;
         }
 
         pidFile = pidsDir + pidName;
@@ -244,6 +254,7 @@ public class Thin {
      * Clears the Thin server logs 
      */
     public void clearLogs() {
+        if (skipLogs) return;
         for (String server : myServers) {
             // Clear thin logs
             for (int i = 0; i < logFileNames.length; i++) {
