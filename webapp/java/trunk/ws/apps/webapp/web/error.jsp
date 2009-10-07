@@ -29,7 +29,7 @@
         <title>Error page</title>
     </head>
     <body>
-     <h3>Encountered an error</h3><br/>
+     <h3>Encountered an error. See the server error log for details.</h3><br/>
      ${requestScope['errorMessage']}
     </body>
 </html>
