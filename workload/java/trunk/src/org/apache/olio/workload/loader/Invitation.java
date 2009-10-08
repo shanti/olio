@@ -49,16 +49,13 @@ public class Invitation extends Loadable {
     boolean isAccepted = false;
     static AtomicInteger aint=new AtomicInteger(1);
 
-    public Invitation(int id) {
-        this.id = ++id;
-    }
-
     public String getClearStatement() {
         return "truncate table INVITATION";
     }
-      
 
     public void prepare() {
+        id = getSequence();
+        id++;
         ThreadResource tr = ThreadResource.getInstance();
         Random r = tr.getRandom();
         requestorUsername = UserName.getUserName(id);        
@@ -96,29 +93,24 @@ public class Invitation extends Loadable {
         }
     }
     
-        /**
+    /**
      * For address, update ID after all the data is loaded.
      * So we update the ID_GEN table at postload and add 1 to count.
      */
     public void postLoad() {
         ThreadConnection c = ThreadConnection.getInstance();
-        try {
-            //update id
-            
+        try {            
             //bug exists in JPA where we are using one ID generator (address)
             //for now, update to a ridiculous high number to avoid duplicate key 
-            //exceptions
+            //exceptions            
             
-            
-             logger.info("Updating Invitation ID");
+             logger.fine("Updating Invitation ID");
              c.prepareStatement("INSERT INTO ID_GEN " +
                     "(GEN_KEY, GEN_VALUE) " +
                     "VALUES ('INVITATION_ID', "+ ScaleFactors.users +1 + ")");
              c.executeUpdate();
-            
-            
-            
-             logger.info("After updating Invitation ID");
+                                    
+             logger.fine("After updating Invitation ID");
         } catch (SQLException e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
            // LoadController.increaseErrorCount();

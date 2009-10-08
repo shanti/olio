@@ -48,12 +48,14 @@ public class Attendees extends Loadable {
     public String getClearStatement() {
         return "truncate table PERSON_SOCIALEVENT";
     }
-
+/**
     public Attendees(int eventId) {
         this.eventId = ++eventId;
     }
-
+**/
     public void prepare() {
+        eventId = getSequence();
+        ++eventId;
         ThreadResource tr = ThreadResource.getInstance();
         Random r = tr.getRandom();
         int attendees = r.random(10, 100);

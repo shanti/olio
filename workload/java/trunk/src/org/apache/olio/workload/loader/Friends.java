@@ -45,15 +45,13 @@ public class Friends extends Loadable {
     String userName;
     String[] friends;
 
-    public Friends(int id) {
-        this.id = ++id;
-    }
-
     public String getClearStatement() {
         return "truncate table PERSON_PERSON";
     }
 
     public void prepare() {
+        id = getSequence();
+        ++id;
         ThreadResource tr = ThreadResource.getInstance();
         Random r = tr.getRandom();
         userName = UserName.getUserName(id);
@@ -84,7 +82,6 @@ public class Friends extends Loadable {
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
-            //LoadController.increaseErrorCount();
         }
     }
 }

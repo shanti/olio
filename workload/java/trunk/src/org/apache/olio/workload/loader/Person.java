@@ -46,15 +46,13 @@ public class Person extends Loadable {
     String[] fields = new String[10];
     int addressId;
 
-    public Person(int id) {
-        this.id = ++id;
-    }
-
     public String getClearStatement() {
         return "truncate table PERSON";
     }
 
     public void prepare() {
+        id = getSequence();
+        ++id;
         ThreadResource tr = ThreadResource.getInstance();
         Random r = tr.getRandom();
         StringBuilder b = tr.getBuffer();

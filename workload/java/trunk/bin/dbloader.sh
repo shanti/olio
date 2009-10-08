@@ -1,4 +1,3 @@
-
 #!/bin/sh
 #
 # Licensed to the Apache Software Foundation (ASF) under one
@@ -20,7 +19,6 @@
 
 #Script to run loader by hand
 
-#Edit above lines if required
 if [ -z "$2" ] ; then
     echo "Usage: $0 [dbserver] [concurrent users]" >&2
     exit 1
@@ -44,13 +42,11 @@ then
     BENCH_HOME=`cd $BINDIR/.. > /dev/null 2>&1 &&pwd`
     export FABAN_HOME BENCH_HOME
 fi
-echo  faban home is $FABAN_HOME
-echo benchhome is $BENCH_HOME
 B=$BENCH_HOME/lib
 L=$FABAN_HOME/lib
 MYSQL_JAR=`ls -r $B/mysql-connector*.jar | head -1`
-CLASSPATH=$MYSQL_JAR:$B/mysql-connector-java-5.0.6-bin.jar:$B/JSON.jar:$B/OlioDriver.jar:\
-$L/fabancommon.jar:$L/commons-logging.jar:$L/fabandriver.jar:$L/fabanagents.jar
+CLASSPATH=$MYSQL_JAR:$B/JSON.jar:$B/OlioDriver.jar:$L/fabancommon.jar:$L/commons-logging.jar:\
+$L/fabandriver.jar:$L/fabanagents.jar
 export CLASSPATH
 
 $JAVA_HOME/bin/java -server org.apache.olio.workload.loader.LoadController com.mysql.jdbc.Driver \

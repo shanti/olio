@@ -1,4 +1,4 @@
- /*
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -14,6 +14,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * 
+ * $Id: ThreadConnection.java,v 1.1.1.1 2008/09/29 22:33:08 sp208304 Exp $
  */
 package org.apache.olio.workload.loader.framework;
 
@@ -134,7 +136,8 @@ public class ThreadConnection {
         }
     }
 
-    void processBatch(String name, int batchCount, Queue<Loadable> queue) {
+    void processBatch(String name, int batchCount,
+            Queue<? extends Loadable> queue) {
         // First we need to save the load objects from the queue
         // so we do not loose them in case we need to retry.
         if (batchBuffer == null) {
@@ -221,10 +224,11 @@ public class ThreadConnection {
         }
 
         // Once we're done with this buffer, don't hold on to the objects.
-        // Let them get GC'd so we don't bloat memory. Minimal CPU cost
-        // for such tight loop and setting all entries to null.
-        for (int i = 0; i < batchBuffer.length; i++)
+        // Return them to the pool so we don't bloat memory.
+        for (int i = 0; i < batchBuffer.length; i++) {
+            batchBuffer[i].pool.putLoader(batchBuffer[i]);
             batchBuffer[i] = null;
+    }
     }
 
     void flush() throws SQLException {

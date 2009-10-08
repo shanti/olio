@@ -1,4 +1,4 @@
- /*
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -14,6 +14,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * 
+ * $Id: Loader.java,v 1.1.1.1 2008/09/29 22:33:08 sp208304 Exp $
  */
 package org.apache.olio.workload.loader.framework;
 
@@ -22,6 +24,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.ArrayList;
 
 /**
  * The loader, one instance per Loadable type loaded, is responsible
@@ -36,10 +39,13 @@ public class Loader {
     /** The batch size of a single batch. */
     public static final int BATCHSIZE = 1000;
 
+    /** The recycling pool size is 3 times the size of the batch. */
+    public static final int POOLSIZE = 3 * BATCHSIZE;
+
     /** The number of errors before exiting. */
     public static final int ERROR_THRESHOLD = 50;
 
-    public static final int LOAD_THREADS = 1;
+    public static final int LOAD_THREADS = 5;
 
     private static Logger logger =
             Logger.getLogger(Loader.class.getName());
@@ -49,6 +55,11 @@ public class Loader {
     private static ConcurrentHashMap<String, Loader> typeMap =
                             new ConcurrentHashMap<String, Loader>();
 
+    private static ConcurrentHashMap<Class, LoadablePool> poolMap =
+                            new ConcurrentHashMap<Class, LoadablePool>();
+
+    private static ArrayList<Thread> mainLoaders = new ArrayList<Thread>();
+
     // This is a single processing pool for processing data preps.
     private static ExecutorService processor =
                                 Executors.newCachedThreadPool();
@@ -56,19 +67,22 @@ public class Loader {
     private String name;
     AtomicInteger loadCount;
 
+    LoadablePool<? extends Loadable> loadablePool;
+
     // A Loadable type database loading pool.
     ExecutorService pool;
     ConcurrentLinkedQueue<Loadable> queue;
 
     /**
      * Obtains the instance of the loader for a given loadable type.
-     * @param name The loadable type name
+     * @param clazz The loadable type
      * @return The loader for this type name, or a new loader if none exists
      */
-    static Loader getInstance(String name) {
+    static Loader getInstance(Class<? extends Loadable> clazz) {
         // We may need to change this to a configurable thread pool size
         // on a per-type basis. This is the only place to change.
 
+        String name = clazz.getName();
         Loader loader = new Loader();
         Loader oldEntry = typeMap.putIfAbsent(name, loader);
 
@@ -94,6 +108,19 @@ public class Loader {
             // pool = Executors.newCachedThreadPool();
     }
 
+    private static <T extends Loadable> LoadablePool<T>
+            getLoadablePool(Class<T> clazz) {
+        LoadablePool<T> pool = new LoadablePool<T>(3 * BATCHSIZE, clazz);
+        @SuppressWarnings("unchecked")
+                LoadablePool<T> oldEntry = poolMap.putIfAbsent(clazz, pool);
+
+        if (oldEntry != null) {
+            pool = oldEntry;
+        }
+
+        return pool;
+    }
+
     /**
      * Sets the URL for the connection to the database.
      * @param url The connection URL
@@ -112,14 +139,24 @@ public class Loader {
     /**
      * Uses the loadable to clear the database through the loadable's
      * clear statement.
-     * @param l The loadable to use
+     * @param clazz The loadable class to use
      */
-    public static void clear(final Loadable l) {
+    public static void clear(Class<? extends Loadable> clazz) {
+        Loadable loadable = null;
+        try {
+            loadable = clazz.newInstance();
+        } catch (Exception ex) {
+            logger.log(Level.SEVERE, "Error instantiating loader class.", ex);
+            increaseErrorCount();
+        }
+
+        if (loadable != null) {
+            final Loadable l = loadable;
         Future f = l.loader.pool.submit(new Runnable() {
+
             public void run() {
                 ThreadConnection c = ThreadConnection.getInstance();
                 try {
-                    System.out.println ("Clear table using >> "+ l.getClearStatement() + "<<");
                     c.prepareStatement(l.getClearStatement());
                     c.executeUpdate();
                 } catch (SQLException e) {
@@ -133,10 +170,11 @@ public class Loader {
             try {
                 Thread.sleep(200);
             } catch (InterruptedException e) {
-                logger.log(Level.WARNING, l.loader.name + ": Interrupted while " +
-                                                "waiting to clear table.", e);
+                    logger.log(Level.WARNING, l.loader.name + ": Interrupted " +
+                            "while waiting to clear table.", e);
             }
         }
+    }
     }
 
     /**
@@ -147,10 +185,29 @@ public class Loader {
      * will gracefully shut down the processing infrastructure and wait until
      * all preparation is done. Shutdown will wait until all data loading
      * is done.
-     * @param l
+     * @param clazz The loadable class
+     * @param occurrences The number of load iterations
      */
-    public static void load(final Loadable l) {
+    public static void load(Class<? extends Loadable> clazz, int occurrences) {
+
+        final Class<? extends Loadable> c = clazz;
+        final int occ = occurrences;
+        Thread mainLoader = new Thread() {
+
+            @Override
+            public void run() {
+                for (int i = 0; i < occ; i++) {
+                    Loadable loadable = null;
+                    try {
+                        loadable = getLoadablePool(c).getLoadable();
+                    } catch (Exception ex) {
+                        logger.log(Level.SEVERE, "Error obtaining loadable", ex);
+                        increaseErrorCount();
+                    }
+                    if (loadable != null) {
+                        final Loadable l = loadable;
         processor.execute(new Runnable() {
+
             public void run() {
                 try {
                     l.prepare();
@@ -162,13 +219,35 @@ public class Loader {
             }
         });
     }
+                }
+            }
+        };
+        mainLoaders.add(mainLoader);
+        mainLoader.start();
+    }
+
+    public static void exec(Runnable r) {
+        processor.execute(r);
+    }
 
     /**
      * Execute the post loads provided by the loadable.
-     * @param l The loadable.
+     * @param clazz The loadable class
      */
-    public static void postLoad(final Loadable l) {
+    public static void postLoad(Class<? extends Loadable> clazz) {
+        Loadable loadable = null;
+        try {
+            loadable = clazz.newInstance();
+        } catch (Exception ex) {
+            logger.log(Level.SEVERE, "Error instantiating loader class.", ex);
+            increaseErrorCount();
+        }
+
+        if (loadable != null) {
+
+            final Loadable l = loadable;
         l.loader.pool.submit(new Runnable() {
+
             public void run() {
                 try {
                     l.postLoad();
@@ -179,6 +258,7 @@ public class Loader {
                 }
             }
         });
+    }
     }
 
 
@@ -203,19 +283,24 @@ public class Loader {
      * preparation is done.
      */
     public static void waitProcessing() {
+        // Wait for the main loaders
+        for (Thread mainLoader : mainLoaders) {
+            for (;;)
+                try {
+                    mainLoader.join();
+                    break;
+                } catch (InterruptedException e) {
+                    logger.log(Level.WARNING, e.getMessage(), e);
+                }
+        }
         // We ensure the process pool is cleared, first.
         if (processor != null) {
-            System.out.println("the processor is shutdown? " + processor.isShutdown() );
         processor.shutdown();
-            System.out.println("after processor shutdown");
         boolean terminated = false;
         while (!terminated)
             try {
-                System.out.println("awaiting termination ");                
-                terminated = processor.awaitTermination(3600, TimeUnit.SECONDS);
+                terminated = processor.awaitTermination(1, TimeUnit.HOURS);
             } catch (InterruptedException e) {
-                
-           System.err.println("Pool did not terminate");
             }
         processor = null;
         }
@@ -235,7 +320,7 @@ public class Loader {
         for (Loader entry : typeMap.values()) {
             while (!entry.pool.isTerminated())
                 try {
-                    entry.pool.awaitTermination(3600, TimeUnit.SECONDS);
+                    entry.pool.awaitTermination(1, TimeUnit.HOURS);
                 } catch (InterruptedException e) {
                 }
         }

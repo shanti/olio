@@ -43,18 +43,15 @@ public class Tag extends Loadable {
     int id;
     String tag;
 
-    public Tag(int id) {
-        this.id = ++id;
-    }
-
     public String getClearStatement() {
-        return "truncate table SOCIALEVENTTAG ";
+        return "truncate table SOCIALEVENTTAG";
     }
 
     public void prepare() {
+        id = getSequence();
+        ++id;
         tag = UserName.getUserName(id);
     }
-
 
     public void load() {
         ThreadConnection c = ThreadConnection.getInstance();
@@ -84,23 +81,15 @@ public class Tag extends Loadable {
             c.executeUpdate();
             //update id
             
-            logger.info("updating Tag ID_GEN ID");
-             /* 
-             c.prepareStatement("update ID_GEN set GEN_VALUE = " + 
-                    "(select count(*) +1 from SOCIALEVENTTAG) " +
-                    "where GEN_KEY='SOCIAL_EVENT_TAG_ID'"); 
-             c.executeUpdate();
-             */                        
-             c.prepareStatement("INSERT INTO ID_GEN " +
+            logger.fine("updating Tag ID_GEN ID");
+            c.prepareStatement("INSERT INTO ID_GEN " +
                     "(GEN_KEY, GEN_VALUE) " +
                     "VALUES ('SOCIAL_EVENT_TAG_ID', "+ ScaleFactors.tagCount + ")");
              c.executeUpdate();
              
-            logger.info("After updating Tag ID_GEN ID");
+            logger.fine("After updating Tag ID_GEN ID");
         } catch (SQLException e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
-
-
     }
 }

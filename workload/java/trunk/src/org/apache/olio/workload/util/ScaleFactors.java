@@ -26,7 +26,7 @@ import java.util.logging.Logger;
 public class ScaleFactors {
 
     /** The ratio between loaded and active users. */
-    public static final int USERS_RATIO = 10;
+    public static final int USERS_RATIO = 100;
     public static int activeUsers = -1;
 
     /** The total number of loaded users */

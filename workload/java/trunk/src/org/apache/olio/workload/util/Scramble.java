@@ -1,4 +1,4 @@
- /*
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -14,14 +14,11 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * v
+ * $Id: Scramble.java,v 1.1.1.1 2008/09/29 22:33:08 sp208304 Exp $
  */
-
- /*
- * $Id: Scramble.java,v 1.1 2007/06/20 19:57:47 akara Exp $
- *
- */
-
 package org.apache.olio.workload.util;
+
 
 import java.util.*;
 
@@ -135,12 +132,12 @@ public class Scramble {
      * @param args ignored
      */
     public static void main(String[] args) {
-        char[][][] results = new char[8][][];
+        char[][][] results = new char[11][][];
         char[][] nullArray = new char[1][1];
         nullArray[0][0] = '0';
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < 5; i++)
             results[i] = nullArray;
-        for (int i = 2; i < 8; i++)
+        for (int i = 5; i < 11; i++)
             results[i] = genChars(i + 1);
         dumpArrays(results);
     }

@@ -56,15 +56,13 @@ public class SocialEvent extends Loadable {
     Date createdTimestamp;
     int[] ifields = new int[4];
 
-    public SocialEvent(int id) {
-        this.id = ++id;
-    }
-
     public String getClearStatement() {
         return "truncate table SOCIALEVENT";
     }
 
     public void prepare() {
+        id = getSequence();
+        ++id;
         ThreadResource tr = ThreadResource.getInstance();
         Random r = tr.getRandom();
         StringBuilder buffer = tr.getBuffer();
@@ -107,7 +105,6 @@ public class SocialEvent extends Loadable {
             c.addBatch();
         } catch (SQLException e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
-            //LoadController.increaseErrorCount();
         }
     }
 
@@ -119,26 +116,17 @@ public class SocialEvent extends Loadable {
         ThreadConnection c = ThreadConnection.getInstance();
         try {
             //update id
-             logger.info("before updating socialEventID");             
+             logger.fine("before updating socialEventID");
              
              c.prepareStatement("INSERT INTO ID_GEN " +
                     "(GEN_KEY, GEN_VALUE) " +
                     "VALUES ('SOCIAL_EVENT_ID', "+ ScaleFactors.events +1 + ")");
              c.executeUpdate();                          
              
-            /* 
-             c.prepareStatement("update ID_GEN set GEN_VALUE = " +
-                    "(select count(*) +1 from SOCIALEVENT) " +
-                    "where GEN_KEY='SOCIAL_EVENT_ID'");
-             c.executeUpdate();
-             */
-             logger.info("after updating socialEventID");
+             logger.fine("after updating socialEventID");
         } catch (SQLException e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
             //LoadController.increaseErrorCount();
         }
-
-
     }
-
 }

@@ -46,15 +46,13 @@ public class EventTag extends Loadable{
     int eventId;
     int [] tagIds;
 
-    public EventTag(int eventId) {
-        this.eventId = ++eventId;
-    }
-
     public String getClearStatement() {
         return "truncate table SOCIALEVENTTAG_SOCIALEVENT";
     }
 
     public void prepare() {
+        eventId = getSequence();
+        ++eventId;
         ThreadResource tr = ThreadResource.getInstance();
         Random r = tr.getRandom();
         int numTags = r.random(1, 7); // Avg is 4 tags per event
