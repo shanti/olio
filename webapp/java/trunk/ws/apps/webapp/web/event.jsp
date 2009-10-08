@@ -127,7 +127,7 @@
   <br/>
    <ol id="attending_list">
     <c:forEach var="attendee" items="${requestScope['socialEvent'].attendees}">
-       <li><a href="${pageContext.servletContext.contextPath}/person/display?user_name=${attendee.userName}">${attendee.userName}</a></li>
+       <li><a href="${pageContext.servletContext.contextPath}/person/display?user_name=${attendee.userName}&actionType=display_person">${attendee.userName}</a></li>
     </c:forEach>
    </ol>
   </c:otherwise> 
