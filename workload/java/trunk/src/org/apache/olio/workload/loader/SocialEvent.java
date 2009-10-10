@@ -41,16 +41,16 @@ public class SocialEvent extends Loadable {
     public static final Date BASE_DATE = new Date(System.currentTimeMillis());
 
     private static final String STATEMENT = "insert into SOCIALEVENT " +
-            "(socialeventid, title, summary, description, submitterUserName, imageurl, " +
-            "imagethumburl, literatureurl, telephone, " +
-            "eventtimestamp, createdtimestamp, ADDRESS_addressid, " +
-            "totalscore, numberofvotes, disabled) " +
-            "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            //"(socialeventid, title, summary, description, submitterUserName, imageurl, " +
+            "(title, summary, description, submitterUserName, imageurl, " + //5
+            "imagethumburl, literatureurl, telephone, " + //8
+            "eventtimestamp, createdtimestamp, ADDRESS_addressid, " + //11
+            "totalscore, numberofvotes, disabled) " + //14
+            "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     private static final String[] EVT_MINUTES = { "00", "15", "30", "45" };
 
     static Logger logger = Logger.getLogger(SocialEvent.class.getName());
-    int id;
 
     String[] fields = new String[9];
     Date createdTimestamp;
@@ -61,7 +61,7 @@ public class SocialEvent extends Loadable {
     }
 
     public void prepare() {
-        id = getSequence();
+        int id = getSequence();
         ++id;
         ThreadResource tr = ThreadResource.getInstance();
         Random r = tr.getRandom();
@@ -69,7 +69,7 @@ public class SocialEvent extends Loadable {
         fields[0] = RandomUtil.randomText(r, 15, 20); //title
         fields[1] = RandomUtil.randomText(r, 15, 50); //summary
         fields[2] = RandomUtil.randomText(r, 50, 495); // description
-        fields[3] = UserName.getUserName(r.random(1, ScaleFactors.users));
+        fields[3] = UserName.getUserName(r.random(1, ScaleFactors.users)); //submitterUserName
         fields[4] = "e" + id + ".jpg"; // imageurl
         fields[5] = "e" + id + "t.jpg"; // imagethumburl
         fields[6] = "e" + id + "l.pdf"; //literatureurl
@@ -81,32 +81,31 @@ public class SocialEvent extends Loadable {
         String eventMin = EVT_MINUTES[r.random(0, 3)];  // eventtimestamp
         fields[8] = String.format("%s %02d:%s:00",
                                             eventDate, eventHr, eventMin);
+
         createdTimestamp = r.makeDateInInterval( //createdtimestamp
                                         BASE_DATE, -540, 0);
         ifields[0] = r.random(1, ScaleFactors.users); // addressId
         // The rest is initialized to 0 anyway, leave it that way.
     }
-
-    public void load() {
+    
+     public void load() {
         ThreadConnection c = ThreadConnection.getInstance();
         try {
             PreparedStatement s = c.prepareStatement(STATEMENT);
-            s.setInt (1, id);
- 	    int len=2;
-            for (int i = 0; i < fields.length; i++,len++)
+            for (int i = 0; i < fields.length; i++)
                 if (fields[i] != null)
-                    s.setString(i + 2, fields[i]);
+                    s.setString(i + 1, fields[i]);
                 else
-                    s.setNull(i + 2, Types.VARCHAR);
-            s.setDate(len, createdTimestamp);
-	    len++;
-            for (int i = 0; i < ifields.length; i++,len++)
-                s.setInt(len, ifields[i]);
+                    s.setNull(i + 1, Types.VARCHAR);
+            s.setDate(10, createdTimestamp);
+            for (int i = 0; i < ifields.length; i++)
+                s.setInt(11 + i, ifields[i]);
             c.addBatch();
         } catch (SQLException e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
     }
+     
 
      /**
      * For tags, we won't know the refcount till all the data is loaded.
@@ -116,17 +115,26 @@ public class SocialEvent extends Loadable {
         ThreadConnection c = ThreadConnection.getInstance();
         try {
             //update id
-             logger.fine("before updating socialEventID");
+             logger.fine("before updating socialEventID");             
              
              c.prepareStatement("INSERT INTO ID_GEN " +
                     "(GEN_KEY, GEN_VALUE) " +
                     "VALUES ('SOCIAL_EVENT_ID', "+ ScaleFactors.events +1 + ")");
              c.executeUpdate();                          
              
+            /* 
+             c.prepareStatement("update ID_GEN set GEN_VALUE = " +
+                    "(select count(*) +1 from SOCIALEVENT) " +
+                    "where GEN_KEY='SOCIAL_EVENT_ID'");
+             c.executeUpdate();
+             */
              logger.fine("after updating socialEventID");
         } catch (SQLException e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
             //LoadController.increaseErrorCount();
         }
+
+
     }
+
 }

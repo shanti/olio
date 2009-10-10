@@ -1,4 +1,4 @@
- /*
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -42,16 +42,15 @@ public class Person extends Loadable {
             "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     static Logger logger = Logger.getLogger(Person.class.getName());
 
-    int id;
     String[] fields = new String[10];
     int addressId;
-
+  
     public String getClearStatement() {
         return "truncate table PERSON";
     }
 
     public void prepare() {
-        id = getSequence();
+        int id = getSequence();
         ++id;
         ThreadResource tr = ThreadResource.getInstance();
         Random r = tr.getRandom();

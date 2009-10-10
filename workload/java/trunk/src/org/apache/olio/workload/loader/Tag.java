@@ -36,30 +36,32 @@ public class Tag extends Loadable {
     // Note that the tag id in the database is autoincrement and may
     // not coincide with this tag id/name when using multi-thread loading.
     private static final String STATEMENT = "insert into SOCIALEVENTTAG " +
-            "(socialeventtagid, tag, refcount) values (?, ?, ?)";
+            //"(socialeventtagid, tag, refcount) values (?, ?, ?)";
+            "(tag, refcount) values (?, ?)";
 
     static Logger logger = Logger.getLogger(Tag.class.getName());
 
-    int id;
     String tag;
 
+   
+
     public String getClearStatement() {
-        return "truncate table SOCIALEVENTTAG";
+        return "truncate table SOCIALEVENTTAG ";
     }
 
     public void prepare() {
-        id = getSequence();
+        int id = getSequence();
         ++id;
         tag = UserName.getUserName(id);
     }
+
 
     public void load() {
         ThreadConnection c = ThreadConnection.getInstance();
         try {
             PreparedStatement s = c.prepareStatement(STATEMENT);
-            s.setInt (1, id);
-            s.setString(2, tag);
-            s.setInt(3, 0); // Initialize it to 0 first, count and add later.
+            s.setString(1, tag);
+            s.setInt(2, 0); // Initialize it to 0 first, count and add later.
             c.addBatch();
         } catch (SQLException e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
@@ -82,7 +84,13 @@ public class Tag extends Loadable {
             //update id
             
             logger.fine("updating Tag ID_GEN ID");
-            c.prepareStatement("INSERT INTO ID_GEN " +
+             /* 
+             c.prepareStatement("update ID_GEN set GEN_VALUE = " + 
+                    "(select count(*) +1 from SOCIALEVENTTAG) " +
+                    "where GEN_KEY='SOCIAL_EVENT_TAG_ID'"); 
+             c.executeUpdate();
+             */                        
+             c.prepareStatement("INSERT INTO ID_GEN " +
                     "(GEN_KEY, GEN_VALUE) " +
                     "VALUES ('SOCIAL_EVENT_TAG_ID', "+ ScaleFactors.tagCount + ")");
              c.executeUpdate();
@@ -91,5 +99,7 @@ public class Tag extends Loadable {
         } catch (SQLException e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
+
+
     }
 }

@@ -38,7 +38,8 @@ public class Invitation extends Loadable {
     // follow same as friends.  Average of 15 invitations. Random 2..28 Friends.
 
     private static final String STATEMENT = "insert into INVITATION " +
-            "(invitationid, isaccepted, requestor_username, candidate_username) values (?, ?, ?, ?)";
+          //  "(invitationid, isaccepted, requestor_username, candidate_username) values (?, ?, ?, ?)";
+              "(isaccepted, requestor_username, candidate_username) values (?, ?, ?)";
     
 
     static Logger logger = Logger.getLogger(Friends.class.getName());
@@ -52,6 +53,7 @@ public class Invitation extends Loadable {
     public String getClearStatement() {
         return "truncate table INVITATION";
     }
+      
 
     public void prepare() {
         id = getSequence();
@@ -80,10 +82,16 @@ public class Invitation extends Loadable {
         try {
             for (String friend : friends) {
                 PreparedStatement s = c.prepareStatement(STATEMENT);
-                s.setInt(1, aint.incrementAndGet());
-                 s.setInt(2, 0);
-                s.setString(3, requestorUsername);
-                s.setString(4, friend);
+                int alternate=0;
+                if (alternate%2 == 0){
+                    s.setInt(1, 0);
+                }else{
+                    s.setInt(1, 1);
+                }
+                s.setString(2, requestorUsername);
+                s.setString(3, friend);
+                 
+                alternate++;
                 c.addBatch();
             }
         } catch (SQLException e) {
@@ -93,23 +101,28 @@ public class Invitation extends Loadable {
         }
     }
     
-    /**
+        /**
      * For address, update ID after all the data is loaded.
      * So we update the ID_GEN table at postload and add 1 to count.
      */
     public void postLoad() {
         ThreadConnection c = ThreadConnection.getInstance();
-        try {            
+        try {
+            //update id
+            
             //bug exists in JPA where we are using one ID generator (address)
             //for now, update to a ridiculous high number to avoid duplicate key 
-            //exceptions            
+            //exceptions
+            
             
              logger.fine("Updating Invitation ID");
              c.prepareStatement("INSERT INTO ID_GEN " +
                     "(GEN_KEY, GEN_VALUE) " +
                     "VALUES ('INVITATION_ID', "+ ScaleFactors.users +1 + ")");
              c.executeUpdate();
-                                    
+            
+            
+            
              logger.fine("After updating Invitation ID");
         } catch (SQLException e) {
             logger.log(Level.SEVERE, e.getMessage(), e);

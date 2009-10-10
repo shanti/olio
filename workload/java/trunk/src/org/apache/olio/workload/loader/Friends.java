@@ -41,7 +41,7 @@ public class Friends extends Loadable {
 
     static Logger logger = Logger.getLogger(Friends.class.getName());
 
-    int id;
+    //int id;
     String userName;
     String[] friends;
 
@@ -50,7 +50,7 @@ public class Friends extends Loadable {
     }
 
     public void prepare() {
-        id = getSequence();
+        int id = getSequence();
         ++id;
         ThreadResource tr = ThreadResource.getInstance();
         Random r = tr.getRandom();
@@ -82,6 +82,7 @@ public class Friends extends Loadable {
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
+            //LoadController.increaseErrorCount();
         }
     }
 }
