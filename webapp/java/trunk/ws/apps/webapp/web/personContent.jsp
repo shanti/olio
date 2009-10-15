@@ -166,7 +166,7 @@
             <a href="${pageContext.servletContext.contextPath}/person?user_name=${displayPerson.userName}&actionType=display_friends">more...</a>
 
         </div>
-            
+       <c:if test="${requestScope['displayPerson'].userName == userBean.loggedInPerson.userName}">     
             <div id="incoming">
                 <fieldset id="incoming_requests">
                     <legend>Incoming friendship invitations</legend>
@@ -207,6 +207,7 @@
                     </ol>
                 </fieldset>
             </div>
+   </c:if>
 <hr />
         </div> <!-- user_header -->
         
