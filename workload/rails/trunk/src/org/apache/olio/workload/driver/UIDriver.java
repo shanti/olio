@@ -25,9 +25,6 @@ import com.sun.faban.driver.transport.hc3.ApacheHC3Transport;
 import org.apache.olio.workload.util.RandomUtil;
 import org.apache.olio.workload.util.ScaleFactors;
 import org.apache.olio.workload.util.UserName;
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpStatus;
 
 import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
@@ -36,10 +33,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Logger;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.multipart.FilePart;
-import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
 
@@ -287,7 +282,6 @@ public class UIDriver {
     private String tagCloudURL;
     private StringBuilder tags = new StringBuilder();
     private LinkedHashSet<Integer> tagSet = new LinkedHashSet<Integer>(7);
-    private HttpClient httpClient;
 
     public UIDriver() throws XPathExpressionException {
         ctx = DriverContext.getContext();
@@ -399,12 +393,6 @@ public class UIDriver {
 		String ifmod = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z").format(BASE_DATE);
 		cachedHeaders.put("If-Modified-Since", ifmod);
         isCached = cached();
-        /**
-        httpClient = new HttpClient();
-        httpClient.setConnectionTimeout(5000);
-         */
-        httpClient = ((ApacheHC3Transport) http).getHttpClient();
-        httpClient.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
     }
 
     @BenchmarkOperation(name = "HomePage",
@@ -436,10 +424,9 @@ public class UIDriver {
     }
 
     @BenchmarkOperation(name = "Login",
-    max90th = 1,
-    timing = Timing.MANUAL)
+                        max90th = 1,
+                        timing = Timing.AUTO)
     public void doLogin() throws IOException, Exception {
-        httpClient = new HttpClient();
         logger.finer("In doLogin");
         int randomId = 0; //use as password
         username = null;
@@ -451,16 +438,11 @@ public class UIDriver {
         randomId = selectUserID();
         username = UserName.getUserName(randomId);
         logger.finer("Logging in as " + username + ", " + randomId);
-        PostMethod loginPost = constructLoginPost(randomId);
-		//loginPost.setFollowRedirects(true);
+        String loginPost = constructLoginPost(randomId);
 
-        ctx.recordTime();
+        StringBuilder response = http.fetchURL(loginURL, loginPost);
 
-        httpClient.executeMethod(loginPost);
-
-        ctx.recordTime();
-
-        int loginIdx = loginPost.getResponseBodyAsString().indexOf("Login:");
+        int loginIdx = response.indexOf("Login:");
         if (loginIdx != -1) {
             throw new Exception(" Found login prompt at index " + loginIdx);
         }
@@ -470,13 +452,12 @@ public class UIDriver {
     }
 
     @BenchmarkOperation(name = "Logout",
-    max90th = 1,
-    timing = Timing.AUTO)
+                        max90th = 1,
+                        timing = Timing.AUTO)
     public void doLogout() throws IOException {
         if (isLoggedOn) {
             logger.finer("Logging off = " + isLoggedOn);
-            GetMethod logout = new GetMethod(logoutURL);
-            httpClient.executeMethod(logout);
+            http.readURL(logoutURL);
             cachedURLs.clear();
             isCached = cached();
             isLoggedOn = false;
@@ -510,7 +491,7 @@ public class UIDriver {
     @BenchmarkOperation(
         name = "AddEvent",
         max90th = 4,
-        timing = Timing.MANUAL)
+        timing = Timing.AUTO)
     @NegativeExponential(
         cycleType = CycleType.CYCLETIME,
         cycleMean = 5000,
@@ -523,12 +504,7 @@ public class UIDriver {
             throw new IOException("User not logged when trying to add an event");
         }
 
-        ctx.recordTime();
-        loadStatics(addEventStatics);
-
-        GetMethod eventForm = new GetMethod(addEventURL);
-
-        ArrayList<Part> params = new ArrayList();
+        ArrayList<Part> params = new ArrayList<Part>();
         String[] parameters = prepareEvent();
         if (parameters[0] == null || parameters[0].length() == 0) {
             logger.warning("Socialevent title is null!");
@@ -559,12 +535,13 @@ public class UIDriver {
         params.add(new NullContentTypePart("address[country]", addressArr[5]));
 
         params.add(new FilePart("event_image", eventImg, "image/jpeg", null));
-        params.add(new FilePart("event_document", eventPdf, "application/pdf", null));
+        params.add(new FilePart("event_document", eventPdf, "application/pdf",
+                   null));
         params.add(new NullContentTypePart("commit", "Create"));
 
         // GET the new event form within a user session
-        httpClient.executeMethod(eventForm);
-        String responseBuffer = eventForm.getResponseBodyAsString();
+        StringBuilder responseBuffer = http.fetchURL(addEventURL);
+        loadStatics(addEventStatics);
         if (responseBuffer.length() == 0) {
             throw new IOException("Received empty response");
         }
@@ -575,22 +552,30 @@ public class UIDriver {
             params.add(new NullContentTypePart("authenticity_token", token));
         }
 
-        Part[] parts = new Part[params.size()];
-        parts = params.toArray(parts);
-        PostMethod post = new PostMethod(addEventResultURL);
-        post.setRequestEntity(
-                new MultipartRequestEntity(parts, post.getParams()));
+        StringBuilder response = ((ApacheHC3Transport) http).
+                                 fetchURL(addEventResultURL, params);
+        
+        int status = http.getResponseCode();
+        String[] locationHeader = http.getResponseHeader("location");
 
-        doMultiPartPost(post, "Event was successfully created.");
-
-
-        ctx.recordTime();
+		if (locationHeader != null) {
+			logger.fine("redirectLocation is " + locationHeader[0]);
+			response = http.fetchURL(locationHeader[0]);
+        } else if (status != HttpStatus.SC_OK) {
+            throw new IOException("Multipart post did not work, returned " +
+                                  "status code: " + status);
+        }
+        String message = "Event was successfully created.";
+        if (response.indexOf(message) == -1) {
+            throw new Exception("Could not find success message '" + message +
+                                " in result body");
+        }
         ++driverMetrics.addEventTotal;
     }
 
     @BenchmarkOperation(name = "AddPerson",
-    max90th = 3,
-    timing = Timing.MANUAL)
+        max90th = 3,
+        timing = Timing.AUTO)
     @NegativeExponential(
         cycleType = CycleType.CYCLETIME,
         cycleMean = 5000,
@@ -602,10 +587,6 @@ public class UIDriver {
         if (isLoggedOn) {
             doLogout();
         }
-
-        ctx.recordTime(); // Start critical section
-        http.readURL(addPersonURL);
-        loadStatics(addPersonStatics);
 
         String[] parameters = preparePerson();
         ArrayList<Part> params = new ArrayList();
@@ -619,7 +600,8 @@ public class UIDriver {
         http.readURL(checkNameURL, "name=" + parameters[0]);
 
         params.add(new NullContentTypePart("user[password]", parameters[1]));
-        params.add(new NullContentTypePart("user[password_confirmation]", parameters[1]));
+        params.add(new NullContentTypePart("user[password_confirmation]",
+                                                            parameters[1]));
         params.add(new NullContentTypePart("user[firstname]", parameters[2]));
         params.add(new NullContentTypePart("user[lastname]", parameters[3]));
         params.add(new NullContentTypePart("user[email]", parameters[4]));
@@ -634,16 +616,30 @@ public class UIDriver {
         params.add(new NullContentTypePart("user[timezone]", parameters[7]));
         params.add(new NullContentTypePart("user[summary]", parameters[6]));
         params.add(new FilePart("user_image", personImg, "image/jpeg", null));
-        Part[] parts = new Part[params.size()];
-        parts = params.toArray(parts);
-        PostMethod post = new PostMethod(addPersonResultURL);
-        post.setRequestEntity(
-                new MultipartRequestEntity(parts, post.getParams()));
-        doMultiPartPost(post, "Succeeded in creating user.");
 
-        ctx.recordTime();
+        http.readURL(addPersonURL);
+        loadStatics(addPersonStatics);
+        StringBuilder response = ((ApacheHC3Transport)http).
+                                 fetchURL(addPersonResultURL, params);
+        
+        int status = http.getResponseCode();
+        String[] locationHeader = http.getResponseHeader("location");
+
+		if (locationHeader != null) {
+			logger.fine("redirectLocation is " + locationHeader[0]);
+			response = http.fetchURL(locationHeader[0]);
+        } else if (status != HttpStatus.SC_OK) {
+            throw new IOException("Multipart post did not work, returned " +
+                                  "status code: " + status);
+        }
+        String message = "Succeeded in creating user.";
+        if (response.indexOf(message) == -1) {
+            throw new Exception("Could not find success message '" + message +
+                    " in result body");
+        }
         ++driverMetrics.addPersonTotal;
     }
+
 
     @BenchmarkOperation(name = "EventDetail",
     max90th = 2,
@@ -692,27 +688,24 @@ public class UIDriver {
 
     @BenchmarkOperation(name = "PersonDetail",
     max90th = 2,
-    timing = Timing.MANUAL)
+    timing = Timing.AUTO)
     public void doPersonDetail() throws IOException {
         logger.finer("doPersonDetail");
         StringBuilder buffer = new StringBuilder(fileServiceURL.length() + 20);
         //buffer.append(fileServiceURL).append("file=p");
 
-        ctx.recordTime();
         // Shanti: No need to be logged on to see user
         /**
         if (isLoggedOn) {
          **/
         int id = random.random(1, ScaleFactors.users);
-        GetMethod personDetailGet = new GetMethod(personDetailURL + id);
-        httpClient.executeMethod(personDetailGet);
-        StringBuilder responseBuffer = new StringBuilder(personDetailGet.getResponseBodyAsString());
-        if (responseBuffer.length() == 0) {
+        StringBuilder response = http.fetchURL(personDetailURL + id);
+        if (response.length() == 0) {
             throw new IOException("Received empty response");
         }
-        Set<String> images = parseImages(responseBuffer);
+        Set<String> images = parseImages(response);
         loadImages(images);
-        String event = RandomUtil.randomEvent(random, responseBuffer);
+        String event = RandomUtil.randomEvent(random, response);
         if (event != null) {
             selectedEvent = event;
         }
@@ -725,23 +718,22 @@ public class UIDriver {
         http.fetchURL(homepageURL);
         }
          ***/
-        ctx.recordTime();
     }
 
     public void doAddAttendee() throws Exception {
         //can only add yourself (one attendee) to party
         // Need to add header that will request js instead of
         // html. This will prevent the redirect.
-        PostMethod attendeePost = new PostMethod(addAttendeeURL +
-                selectedEvent + "/attend");
-        Header header = new Header("Accept", "text/javascript");
-        attendeePost.setRequestHeader(header);
-        int status = httpClient.executeMethod(attendeePost);
+        HashMap<String, String> header = new HashMap<String, String>(1);
+        header.put("Accept", "text/javascript");
+		// Need to send only post request, get doesn't work. So send null post.
+        StringBuilder response = http.fetchURL(addAttendeeURL +
+                selectedEvent + "/attend", "", header);
+        int status = http.getResponseCode();
         if (status != HttpStatus.SC_OK) {
             throw new Exception("Add attendee returned: " + status);
         }
-        String buffer = attendeePost.getResponseBodyAsString();
-        if (buffer.indexOf("You are attending") == -1) {
+        if (response.indexOf("You are attending") == -1) {
             logger.warning("Add attendee failed, possible race condition");
         // throw new Exception("Add attendee failed, could not find: You are attending");
         }
@@ -795,7 +787,8 @@ public class UIDriver {
         return urlSet;
     }
 
-    private String parseAuthToken(String responseBuffer) throws IOException {
+    private String parseAuthToken(StringBuilder responseBuffer)
+            throws IOException {
 
         int idx = responseBuffer.indexOf("authenticity_token");
 
@@ -908,57 +901,14 @@ public class UIDriver {
         return returnList;
     }
 
-    private PostMethod constructLoginPost(int randomId) {
-        /***
-        ArrayList<Part> loginparams = new ArrayList();
-        loginparams.add(new NullContentTypePart("users[username]", username));
-        loginparams.add(new NullContentTypePart("users[password]", String.valueOf(randomId)));
-        loginparams.add(new NullContentTypePart("submit", "Login"));
-         ***/
-        PostMethod loginPost = new PostMethod(loginURL);
+    private String constructLoginPost(int randomId) {
+        StringBuilder postString = new StringBuilder();
+        postString.append("users[username]=").append(username);
+        postString.append("&users[password]=").append(randomId);
+        postString.append("&submit=").append("Login");
 
-        // loginPost.setFollowRedirects(true);
-        loginPost.addParameter("users[username]", username);
-        loginPost.addParameter("users[password]", String.valueOf(randomId));
-        loginPost.addParameter("submit", "Login");
+        return postString.toString();
 
-        return loginPost;
-
-    }
-
-    public void doMultiPartPost(PostMethod post, String message)
-            throws Exception {
-        logger.finer("In doMultiPartPost()");
-
-        if (httpClient == null) {
-            logger.warning("HttpClient is null, this shouldn't happen");
-            HttpClient httpClient = ((ApacheHC3Transport) http).getHttpClient();
-            httpClient.getHttpConnectionManager().getParams().
-                    setConnectionTimeout(5000);
-        }
-
-        int status = httpClient.executeMethod(post);
-		Header locationHeader = post.getResponseHeader("location");
-		if (locationHeader != null) {
-			/*********
-            // Manually follow redirect
-            // GetMethod get = new GetMethod(post.getResponseHeader("Location").getValue());
-            httpClient.executeMethod(get);
-            String buffer = get.getResponseBodyAsString();
-            int idx = buffer.indexOf(message);
-            if (idx == -1) {
-                throw new Exception("Could not find success message '" + message + "' in result body");
-            }
-			*********/
-			logger.fine("locationHeader is not null");
-			String redirectLocation = locationHeader.getValue();
-			// Release the connection after we get location
-			post.releaseConnection();
-			logger.fine("redirectLocation is " + redirectLocation);
-			http.fetchURL(redirectLocation);
-        } else if (status != HttpStatus.SC_OK) {
-            throw new IOException("Multipart post did not work, returned status code: " + status);
-        }
     }
 
     public String[] prepareEvent() {
@@ -1152,11 +1102,12 @@ public class UIDriver {
             cnt = r.getOpsCountSteady("TagSearch");
             el[5] = new Element();
             el[5].description = "Average images on Tag Search Results";
-            el[5].target = "&gt;= 3.6";
+            //el[5].target = "&gt;= 3.6";
+            el[5].target = "&gt;= 0";
             if (cnt > 0) {
                 double avgImgs = tagSearchImages / (double) cnt;
                 el[5].result = String.format("%.2f", avgImgs);
-                if (avgImgs >= 3.6d) {
+                if (avgImgs >= 0) {
                     el[5].passed = Boolean.TRUE;
                 } else {
                     el[5].passed = Boolean.FALSE;

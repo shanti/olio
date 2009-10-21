@@ -111,6 +111,7 @@
                     <xforms:bind id="bind-load-scale" xforms:nodeset="scale" xforms:type="positiveInteger"/>
                     <!-- addition here -->
                     <xforms:bind id='bind-dbserver-service' xforms:nodeset='fh:service'>
+                        <xforms:bind id="bind-dbserver-service-tools" xforms:nodeset="fh:tools" />
                       <xforms:bind id='bind-dbserver-service-config' xforms:nodeset='fh:config'>
                         <xforms:bind id="bind-db-homePath" xforms:nodeset="serverHome" />
                         <xforms:bind id="bind-db-confPath" xforms:nodeset="confPath" />
@@ -180,13 +181,14 @@
                     <dbDriver>JDBC driver class name</dbDriver>
                     <connectURL>JDBC connection URL</connectURL>
                     <reloadDB>Reload Database</reloadDB>
+                    <dbTools>DB Service Tools</dbTools>
                     <reloadMedia>Reload Images</reloadMedia>
-                    <dbHomePath>Path for Database Home</dbHomePath>
+                    <dbHomePath>Database Home</dbHomePath>
                     <serverType>Server Type</serverType>
-                    <serverCmdPath>Server command</serverCmdPath>
-                    <serverConfPath>Server config file</serverConfPath>
-                    <serverLogsDir>Server logs directory</serverLogsDir>
-                    <serverPidsDir>Server pids directory</serverPidsDir>
+                    <serverCmdPath>Server Command</serverCmdPath>
+                    <serverConfPath>Server Config File</serverConfPath>
+                    <serverLogsDir>Server Logs Directory</serverLogsDir>
+                    <serverPidsDir>Server Pids Directory</serverPidsDir>
 					<rakePath>Path to rake</rakePath>
 					<getAccLog>Get Access Log ? </getAccLog>
 					<appDir>Application home directory</appDir>
@@ -202,8 +204,9 @@
                     <hostPorts>Host:Port Pairs</hostPorts>
                     <port>Port</port>
                     <cacheHostPorts>Memcached Hosts:Ports</cacheHostPorts>
-                    <cacheBinPath>Memcached bin Directory</cacheBinPath>
+                    <cacheBinPath>Path to memcached command</cacheBinPath>
                     <serverMemSize>Memcached Max Memory(MB)</serverMemSize>
+                    <cacheTools>MemcachedService Tools</cacheTools>
                     <pathConfig>URL Path Configurations</pathConfig>
                     <java>Java</java>
                     <php>PHP</php>
@@ -548,8 +551,13 @@
                         </xforms:input>
                          <xforms:input id="input-db-confPath" xforms:bind="bind-db-confPath">
                             <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/dbConfPath"/>
-                            <xforms:hint>Enter DB conf file directory</xforms:hint>
-                            <xforms:help>Enter DB conf file directory (e.g /etc)</xforms:help>
+                            <xforms:hint>Enter the path to the DB config file</xforms:hint>
+                            <xforms:help>Enter the path to the DB config file</xforms:help>
+                        </xforms:input>
+                        <xforms:input id="input-db-service-tools" xforms:bind="bind-dbserver-service-tools">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/dbTools"/>
+                            <xforms:hint>Enter the DB-specific tools to run</xforms:hint>
+                            <xforms:help>Enter the DB-specific tools to run</xforms:help>
                         </xforms:input>
                     </xforms:group>
                     <xforms:group id="group-dataStorage">
@@ -616,6 +624,11 @@
                             <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/serverMemSize"/>
                             <xforms:hint>Enter the max. size in MB of the cache</xforms:hint>
                             <xforms:help>Enter the max. size in MB of the cache</xforms:help>
+                        </xforms:input>
+                        <xforms:input id="input-cacheServers-service-tools" xforms:bind="bind-cacheServers-service-tools">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/cacheTools"/>
+                            <xforms:hint>Enter the memcached-specific tools to run</xforms:hint>
+                            <xforms:help>Enter the memcached-specific tools to run</xforms:help>
                         </xforms:input>
                     </xforms:group>
                 </xforms:case>
