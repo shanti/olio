@@ -19,7 +19,7 @@
         <fa:scale>50</fa:scale>
         
         <fa:runControl>
-            <fa:rampUp>10</fa:rampUp>
+            <fa:rampUp>30</fa:rampUp>
             <fa:steadyState>300</fa:steadyState>
             <fa:rampDown>10</fa:rampDown>
         </fa:runControl>
@@ -35,14 +35,13 @@
 
         <stats>
             <maxRunTime>6</maxRunTime>
-            <interval>10</interval>
+            <interval>30</interval>
         </stats>
         
         <runtimeStats enabled="false">
             <interval>5</interval>
         </runtimeStats>
-        
-        
+                
         <driverConfig name="UIDriver">
             <agents>1</agents>
             <stats>
@@ -57,7 +56,7 @@
     
     <webServer>
         <fa:hostConfig xmlns="http://faban.sunsource.net/ns/fabanharness" xmlns:fa="http://faban.sunsource.net/ns/faban">
-            <fa:hostPorts>myHost:8080</fa:hostPorts>
+            <fa:hostPorts>webHost:8080</fa:hostPorts>
             <enabled>true</enabled>
             <cpus>0</cpus>
             <tools>vmstat 10; mpstat 10; nicstat 10</tools>
@@ -69,9 +68,9 @@
             <fh:tools>NONE</fh:tools>
             <fh:restart>true</fh:restart>
             <fh:config>
-                <cmdPath>/opt/glassfish/bin</cmdPath>
+                <cmdPath>/opt/glassfish/bin/asadmin</cmdPath>
                 <logsDir>/opt/glassfish/domains/domain1/logs</logsDir>
-                <configDir>/opt/glassfish/domains/domain1/config</configDir>
+                <confPath>/opt/glassfish/domains/domain1/config/domain.xml</confPath>
             </fh:config>
         </fh:service>
     </webServer>
@@ -93,7 +92,7 @@
             <fh:tools>Mysqlstats</fh:tools>
             <fh:restart>false</fh:restart>
             <fh:config>
-                <serverHome>/export/home/mysql</serverHome>
+                <serverHome>/var/mysql</serverHome>
                 <user>olio</user>
                 <password>olio</password>
                 <confPath>/etc/my.cnf</confPath>
@@ -103,7 +102,7 @@
     <dataStorage>
         <fa:hostConfig xmlns:fa="http://faban.sunsource.net/ns/faban"
                        xmlns="http://faban.sunsource.net/ns/fabanharness">
-            <fa:host>myDataStorageHost</fa:host>
+            <fa:host>storageHost</fa:host>
             <enabled>true</enabled>
             <cpus>0</cpus>
             <tools>NONE</tools>

@@ -57,7 +57,7 @@
                         <xforms:bind id='bind-webServer-service-config' xforms:nodeset='fh:config'  >
                             <xforms:bind id='bind-webServer-cmdPath' xforms:nodeset='cmdPath'/>
                             <xforms:bind id='bind-webServer-logsDir' xforms:nodeset='logsDir'/>
-                            <xforms:bind id='bind-webServer-configDir' xforms:nodeset='configDir'/>
+                            <xforms:bind id='bind-webServer-confPath' xforms:nodeset='confPath'/>
                         </xforms:bind>
                     </xforms:bind>
                 </xforms:bind>
@@ -73,6 +73,7 @@
                     <xforms:bind id="bind-reloadDB" xforms:nodeset="reloadDB" xforms:type="boolean"/>
                     <xforms:bind id="bind-load-scale" xforms:nodeset="scale" xforms:type="positiveInteger"/>
                     <xforms:bind id='bind-dbServer-service' xforms:nodeset='fh:service'>
+                        <xforms:bind id="bind-dbServer-service-tools" xforms:nodeset='fh:tools' />
                         <xforms:bind id='bind-dbServer-service-config' xforms:nodeset='fh:config'>
                             <xforms:bind id='bind-db-serverHome' xforms:nodeset='serverHome'/>
                             <xforms:bind id="bind-db-confPath" xforms:nodeset="confPath" />
@@ -97,6 +98,7 @@
                         <xforms:bind id="bind-cacheServers-userCommands" xforms:nodeset="fh:userCommands"/>
                     </xforms:bind>
                     <xforms:bind id='bind-cacheServers-service' xforms:nodeset='fh:service'  >
+                        <xforms:bind id="bind-cacheServers-service-tools" xforms:nodeset='fh:tools' />
                         <xforms:bind id='bind-cacheServers-service-config' xforms:nodeset='fh:config'  >
                             <xforms:bind id="bind-cache-cmdPath" xforms:nodeset="cmdPath"/>
                             <xforms:bind id='bind-cache-serverMemSize' xforms:nodeset='serverMemSize' xforms:type="positiveInteger"/>
@@ -129,7 +131,7 @@
                     <delay>Time between starts (ms)</delay>
                     <simultaneous>Start simultaneously</simultaneous>
                     <parallel>Start agents in parallel</parallel>
-                    <webServer>Web&#160;Server</webServer>
+                    <webServer>App Server</webServer>
                     <dbServer>Database Server</dbServer>
                     <dataStorage>Data Storage Server</dataStorage>
                     <cacheServers>Memcached Servers</cacheServers>
@@ -138,14 +140,15 @@
                     <dbDriver>JDBC driver class name</dbDriver>
                     <connectURL>JDBC connection URL</connectURL>
                     <reloadDB>Reload Database</reloadDB>
+                    <dbTools>DB-specific Tools</dbTools>
                     <reloadMedia>Reload Images</reloadMedia>
                     <dbHomePath>Path for Database Home</dbHomePath>
                     <webserverType>Application Server</webserverType>
-                    <webserverBinPath>Webserver bin Directory</webserverBinPath>
-                    <webserverLogPath>Webserver logs Directory</webserverLogPath>
-                    <serverConfPath>Server Config Direcotry</serverConfPath>
+                    <webserverBinPath>Appserver Command Path</webserverBinPath>
+                    <webserverLogPath>Appserver Logs Directory</webserverLogPath>
+                    <serverConfPath>Server Config File</serverConfPath>
                     <mediaDir>Media Directory</mediaDir>
-                    <dbConfPath>DB config file</dbConfPath>
+                    <dbConfPath>DB Config File</dbConfPath>
                     <agents>Agents</agents>
                     <statsInterval>Stats Collection Interval</statsInterval>
                     <serverConfig>Server Information</serverConfig>
@@ -157,11 +160,8 @@
                     <cacheHostPorts>Memcached Hosts:Ports</cacheHostPorts>
                     <cacheCmdPath>Path to Memcached command</cacheCmdPath>
                     <serverMemSize>Server Memory Size</serverMemSize>
+                    <cacheTools>Memcached Tools</cacheTools>
                     <pathConfig>URL Path Configurations</pathConfig>
-                    <java>Java</java>
-                    <php>PHP</php>
-                    <apache>Apache</apache>
-                    <lighttpd>lighttpd</lighttpd>
                     <glassfish>GlassFish</glassfish>
                     <tools>Tools</tools>
                     <userCommands>User Commands</userCommands>
@@ -333,28 +333,30 @@
                                      <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/glassfish"/>
                                      <xforms:value>glassfish</xforms:value>
                                  </xforms:item>
+                                 <!--
                                  <xforms:item>
                                      <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/weblogic"/>
                                      <xforms:value>weblogic</xforms:value>
                                  </xforms:item>
+                                 -->
                                  <xforms:hint>Choose the application server</xforms:hint>
                                  <xforms:help>Choose the application server</xforms:help>
                              </xforms:choices>
                          </xforms:select1>
                         <xforms:input id="input-webServer-cmdPath" xforms:bind="bind-webServer-cmdPath">
                             <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/webserverBinPath"/>
-                            <xforms:hint>Enter the path to the webserver bin directory</xforms:hint>
-                            <xforms:help>Enter the path to the webserver bin directory</xforms:help>
+                            <xforms:hint>Enter the path to the appserver command</xforms:hint>
+                            <xforms:help>Enter the path to the appserver command (used to start/stop the server)</xforms:help>
                         </xforms:input>
                         <xforms:input id="input-webServer-logPath" xforms:bind="bind-webServer-logsDir">
                             <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/webserverLogPath"/>
-                            <xforms:hint>Enter the path to the webserver logs directory</xforms:hint>
-                            <xforms:help>Enter the path to the webserver logs directory</xforms:help>
+                            <xforms:hint>Enter the path to the appserver logs directory</xforms:hint>
+                            <xforms:help>Enter the path to the appserver logs directory</xforms:help>
                         </xforms:input>
-                        <xforms:input id="input-webServer-configDir" xforms:bind="bind-webServer-configDir">
+                        <xforms:input id="input-webServer-confPath" xforms:bind="bind-webServer-confPath">
                             <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/serverConfPath"/>
-                            <xforms:hint>Enter the app server config directory</xforms:hint>
-                            <xforms:help>Enter the app server config directory</xforms:help>
+                            <xforms:hint>Enter the path to the app server config file</xforms:hint>
+                            <xforms:help>Enter the path to the app server config file</xforms:help>
                         </xforms:input>
                        <xforms:select1 id="select1-restart" xforms:bind="bind-webServer-restart">
                             <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/restart"/>
@@ -431,6 +433,11 @@
                             <xforms:hint>Enter the path to the DB config file </xforms:hint>
                             <xforms:help>Enter the path to the DB config file</xforms:help>
                         </xforms:input>
+                        <xforms:input id="input-db-tools" xforms:bind="bind-dbServer-service-tools">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/dbTools"/>
+                            <xforms:hint>Enter the DB-specific tools to run</xforms:hint>
+                            <xforms:help>Enter the DB-specific tools to run</xforms:help>
+                        </xforms:input>
                     </xforms:group>
                     <xforms:group id="group-dataStorage">
                         <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/dataStorage"/>
@@ -497,22 +504,12 @@
                             <xforms:hint>Enter max. size of memcached cache (in MB)</xforms:hint>
                             <xforms:help>Enter max. size of memcached cache (in MB)</xforms:help>
                         </xforms:input>
-                    </xforms:group>
-                    <!-- Shanti - commenting for now, as not used
-                    <xforms:group id="group-otherServers">
-                        <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/otherServers"/>
-                        <xforms:input id="input-otherServers-host" xforms:bind="bind-otherServers-host">
-                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/hosts"/>
-                            <xforms:hint>The servers' host names or IP addresses, space separated</xforms:hint>
-                            <xforms:help>Enter the servers' host names or IP addresses, space separated</xforms:help>
-                        </xforms:input>
-                        <xforms:input id="input-otherServers-tools" xforms:bind="bind-otherServers-tools">
-                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/tools"/>
-                            <xforms:hint>Enter tool commands to collect statistics, separated by semi-colon</xforms:hint>
-                            <xforms:help>Enter tool commands to collect statistics, separated by semi-colon</xforms:help>
+                        <xforms:input id="input-cacheServers-service-tools" xforms:bind="bind-cacheServers-service-tools">
+                            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/cacheTools"/>
+                            <xforms:hint>Enter the memcached-specific tools to run</xforms:hint>
+                            <xforms:help>Enter the memcached-specific tools to run</xforms:help>
                         </xforms:input>
                     </xforms:group>
-                    -->
                 </xforms:case>
             </xforms:switch>
         </xforms:group>
