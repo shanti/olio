@@ -45,8 +45,8 @@ fi
 
 B=$BENCH_HOME/lib
 L=$FABAN_HOME/lib
-CLASSPATH=$B/mysql-connector-java-5.0.6-bin.jar:$B/json.jar:$B/OlioDriver.jar:\
-$L/commons-httpclient-2.0.1.jar:$L/fabancommon.jar:$L/commons-logging.jar:\
+MYSQL_JAR=`ls -r $B/mysql-connector*.jar | head -1`
+CLASSPATH=$MYSQL_JAR:$B/json.jar:$B/OlioDriver.jar:$L/fabancommon.jar:$L/commons-logging.jar:\
 $L/fabandriver.jar:$L/fabanagents.jar
 export CLASSPATH
 

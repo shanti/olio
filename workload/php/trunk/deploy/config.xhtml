@@ -20,10 +20,6 @@
 		<xforms:bind id='bind-runConfig-hostConfig' xforms:nodeset='fa:hostConfig'  >
 			<xforms:bind id='bind-runConfig-hostConfig-host' xforms:nodeset='fa:host'  >
 			</xforms:bind>
-			<xforms:bind id='bind-runConfig-enabledConfig-enabled' xforms:nodeset='fh:enabled'  >
-			</xforms:bind>
-			<xforms:bind id='bind-runConfig-cpusConfig-cpus' xforms:nodeset='fh:cpus'  >
-			</xforms:bind>
 			<xforms:bind id='bind-runConfig-toolsConfig-tools' xforms:nodeset='fh:tools'  >
 			</xforms:bind>
 			<xforms:bind id='bind-runConfig-userCommandsConfig-userCommands' xforms:nodeset='fh:userCommands'  >
@@ -70,10 +66,6 @@
 			</xforms:bind>
 			<xforms:bind id='bind-runConfig-driverConfig-runtimeStats' xforms:nodeset='fd:runtimeStats'  >
 			</xforms:bind>
-			<xforms:bind id='bind-runConfig-driverConfig-properties' xforms:nodeset='fd:properties'  >
-				<xforms:bind id='bind-runConfig-driverConfig-properties-property' xforms:nodeset='fd:property[@name="serverType"]'  >
-				</xforms:bind>
-			</xforms:bind>
 		</xforms:bind>
 	</xforms:bind>
 	<xforms:bind id='bind-webServer' xforms:nodeset='webServer'  >
@@ -81,8 +73,6 @@
 			<xforms:bind id='bind-webServer-hostConfig-hostPorts' xforms:nodeset='fa:hostPorts'  >
 			</xforms:bind>
 			<xforms:bind id='bind-webServer-hostConfig-enabled' xforms:nodeset='fh:enabled'  >
-			</xforms:bind>
-			<xforms:bind id='bind-webServer-hostConfig-cpus' xforms:nodeset='fh:cpus'  >
 			</xforms:bind>
 			<xforms:bind id='bind-webServer-hostConfig-tools' xforms:nodeset='fh:tools'  >
 			</xforms:bind>
@@ -92,18 +82,16 @@
 		<xforms:bind id='bind-webServer-type' xforms:nodeset='type'  >
 		</xforms:bind>
 		<xforms:bind id='bind-webServer-service' xforms:nodeset='fh:service'  >
-			<xforms:bind id='bind-webServer-service-name' xforms:nodeset='fh:name'  >
-			</xforms:bind>
-			<xforms:bind id='bind-webServer-service-tools' xforms:nodeset='fh:tools'  >
-			</xforms:bind>
-			<xforms:bind id='bind-webServer-service-restart' xforms:nodeset='fh:restart'  >
-			</xforms:bind>
 			<xforms:bind id='bind-webServer-service-config' xforms:nodeset='fh:config'  >
 				<xforms:bind id='bind-webServer-service-config-cmdPath' xforms:nodeset='cmdPath'  >
 				</xforms:bind>
 				<xforms:bind id='bind-webServer-service-config-logsDir' xforms:nodeset='logsDir'  >
 				</xforms:bind>
-				<xforms:bind id='bind-webServer-service-config-phpSessionDir' xforms:nodeset='phpSessionDir'  >
+				<xforms:bind id='bind-webServer-service-config-sessionDir' xforms:nodeset='sessionDir'  >
+				</xforms:bind>
+                <xforms:bind id='bind-webServer-service-config-confPath' xforms:nodeset='confPath'  >
+				</xforms:bind>
+                <xforms:bind id='bind-webServer-service-config-phpIniPath' xforms:nodeset='phpIniPath'  >
 				</xforms:bind>
 			</xforms:bind>
 		</xforms:bind>
@@ -114,8 +102,6 @@
 			</xforms:bind>
 			<xforms:bind id='bind-dbServer-enabledConfig-enabled' xforms:nodeset='fh:enabled'  >
 			</xforms:bind>
-			<xforms:bind id='bind-dbServer-cpusConfig-cpus' xforms:nodeset='fh:cpus'  >
-			</xforms:bind>
 			<xforms:bind id='bind-dbServer-toolsConfig-tools' xforms:nodeset='fh:tools'  >
 			</xforms:bind>
 			<xforms:bind id='bind-dbServer-userCommandsConfig-userCommands' xforms:nodeset='fh:userCommands'  >
@@ -125,17 +111,11 @@
 		</xforms:bind>
 		<xforms:bind id='bind-dbServer-connectURL' xforms:nodeset='connectURL'  >
 		</xforms:bind>
-		<xforms:bind id='bind-dbServer-autoCommit' xforms:nodeset='autoCommit'  >
-		</xforms:bind>
 		<xforms:bind id='bind-dbServer-reloadDB' xforms:nodeset='reloadDB'  >
 		</xforms:bind>
 		<xforms:bind id='bind-dbServer-scale' xforms:nodeset='scale' xforms:type='positiveInteger'>
 		</xforms:bind>
-		<xforms:bind id='bind-dbServer-dbConfPath' xforms:nodeset='dbConfPath'  >
-		</xforms:bind>
 		<xforms:bind id='bind-dbServer-service' xforms:nodeset='fh:service'  >
-			<xforms:bind id='bind-dbServer-service-name' xforms:nodeset='fh:name'  >
-			</xforms:bind>
 			<xforms:bind id='bind-dbServer-service-tools' xforms:nodeset='fh:tools'  >
 			</xforms:bind>
 			<xforms:bind id='bind-dbServer-service-restart' xforms:nodeset='fh:restart'  >
@@ -146,6 +126,8 @@
 				<xforms:bind id='bind-dbServer-service-config-user' xforms:nodeset='user'  >
 				</xforms:bind>
 				<xforms:bind id='bind-dbServer-service-config-password' xforms:nodeset='password'  >
+				</xforms:bind>
+                <xforms:bind id='bind-dbServer-service-config-confPath' xforms:nodeset='confPath'  >
 				</xforms:bind>
 			</xforms:bind>
 		</xforms:bind>
@@ -182,8 +164,6 @@
 			</xforms:bind>
 		</xforms:bind>
 		<xforms:bind id='bind-cacheServers-service' xforms:nodeset='fh:service'  >
-			<xforms:bind id='bind-cacheServers-service-name' xforms:nodeset='fh:name'  >
-			</xforms:bind>
 			<xforms:bind id='bind-cacheServers-service-tools' xforms:nodeset='fh:tools'  >
 			</xforms:bind>
 			<xforms:bind id='bind-cacheServers-service-restart' xforms:nodeset='fh:restart'  >
@@ -212,7 +192,6 @@
                     <host>Host</host>
                     <hosts>Hosts</hosts>
                     <enabled>Enabled</enabled>
-                    <cpus>Cpus</cpus>
                     <tools>Tools</tools>
                     <serviceTools>Service Tools</serviceTools>
                     <userCommands>User Commands</userCommands>
@@ -229,7 +208,7 @@
                     <parallel>Start agents in Parallel</parallel>
                     <stats>Stats</stats>
                     <maxRunTime>Max Run Time</maxRunTime>
-                    <interval>Interval</interval>
+                    <interval>Detailed Stats Interval</interval>
                     <runtimestatsinterval>Runtime Stats Interval</runtimestatsinterval>
                     <runtimeStats>Runtime Stats</runtimeStats>
                     <driverConfig>Driver Config</driverConfig>
@@ -238,24 +217,27 @@
                     <property>Property</property>
                     <webServer>Web Server</webServer>
                     <apache>Apache</apache>
-                    <lighttpd>lighttpd</lighttpd>
-                    <glassfish>GlassFish</glassfish>
+                    <lighttpd>Lighttpd</lighttpd>
                     <hostPorts>Host:Port Pairs</hostPorts>
                     <type>Type</type>
                     <service>Service</service>
                     <name>Name</name>
                     <restart>Restart</restart>
                     <config>Config</config>
-                    <cmdPath>Cmd Path</cmdPath>
-                    <logsDir>Logs Dir</logsDir>
-                    <phpSessionDir>Php Session Directory</phpSessionDir>
-                    <dbServer>Database Server</dbServer>
+                    <webCmdPath>Web Server command path</webCmdPath>                    
+                    <logsDir>Logs Directory</logsDir>
+                    <sessionDir>Php Sessions Directory</sessionDir>
+                    <webConfPath>Webserver Config File</webConfPath>
+                    <phpIniPath>Path to php.ini</phpIniPath>
+                    <servers>Data Servers</servers>
+                    <dbServer>Database Servers</dbServer>
                     <dbDriver>JDBC driver class name</dbDriver>
                     <connectURL>JDBC connection URL</connectURL>
                     <autoCommit>AutoCommit</autoCommit>
                     <reloadDB>Reload Database</reloadDB>
                     <loadScale>Loaded for Concurrent Users</loadScale>
-                    <dbConfPath>DB config file Directory</dbConfPath>
+                    <dbConfPath>DB Config File</dbConfPath>
+                    <dbTools>DB-specific Tools</dbTools>
                     <serverHome>Server Home</serverHome>
                     <user>User</user>
                     <password>Password</password>
@@ -263,10 +245,9 @@
                     <reloadMedia>Reload Images</reloadMedia>
                     <mediaDir>Media Directory</mediaDir>
                     <cacheServers>Memcached Servers</cacheServers>
-                    <serverMemSize>Server Mem Size</serverMemSize>
-                    <serviceDesc>Requested Services Details</serviceDesc>
-                    <java>Java</java>
-                    <php>PHP</php>
+                    <cmdPath>Memcached Command Path</cmdPath>
+                    <serverMemSize>Maximum Server Cache Size</serverMemSize>
+                    <cacheTools>Memcached Tools</cacheTools>
                     <unit>Unit</unit>
                     <time>Time (sec)</time>
                     <cycles>Cycles</cycles>
@@ -301,6 +282,14 @@
             <xforms:toggle id='toggle-webServer' xforms:case='case-webServer'/>
         </xforms:action>
     </xforms:trigger>
+    <xforms:trigger id="trigger-servers">
+            <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/servers"/>
+            <xforms:action id="action-servers">
+                <xforms:revalidate xforms:model="benchmark-model" id="revalidate-servers"/>
+                <xforms:toggle id="toggle-servers" xforms:case="case-servers"/>
+            </xforms:action>
+    </xforms:trigger>
+    <!--
     <xforms:trigger id='trigger-dbServer'>
         <xforms:label xforms:model='benchmark-labels' xforms:ref='/labels/dbServer'/>
         <xforms:action id='action-dbServer'>
@@ -322,7 +311,7 @@
             <xforms:toggle id='toggle-cacheServers' xforms:case='case-cacheServers'/>
         </xforms:action>
     </xforms:trigger>
-
+    -->
     <xforms:switch id="switch">
         <xforms:case id='case-jvmConfig'>
             <xforms:group id='group-jvmConfig'>
@@ -360,12 +349,6 @@
                     <xforms:label xforms:model='benchmark-labels' xforms:ref='/labels/userCommands'/>
                     <xforms:hint>Enter any extra command or script to execute</xforms:hint>
                     <xforms:help>Enter any extra command or script to execute</xforms:help>
-                </xforms:input>
-                <xforms:input id='input-runConfig-enabledConfig-enabled' xforms:bind='bind-runConfig-enabledConfig-enabled'>
-                    <xforms:label xforms:model='benchmark-labels' xforms:ref='/labels/enabled'/>
-                </xforms:input>
-                    <xforms:input id='input-runConfig-cpusConfig-cpus' xforms:bind='bind-runConfig-cpusConfig-cpus'>
-                    <xforms:label xforms:model='benchmark-labels' xforms:ref='/labels/cpus'/>
                 </xforms:input>
             </xforms:group>
             <xforms:group id="group-runControl">
@@ -429,9 +412,11 @@
                     <xforms:help>Enter the interval, in seconds, to collect detailed statistics</xforms:help>
                     <xforms:alert>Not a valid number</xforms:alert>
                 </xforms:input>
+                <!--
                 <xforms:input id='input-runConfig-runtimeStats-interval' xforms:bind='bind-runConfig-runtimeStats-interval'>
                     <xforms:label xforms:model='benchmark-labels' xforms:ref='/labels/runtimestatsinterval'/>
                 </xforms:input>
+                -->
             </xforms:group>
         </xforms:case>
         <xforms:case id='case-webServer'>
@@ -452,28 +437,9 @@
                           <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/lighttpd"/>
                           <xforms:value>lighttpd</xforms:value>
                        </xforms:item>
-                       <xforms:item>
-                          <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/glassfish"/>
-                          <xforms:value>glassfish</xforms:value>
-                       </xforms:item>
                        <xforms:hint>Choose the web server type.</xforms:hint>
                        <xforms:help>Choose the web server type.</xforms:help>
                    </xforms:choices>
-                </xforms:select1>
-                <xforms:select1 id='input-runConfig-driverConfig-properties-property' xforms:bind='bind-runConfig-driverConfig-properties-property'>
-                    <xforms:label xforms:model='benchmark-labels' xforms:ref='/labels/type'/>
-                    <xforms:choices>
-                        <xforms:item>
-                           <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/java"/>
-                           <xforms:value>jsp</xforms:value>
-                        </xforms:item>
-                        <xforms:item>
-                           <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/php"/>
-                           <xforms:value>php</xforms:value>
-                        </xforms:item>
-                        <xforms:hint>Choose the server architecture type.</xforms:hint>
-                        <xforms:help>Choose the server architecture type.</xforms:help>
-                    </xforms:choices>
                 </xforms:select1>
                 <xforms:input id='input-webServer-hostConfig-userCommands' xforms:bind='bind-webServer-hostConfig-userCommands'>
                     <xforms:label xforms:model='benchmark-labels' xforms:ref='/labels/userCommands'/>
@@ -485,33 +451,29 @@
                     <xforms:hint>Enter tool commands to collect statistics, separated by semi-colon</xforms:hint>
                     <xforms:help>Enter tool commands to collect statistics, separated by semi-colon</xforms:help>
                 </xforms:input>
-            </xforms:group>
-            <xforms:group id='group-webServer-requested-services'>
-                <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/serviceDesc"/>
-                <xforms:input id='input-webServer-service-name' xforms:bind='bind-webServer-service-name'>
-                    <xforms:label xforms:model='benchmark-labels' xforms:ref='/labels/name'/>
-                </xforms:input>
-                <xforms:input id='input-webServer-service-tools' xforms:bind='bind-webServer-service-tools'>
-                    <xforms:label xforms:model='benchmark-labels' xforms:ref='/labels/serviceTools'/>
-                    <xforms:hint>Enter tool commands to collect statistics, separated by semi-colon</xforms:hint>
-                    <xforms:help>Enter tool commands to collect statistics, separated by semi-colon</xforms:help>
-                </xforms:input>
-                <xforms:input id='input-webServer-service-restart' xforms:bind='bind-webServer-service-restart'>
-                    <xforms:label xforms:model='benchmark-labels' xforms:ref='/labels/restart'/>
-                </xforms:input>
                 <xforms:input id='input-webServer-service-config-cmdPath' xforms:bind='bind-webServer-service-config-cmdPath'>
-                    <xforms:label xforms:model='benchmark-labels' xforms:ref='/labels/cmdPath'/>
+                    <xforms:label xforms:model='benchmark-labels' xforms:ref='/labels/webCmdPath'/>
+                    <xforms:hint>The path to the command to start the webserver</xforms:hint>
                 </xforms:input>
-                        <xforms:input id='input-webServer-service-config-logsDir' xforms:bind='bind-webServer-service-config-logsDir'>
+                <xforms:input id='input-webServer-service-config-logsDir' xforms:bind='bind-webServer-service-config-logsDir'>
                     <xforms:label xforms:model='benchmark-labels' xforms:ref='/labels/logsDir'/>
                 </xforms:input>
-                        <xforms:input id='input-webServer-service-config-phpSessionDir' xforms:bind='bind-webServer-service-config-phpSessionDir'>
-                    <xforms:label xforms:model='benchmark-labels' xforms:ref='/labels/phpSessionDir'/>
+                <xforms:input id='input-webServer-service-config-confPath' xforms:bind='bind-webServer-service-config-confPath'>
+                    <xforms:label xforms:model='benchmark-labels' xforms:ref='/labels/webConfPath'/>
+                    <xforms:hint>The path to the webserver config file</xforms:hint>
+                </xforms:input>
+                <xforms:input id='input-webServer-service-config-sessionDir' xforms:bind='bind-webServer-service-config-sessionDir'>
+                    <xforms:label xforms:model='benchmark-labels' xforms:ref='/labels/sessionDir'/>
+                    <xforms:hint>The directory where the PHP session files are stored</xforms:hint>
+                </xforms:input>
+                <xforms:input id='input-webServer-service-config-phpIniPath' xforms:bind='bind-webServer-service-config-phpIniPath'>
+                    <xforms:label xforms:model='benchmark-labels' xforms:ref='/labels/phpIniPath'/>
                 </xforms:input>
             </xforms:group>
         </xforms:case>
-        <xforms:case id='case-dbServer'>
+        <xforms:case id='case-servers'>
             <xforms:group id='group-dbServer'>
+                <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/dbServer"/>
                 <xforms:input id='input-dbServer-hostConfig-host' xforms:bind='bind-dbServer-hostConfig-host'>
                     <xforms:label xforms:model='benchmark-labels' xforms:ref='/labels/host'/>
                     <xforms:hint>The Database server host name or IP address. For multiple servers, enter the master first then the slaves</xforms:hint>
@@ -542,21 +504,6 @@
                          <xforms:help>Yes to reload the database, otherwise database not reloaded.</xforms:help>
                     </xforms:choices>
                 </xforms:select1>
-                <xforms:select1 id='input-dbServer-autoCommit' xforms:bind='bind-dbServer-autoCommit'>
-                    <xforms:label xforms:model='benchmark-labels' xforms:ref='/labels/autoCommit'/>
-                    <xforms:choices>
-                         <xforms:item>
-                             <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/yes"/>
-                             <xforms:value>true</xforms:value>
-                         </xforms:item>
-                         <xforms:item>
-                             <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/no"/>
-                             <xforms:value>false</xforms:value>
-                         </xforms:item>
-                         <xforms:hint>Yes if the database autocommits, otherwise loader commits.</xforms:hint>
-                         <xforms:help>Yes if the database autocommits, otherwise loader commits.</xforms:help>
-                    </xforms:choices>
-                </xforms:select1>
                 <xforms:input id='input-dbServer-scale' xforms:bind='bind-dbServer-scale'>
                     <xforms:label xforms:model='benchmark-labels' xforms:ref='/labels/loadScale'/>
                     <xforms:hint>Enter the number of concurrent users data is loaded for</xforms:hint>
@@ -569,34 +516,42 @@
                 </xforms:input>
                 <xforms:input id='input-dbServer-userCommandsConfig-userCommands' xforms:bind='bind-dbServer-userCommandsConfig-userCommands'>
                     <xforms:label xforms:model='benchmark-labels' xforms:ref='/labels/userCommands'/>
-                    <xforms:hint>Enter any extra command or script to execute</xforms:hint>
-                    <xforms:help>Enter any extra command or script to execute</xforms:help>
+                    <xforms:hint>Enter any extra command to execute on DB servers before run</xforms:hint>
+                    <xforms:help>Enter any extra command to execute on DB servers before run</xforms:help>
                 </xforms:input>
-            </xforms:group>
-            <xforms:group id='group-webServer-requested-services'>
-                <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/serviceDesc"/>
-                <xforms:input id='input-dbServer-service-name' xforms:bind='bind-dbServer-service-name'>
-                    <xforms:label xforms:model='benchmark-labels' xforms:ref='/labels/name'/>
-                </xforms:input>
-                    <xforms:input id='input-dbServer-service-tools' xforms:bind='bind-dbServer-service-tools'>
-                    <xforms:label xforms:model='benchmark-labels' xforms:ref='/labels/serviceTools'/>
-                </xforms:input>
-                <xforms:input id='input-dbServer-service-restart' xforms:bind='bind-dbServer-service-restart'>
+                <!--
+                <xforms:select1 id='input-dbServer-service-restart' xforms:bind='bind-dbServer-service-restart'>
                     <xforms:label xforms:model='benchmark-labels' xforms:ref='/labels/restart'/>
-                </xforms:input>
+                    <xforms:hint>Restart DB Server before run ? (Not recommended)</xforms:hint>
+                    <xforms:choices>
+                         <xforms:item>
+                               <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/yes"/>
+                                <xforms:value>true</xforms:value>
+                         </xforms:item>
+                         <xforms:item>
+                               <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/no"/>
+                               <xforms:value>false</xforms:value>
+                         </xforms:item>
+                   </xforms:choices>
+                </xforms:select1>
+                -->
                 <xforms:input id='input-dbServer-service-config-serverHome' xforms:bind='bind-dbServer-service-config-serverHome'>
                     <xforms:label xforms:model='benchmark-labels' xforms:ref='/labels/serverHome'/>
                 </xforms:input>
-                <xforms:input id='input-dbServer-service-config-user' xforms:bind='bind-dbServer-service-config-user'>
-                    <xforms:label xforms:model='benchmark-labels' xforms:ref='/labels/user'/>
+                <xforms:input id='input-dbServer-service-config-confPath' xforms:bind='bind-dbServer-service-config-confPath'>
+                    <xforms:label xforms:model='benchmark-labels' xforms:ref='/labels/dbConfPath'/>
                 </xforms:input>
-                <xforms:input id='input-dbServer-service-config-password' xforms:bind='bind-dbServer-service-config-password'>
-                    <xforms:label xforms:model='benchmark-labels' xforms:ref='/labels/password'/>
+                <xforms:input id='input-dbServer-service-tools' xforms:bind='bind-dbServer-service-tools'>
+                    <xforms:label xforms:model='benchmark-labels' xforms:ref='/labels/dbTools'/>
+                    <xforms:hint>Enter names of MysqlService tools to run</xforms:hint>
                 </xforms:input>
             </xforms:group>
+        <!--
         </xforms:case>
         <xforms:case id='case-dataStorage'>
+        -->
             <xforms:group id='group-dataStorage'>
+                <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/dataStorage"/>
                 <xforms:input id='input-dataStorage-hostConfig-host' xforms:bind='bind-dataStorage-hostConfig-host'>
                     <xforms:label xforms:model='benchmark-labels' xforms:ref='/labels/host'/>
                     <xforms:hint>The server host name or IP address</xforms:hint>
@@ -633,9 +588,12 @@
                     <xforms:help>Enter any extra command or script to execute</xforms:help>
                 </xforms:input>
             </xforms:group>
+        <!--
         </xforms:case>
         <xforms:case id='case-cacheServers'>
+        -->
             <xforms:group id='group-cacheServers'>
+                <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/cacheServers"/>
                 <xforms:input id='input-cacheServers-hostConfig-hostPorts' xforms:bind='bind-cacheServers-hostConfig-hostPorts'>
                     <xforms:label xforms:model='benchmark-labels' xforms:ref='/labels/hostPorts'/>
                     <xforms:hint>The memcached servers' [host:port] pairs, space separated</xforms:hint>
@@ -651,20 +609,13 @@
                     <xforms:hint>Enter any extra command or script to execute</xforms:hint>
                     <xforms:help>Enter any extra command or script to execute</xforms:help>
                 </xforms:input>
-            </xforms:group>
-            <xforms:group id='group-webServer-requested-services'>
-                <xforms:label xforms:model="benchmark-labels" xforms:ref="/labels/serviceDesc"/>
-                <xforms:input id='input-cacheServers-service-name' xforms:bind='bind-cacheServers-service-name'>
-                    <xforms:label xforms:model='benchmark-labels' xforms:ref='/labels/name'/>
-                </xforms:input>               
                 <xforms:input id='input-cacheServers-service-tools' xforms:bind='bind-cacheServers-service-tools'>
-                    <xforms:label xforms:model='benchmark-labels' xforms:ref='/labels/serviceTools'/>
-                </xforms:input>
-                <xforms:input id='input-cacheServers-service-restart' xforms:bind='bind-cacheServers-service-restart'>
-                    <xforms:label xforms:model='benchmark-labels' xforms:ref='/labels/restart'/>
+                    <xforms:label xforms:model='benchmark-labels' xforms:ref='/labels/cacheTools'/>
+                    <xforms:hint>Enter names of MemcachedService tools to run</xforms:hint>
                 </xforms:input>
                 <xforms:input id='input-cacheServers-service-config-cmdPath' xforms:bind='bind-cacheServers-service-config-cmdPath'>
                     <xforms:label xforms:model='benchmark-labels' xforms:ref='/labels/cmdPath'/>
+                    <xforms:hint>Path to memcached command</xforms:hint>
                 </xforms:input>
                 <xforms:input id='input-cacheServers-service-config-serverMemSize' xforms:bind='bind-cacheServers-service-config-serverMemSize'>
                     <xforms:label xforms:model='benchmark-labels' xforms:ref='/labels/serverMemSize'/>

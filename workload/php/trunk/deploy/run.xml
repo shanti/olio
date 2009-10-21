@@ -28,7 +28,7 @@
         <fh:description>Enter description for this run here</fh:description>
         
         <fa:hostConfig>
-            <fa:host>pae4150-8</fa:host>
+            <fa:host>driverHost</fa:host>
             <fh:enabled>true</fh:enabled>
             <fh:cpus>0</fh:cpus>
             <fh:tools>vmstat 10</fh:tools>
@@ -75,10 +75,10 @@
     
     <webServer>
         <fa:hostConfig xmlns="http://faban.sunsource.net/ns/fabanharness" xmlns:fa="http://faban.sunsource.net/ns/faban">
-            <fa:hostPorts>pae2200-2:8080</fa:hostPorts>
+            <fa:hostPorts>webHost:8080</fa:hostPorts>
             <enabled>true</enabled>
             <cpus>0</cpus>
-            <tools>vmstat 10; mpstat 10; iostat -xn 10</tools>           
+            <tools>vmstat 10; mpstat 10; nicstat 10</tools>
             <userCommands/>            
         </fa:hostConfig>
         <type>apache</type>
@@ -89,38 +89,40 @@
             <fh:config>
                 <cmdPath>/usr/apache2/2.2/bin/apachectl</cmdPath>
                 <logsDir>/var/apache2/2.2/logs</logsDir>
-                <phpSessionDir>/tmp</phpSessionDir>
+                <sessionDir>/tmp/http_sessions</sessionDir>
+                <confPath>/etc/apache2/2.2/httpd.conf</confPath>
+                <phpIniPath>/etc/php/5.2/php.ini</phpIniPath>
              </fh:config>
         </fh:service>
     </webServer>
     <dbServer>
         <fa:hostConfig xmlns="http://faban.sunsource.net/ns/fabanharness" xmlns:fa="http://faban.sunsource.net/ns/faban">
-            <fa:host>pae4250-03</fa:host>
+            <fa:host>dbHost</fa:host>
             <enabled>true</enabled>
             <cpus>0</cpus>
             <tools></tools>
             <userCommands/>
         </fa:hostConfig>
         <dbDriver>com.mysql.jdbc.Driver</dbDriver>        
-        <connectURL>jdbc:mysql://pae4250-03/olio?user=olio&amp;password=olio&amp;relaxAutoCommit=true&amp;sessionVariables=FOREIGN_KEY_CHECKS=0</connectURL>
+        <connectURL>jdbc:mysql://dbHost/olio?user=olio&amp;password=olio&amp;relaxAutoCommit=true&amp;sessionVariables=FOREIGN_KEY_CHECKS=0</connectURL>
         <autoCommit>true</autoCommit>
         <reloadDB>true</reloadDB>
-        <scale>500</scale>
-        <dbConfPath>/etc</dbConfPath>
+        <scale>50</scale>        
         <fh:service xmlns:fh="http://faban.sunsource.net/ns/fabanharness">
             <fh:name>MySQLService</fh:name>
             <fh:tools>Mysqlstats</fh:tools>
-            <fh:restart>true</fh:restart>
+            <fh:restart>false</fh:restart>
             <fh:config>
-                <serverHome>/opt/coolstack/mysql</serverHome>
+                <serverHome>/var/mysql</serverHome>
                 <user>olio</user>
                 <password>olio</password>
+                <confPath>/etc/my.cnf</confPath>
              </fh:config>
         </fh:service>
     </dbServer>
     <dataStorage>
         <fa:hostConfig xmlns="http://faban.sunsource.net/ns/fabanharness" xmlns:fa="http://faban.sunsource.net/ns/faban">
-            <fa:host>pae2200-2</fa:host>
+            <fa:host>dataHost</fa:host>
             <enabled>true</enabled>
             <cpus>0</cpus>
             <tools>NONE</tools>
@@ -131,7 +133,7 @@
     </dataStorage>
     <cacheServers>
         <fa:hostConfig xmlns="http://faban.sunsource.net/ns/fabanharness" xmlns:fa="http://faban.sunsource.net/ns/faban">
-            <fa:hostPorts>pae2200-2</fa:hostPorts>
+            <fa:hostPorts>cacheHost</fa:hostPorts>
             <enabled>true</enabled>
             <cpus>0</cpus>
             <tools>NONE</tools>

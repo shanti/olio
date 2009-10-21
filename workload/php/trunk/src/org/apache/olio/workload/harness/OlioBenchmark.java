@@ -57,6 +57,16 @@ public class OlioBenchmark extends DefaultFabanBenchmark2 {
         params = getParamRepository();
 
         //Obtaining configuration parameters
+        String webserver = params.getParameter("webServer/type");
+        // Set the appropriate server based on the type
+        if (webserver != null && webserver.trim().length() > 0) {
+            webserver = webserver.trim();
+            if (webserver.equals("apache"))
+                params.setParameter("webServer/fh:service/fh:name", "ApacheHttpdService");
+            else if (webserver.equals("lighttpd"))
+                params.setParameter("webServer/fh:service/fh:name", "LighttpdService");
+        }
+
         String[] dbhosts = params.getParameter(
                             "dbServer/fa:hostConfig/fa:host").split(" ");
         
