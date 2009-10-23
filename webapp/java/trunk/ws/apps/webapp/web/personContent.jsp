@@ -159,7 +159,9 @@
             <h2>Friend Cloud</h2>
             <p id="friend_cloud"> 
             <c:forEach var="friend" items="${requestScope['displayPerson'].friends}">                 
-                <a href="${pageContext.servletContext.contextPath}/person?&user_name=${friend.userName}&actionType=display_person">${friend.userName}</a>
+                <div class="friend_cloud_item">
+                <a href="${pageContext.servletContext.contextPath}/person?&user_name=${friend.userName}&actionType=display_person"><img src="${mf.artifactPath}/${friend.imageThumbURL}" height=50px width=50px /> </a><br /> <a href="${pageContext.servletContext.contextPath}/person?&user_name=${friend.userName}&actionType=display_person">${friend.userName}</a>&nbsp;</br>
+                </div>
             </c:forEach>
             <p class="clr" />
             
