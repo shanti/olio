@@ -22,11 +22,13 @@ import org.apache.olio.webapp.model.Person;
 import org.apache.olio.webapp.util.WebappUtil;
 import java.io.IOException;
 import java.util.logging.Level;
+import java.util.List;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import static org.apache.olio.webapp.controller.WebConstants.*;
+import org.apache.olio.webapp.util.WebappConstants;
 import org.apache.olio.webapp.model.Address;
 import org.apache.olio.webapp.model.SocialEvent;
 import org.apache.olio.webapp.model.Invitation;
@@ -116,6 +118,19 @@ public class PersonAction implements Action {
                 String username = request.getParameter("user_name");
                 Person displayUser = mf.findPerson(username);
                 request.setAttribute("displayPerson", displayUser);
+                //addition here for pages
+                 int index = WebappUtil.getIntProperty(request.getParameter("index"));
+                 
+            List<Person> list = (List)displayUser.getFriends();
+                
+            if (list != null) {
+                List friendList = WebappUtil.getPagedList(list, index);                
+                request.setAttribute("numPages", WebappUtil.getNumPages(list));
+                request.setAttribute("pageUrl", request.getContextPath() + "/person?user_name="+username+"&page=friends.jsp&actionType=display_friends");
+                request.setAttribute("itemList", friendList);
+                request.setAttribute("index", index);
+            }
+          
                 returnURL = "/site.jsp?page=friends.jsp";
 
             } else if (actionType.equalsIgnoreCase("add_person")) {

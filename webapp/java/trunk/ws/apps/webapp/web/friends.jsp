@@ -53,7 +53,8 @@
               <h1 id="friendslist">Friends of ${requestScope['displayPerson'].userName}</h1>
               <ol id="friends_list" >
 
-                <c:forEach var="myFriend" items="${requestScope['displayPerson'].friends}">   
+                <c:forEach var="myFriend" items="${requestScope['itemList']}" varStatus="rowCounter">
+
                
                     <li style="padding: 7px;" class="my_friend" id="friend_${myFriend.userName}">
 
@@ -75,9 +76,15 @@
                </c:forEach>
             </ol>
 
-                <div class="clr"></div>
-                <br />          
-            </div>
+<div class="clr"></div>
+<br />
+<div>
+    <jsp:include flush="true" page="paginate.jsp">
+        <jsp:param name="*" value="*"/>
+    </jsp:include>
+</div>
+<div class="clr"></div><br/>
+</div>
   
 <!--
           <div class="rounded_corner bottom_right"><span></span></div>

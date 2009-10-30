@@ -391,8 +391,8 @@ public class WebappUtil {
         }
         return strb.toString();
     }
-    
-    public static List<SocialEvent> getPagedList (List<SocialEvent> list, int index) {
+   
+         public static List getPagedList (List list, int index) {
         int size = list.size();
         int numPages = getNumPages(list);
         if (size <= WebappConstants.ITEMS_PER_PAGE) {
@@ -408,10 +408,9 @@ public class WebappUtil {
         if (endIndex > size)
             endIndex = size;
 
-        List<SocialEvent> slist = list.subList(startIndex, endIndex);
+        List slist = list.subList(startIndex, endIndex);
         return slist;
     }
-    
     public static int getNumPages (long size) {
         if (size % WebappConstants.ITEMS_PER_PAGE != 0)
             return (int) size/WebappConstants.ITEMS_PER_PAGE + 1;
