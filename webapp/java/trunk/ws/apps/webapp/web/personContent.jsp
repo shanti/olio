@@ -158,15 +158,22 @@
         <div id="friend_cloud">
             <h2>Friend Cloud</h2>
             <p id="friend_cloud"> 
-            <c:forEach var="friend" items="${requestScope['displayPerson'].friends}">                 
-                <div class="friend_cloud_item">
-                <a href="${pageContext.servletContext.contextPath}/person?&user_name=${friend.userName}&actionType=display_person"><img src="${mf.artifactPath}/${friend.imageThumbURL}" height=50px width=50px /> </a><br /> <a href="${pageContext.servletContext.contextPath}/person?&user_name=${friend.userName}&actionType=display_person">${friend.userName}</a>&nbsp;</br>
-                </div>
+            <c:forEach var="friend" items="${requestScope['displayPerson'].friends}" varStatus="rowCounter">
+		<c:set var="friendLoopCount" scope="page" value="${rowCounter.count}"/>
+               <c:if test="${rowCounter.count < 7}">
+                    <div class="friend_cloud_item">
+                        <a href="${pageContext.servletContext.contextPath}/person?&user_name=${friend.userName}&actionType=display_person">
+                        <img src="${mf.artifactPath}/${friend.imageThumbURL}" height=50px width=50px /> </a><br />
+                            <a href="${pageContext.servletContext.contextPath}/person?&user_name=${friend.userName}&actionType=display_person">
+                                ${friend.firstName}&nbsp;${friend.lastName}</a>
+                        &nbsp;<br></br>
+                    </div>
+                </c:if>
             </c:forEach>
             <p class="clr" />
-            
+	<c:if test="${friendLoopCount > 6}">
             <a href="${pageContext.servletContext.contextPath}/person?user_name=${displayPerson.userName}&actionType=display_friends">more...</a>
-
+        </c:if>
         </div>
        <c:if test="${requestScope['displayPerson'].userName == userBean.loggedInPerson.userName}">     
             <div id="incoming">
