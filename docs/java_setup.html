@@ -791,9 +791,35 @@ WAR file to WebLogic.<br>
  style="font-family: monospace;">
     <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;
 [copy] Copying 3 files to
-/Users/klichong/projects/olio/webapp/java/trunk/ws/apps/webapp/build/classes</span></li>
+/Users/klichong/projects/olio/webapp/java/trunk/ws/apps/webapp/build/classes<br>
+....<br>
+    </span></li>
+  <li><span style="font-family: monospace;"></span>
+    <p>You will have to deployed the two libraries in the
+&lt;$weblogic&gt;/common/deployable-libraries for the application to
+work:<br>
+    </p>
+    <ul>
+      <li> jsf-1.2.war</li>
+      <li>jstl-1.2.war <br>
+      </li>
+    </ul>
+    <p><br>
+CLI command:<br>
+    </p>
+    <pre>java weblogic.Deployer -adminurl http://localhost:7001 -user weblogic</pre>
+    <pre>&nbsp;&nbsp;&nbsp; -password weblogic -deploy -targets myserver1,myserver2</pre>
+    <pre>&nbsp;&nbsp;&nbsp; -library ./deployable-libraries/XXXX.war</pre>
+    <p><br>
+If you're using the weblogic admin UI, then make sure "Install this
+deployment as a library" box is checked and click Next.&nbsp; Accept
+the defaults and click Finish to complete installation. <br>
+    </p>
+  </li>
 </ol>
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; ....</div>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <br>
+<br>
+</div>
 <h2>Deploying the Web Application</h2>
 Deploy
 the webapp.war from the $WEBAPP/ws/apps/webapp/dist directory to your
