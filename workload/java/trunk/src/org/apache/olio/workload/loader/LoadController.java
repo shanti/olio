@@ -72,6 +72,7 @@ public class LoadController {
         // This is to ensure all load tasks are done before this one starts.
         postLoad(Tag.class);
         postLoad(Address.class);
+        postLoad(Person.class);
         postLoad(SocialEvent.class);
         postLoad(Comments.class);
         postLoad(Invitation.class);

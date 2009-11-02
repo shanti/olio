@@ -37,27 +37,27 @@ public class Friends extends Loadable {
     // We use on average of 15 friends. Random 2..28 Friends.
 
     private static final String STATEMENT = "insert into PERSON_PERSON " +
-            "(Person_username, friends_username) values (?, ?)";
+            "(Person_userid, friends_userid) values (?, ?)";
 
     static Logger logger = Logger.getLogger(Friends.class.getName());
 
-    //int id;
-    String userName;
-    String[] friends;
-
+    int id;
+    //String userName;
+    //String[] friends;
+    LinkedHashSet<Integer> friendSet;
     public String getClearStatement() {
         return "truncate table PERSON_PERSON";
     }
 
     public void prepare() {
-        int id = getSequence();
+        id = getSequence();
         ++id;
         ThreadResource tr = ThreadResource.getInstance();
         Random r = tr.getRandom();
-        userName = UserName.getUserName(id);
+        //userName = UserName.getUserName(id);
         int count = r.random(2, 28);
+	    friendSet = new LinkedHashSet<Integer>(count);
 
-        LinkedHashSet<Integer> friendSet = new LinkedHashSet<Integer>(count);
         for (int i = 0; i < count; i++) {
             int friendId;
             do { // Prevent friend to be the same user.
@@ -65,19 +65,22 @@ public class Friends extends Loadable {
             } while (friendId == id || !friendSet.add(friendId));
         }
 
-        friends = new String[friendSet.size()];
-        int idx = 0;
-        for (int friendId : friendSet)
-            friends[idx++] = UserName.getUserName(friendId);
+        //friends = new String[friendSet.size()];
+        //int idx = 0;
+        //for (int friendId : friendSet)
+         //   friends[idx++] = UserName.getUserName(friendId);
     }
 
     public void load() {
         ThreadConnection c = ThreadConnection.getInstance();
         try {
-            for (String friend : friends) {
+        //    for (String friend : friends) {
+			  for (Integer friend : friendSet) {
                 PreparedStatement s = c.prepareStatement(STATEMENT);
-                s.setString(1, userName);
-                s.setString(2, friend);
+                //s.setString(1, userName);
+                //s.setString(2, friend);
+				s.setInt(1, id);
+				s.setInt(2, friend);
                 c.addBatch();
             }
         } catch (SQLException e) {

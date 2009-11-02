@@ -83,4 +83,25 @@ public class Person extends Loadable {
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
     }
+     /**
+     * Update ID after all the data is loaded.
+     * So we update the ID_GEN table at postload and add 1 to count.
+     */
+    public void postLoad() {
+        ThreadConnection c = ThreadConnection.getInstance();
+        try {
+            //update id
+             logger.fine("Updating Person ID");
+              
+             c.prepareStatement("INSERT INTO ID_GEN " +
+                    "(GEN_KEY, GEN_VALUE) " +
+                    "VALUES ('PERSON_ID', "+ ScaleFactors.users+1  + ")");
+             c.executeUpdate();
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            //LoadController.increaseErrorCount();
+        }
+
+
+    }
 }

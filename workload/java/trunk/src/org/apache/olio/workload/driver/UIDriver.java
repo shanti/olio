@@ -591,6 +591,8 @@ public class UIDriver {
         params.add(new StringPart("last_name", parameters[3]));
         params.add(new StringPart("email", parameters[4]));
         params.add(new StringPart("telephone",parameters[5]));
+        params.add(new StringPart("summary", parameters[6]));
+        params.add(new StringPart("timezone", parameters[7]));
         String[] addressArr = prepareAddress();
         params.add(new StringPart("street1", addressArr[0]));
         params.add(new StringPart("street2", addressArr[1]));
@@ -598,8 +600,6 @@ public class UIDriver {
         params.add(new StringPart("state", addressArr[3]));
         params.add(new StringPart("zip", addressArr[4]));
         params.add(new StringPart("country", addressArr[5]));
-        params.add(new StringPart("summary", parameters[6]));
-        params.add(new StringPart("timezone", parameters[7]));
         params.add(new FilePart("upload_person_image", personImg));
         /****
         Part[] parts = new Part[params.size()];

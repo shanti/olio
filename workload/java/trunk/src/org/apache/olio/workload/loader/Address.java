@@ -108,7 +108,7 @@ public class Address extends Loadable {
         ThreadConnection c = ThreadConnection.getInstance();
         try {
             //update id
-             logger.info("Updating Address ID");
+             logger.fine("Updating Address ID");
               
              c.prepareStatement("INSERT INTO ID_GEN " +
                     "(GEN_KEY, GEN_VALUE) " +
@@ -121,7 +121,7 @@ public class Address extends Loadable {
                     "where GEN_KEY='ADDRESS_ID'");
              c.executeUpdate();
              */ 
-             logger.info("After updating Address ID");
+             logger.fine("After updating Address ID");
         } catch (SQLException e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
             //LoadController.increaseErrorCount();
