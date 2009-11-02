@@ -38,6 +38,11 @@
         </named-query>
     </entity>
     <entity name="Person" class="org.apache.olio.webapp.model.Person">
+        <named-query name="getUserByName">
+          <query>SELECT u FROM Person u WHERE u.userName = :userName</query>
+          <hint name="eclipselink.query-results-cache" value="true"/>
+          <hint name="eclipselink.query-results-cache.size" value="500"/>
+        </named-query>
         <named-query name="getPostedEvents">
           <query>SELECT s FROM SocialEvent s WHERE s.submitterUserName = :submitter</query>
           <hint name="eclipselink.query-results-cache" value="true"/>

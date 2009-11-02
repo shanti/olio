@@ -134,7 +134,8 @@ public class ModelFacade implements ServletContextListener {
 
     public int addInvitation(Person loggedInUser, Invitation invitation) {
         EntityManager em = emf.createEntityManager();
-        Person friend = em.find(Person.class, invitation.getCandidate().getUserName());
+        //Person friend = em.find(Person.class, invitation.getCandidate().getUserName());
+        Person friend = findPerson(invitation.getCandidate().getUserName());
         try {
             utx.begin();
             logger.finer("Before: size of outgoingInvitations for loggedInUser " + loggedInUser.getOutgoingInvitations().size());
@@ -172,15 +173,20 @@ public class ModelFacade implements ServletContextListener {
 
     public Person findPerson(String userName) {
         EntityManager em = emf.createEntityManager();
-        Person p = null;
+        logger.finest("In findPerson for " + userName);
         try {
-            p = em.find(Person.class, userName);
-            return p;
-        } catch (Exception e) {
+            Query q = em.createNamedQuery("getUserByName");
+            q.setParameter("userName", userName);
+            List<Person> users = q.getResultList();
+            if (users.size() < 1) {
+                logger.warning("Person with username = " + userName + " not found");
+                return null;
+            } else {
+                return users.get(0);
+            }
         } finally {
             em.close();
         }
-        return p;
     }
 
     /**
@@ -214,8 +220,13 @@ public class ModelFacade implements ServletContextListener {
         EntityManager em = emf.createEntityManager();
         Query q = em.createQuery("Select i FROM Invitation i where i.requestor.userName=\'" + requestorUsername + "\'" +
                 " AND i.candidate.userName=\'" + candidateUsername + "\'");
-        Invitation invite = (Invitation) q.getSingleResult();
-        return invite;
+        // The getSingleResult doesn't work as sometimes you may have none
+        // Invitation invite = (Invitation) q.getSingleResult();
+        List<Invitation> invitations = q.getResultList();
+        if (invitations.size() > 0)
+            return(invitations.get(0));
+        else
+            return null;
     }
 
     @SuppressWarnings("unchecked")
@@ -228,26 +239,27 @@ public class ModelFacade implements ServletContextListener {
 
     @SuppressWarnings("unchecked")
     public Person getPerson(String userName) {
+        logger.finest("In getPerson for " + userName);
         if (userName == null) {
             return null;
         }
         Person person = null;
 
-        if (person == null) {
-            EntityManager em = emf.createEntityManager();
-            person = em.find(Person.class, userName);
-            //Even though EclipseLink allows access of of Lazy fetched realtionships from detached
-            // entities, other JPA implementations may not.
-            // Manual loading of these relationships are done to support other implementations.
-            // Making it eager fetch will cause cascade fetching.
-            if (person != null) {
-                person.getAddress();
-                person.getFriends();
-                person.getSocialEvents();
-                person.getIncomingInvitations();
-            }
-            em.close();
+        // EntityManager em = emf.createEntityManager();
+        // person = em.find(Person.class, userName);
+        person = findPerson(userName);
+
+        //Even though EclipseLink allows access of of Lazy fetched realtionships from detached
+        // entities, other JPA implementations may not.
+        // Manual loading of these relationships are done to support other implementations.
+        // Making it eager fetch will cause cascade fetching.
+        if (person != null) {
+            person.getAddress();
+            person.getFriends();
+            person.getSocialEvents();
+            person.getIncomingInvitations();
         }
+        // em.close();
 
         return person;
     }
@@ -269,7 +281,7 @@ public class ModelFacade implements ServletContextListener {
                 utx.rollback();
             } catch (Exception e) {
             }
-            throw new RuntimeException("Error updating rating", exe);
+            throw new RuntimeException("Error updating person", exe);
         } finally {
             em.close();
         }
@@ -284,7 +296,8 @@ public class ModelFacade implements ServletContextListener {
             //try with em.remove instead
 
             utx.begin();
-            Person person = em.find(Person.class, userName);
+            //Person person = em.find(Person.class, userName);
+            Person person = findPerson(userName);
             if (person == null) // Not a valid event
             {
                 return;
@@ -374,8 +387,10 @@ public class ModelFacade implements ServletContextListener {
         try {
             utx.begin();
             //need to add error checks if friend exists etc
-            Person friend = em.find(Person.class, friendUserName);
-            person = em.find(Person.class, userName);
+            //Person friend = em.find(Person.class, friendUserName);
+            Person friend = findPerson(friendUserName);
+            //person = em.find(Person.class, userName);
+            person = findPerson(userName);
             person.getFriends().add(friend);
             //logger.finer("**** ModelFacade::addFriend about to merge, person username=" + person.getUserName() +
             //              " and friend username=" + friend.getUserName());  
@@ -1137,6 +1152,7 @@ public class ModelFacade implements ServletContextListener {
     }
 
     public Person login(String user_name, String password) {
+        logger.finest("In login for user " + user_name + " password " + password);
         if (user_name == null || password == null) {
             return null;
         }
@@ -1226,7 +1242,8 @@ public class ModelFacade implements ServletContextListener {
         EntityManager em = emf.createEntityManager();
         String username = inv.getRequestor().getUserName();
         String candidateUsername = inv.getCandidate().getUserName();
-        Person person = em.find(Person.class, username);
+        //Person person = em.find(Person.class, username);
+        Person person = findPerson(username);
         person.getIncomingInvitations().remove(inv);
         try {
             utx.begin();
@@ -1283,11 +1300,13 @@ public class ModelFacade implements ServletContextListener {
             //outgoing
             isIncoming = false;
             requestor = loggedInUser;
-            candidate = em.find(Person.class, inv.getCandidate().getUserName());
+            //candidate = em.find(Person.class, inv.getCandidate().getUserName());
+            candidate = findPerson(inv.getCandidate().getUserName());
         } else if (loggedInUser.getUserName().equalsIgnoreCase(inv.getCandidate().getUserName())) {
             //incoming
             isIncoming = true;
-            requestor = em.find(Person.class, inv.getRequestor().getUserName());
+            //requestor = em.find(Person.class, inv.getRequestor().getUserName());
+            requestor = findPerson(inv.getRequestor().getUserName());
             candidate = loggedInUser;
         }
         //if incoming, then requestor is the friend, and the candidate is the loggedInUser

@@ -76,11 +76,21 @@ public class ArtifactAction implements Action {
 
         // Modified for DFS support
         FileSystem fs = ServiceLocator.getInstance().getFileSystem();
-
+        /*
+         * Shanti: Do not try and get image path here. Delegate to filesystem
         // look for file in default location such as WEB-INF
         String imagePath = WebappUtil.getArtifactLocalionDir() + pathInfo;
+         */
+        // Strip leading slash from pathInfo
+        String imagePath;
+        if (pathInfo.charAt(0) == '/')
+            imagePath = pathInfo.substring(1);
+        else
+            imagePath = pathInfo;
+
         logger.finer("Image path = " + imagePath);
         File imageFile = new File(imagePath);
+
         /* Assume image exists -- This was done to reduce FileSystem interaction
         if(!fs.exists(imagePath)) {
         System.out.println ("Could not find file - " + imagePath);

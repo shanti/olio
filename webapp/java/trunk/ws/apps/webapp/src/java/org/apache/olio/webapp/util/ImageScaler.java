@@ -163,7 +163,7 @@ public class ImageScaler {
      * @param from the path of the original image
      * @param to the path of the target thumbnail
      */
-    public void resizeWithGraphics(String to) throws IOException {
+    public void resizeWithGraphics(OutputStream to) throws IOException {
         BufferedImage th = new BufferedImage(thumbWidth, thumbHeight, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2d = th.createGraphics();
         /* Simplify - trade off performance for quality
@@ -183,14 +183,7 @@ public class ImageScaler {
         
         // Added for for distributed file system support
         // Store image based on local of distributed files systems
-        FileSystem fs = ServiceLocator.getInstance().getFileSystem();
-        OutputStream oStream = fs.create(to);
-        ImageIO.write(th, format, oStream);
-
-        try {
-            oStream.close();
-        }
-        catch (Exception e) {}
+        ImageIO.write(th, format, to);
     }
     
     /* Using Affine transform

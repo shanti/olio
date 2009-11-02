@@ -26,7 +26,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
-
+import javax.persistence.JoinColumn;
 import java.util.logging.Logger;
 
 /**
@@ -59,8 +59,18 @@ public class Invitation implements Serializable {
     @Id
     private int invitationID;
     @ManyToOne
+    @JoinColumn(
+         name = "REQUESTOR_USERNAME",
+         referencedColumnName = "USERNAME",
+         unique = true
+    )
     private Person requestor;
     @ManyToOne
+    @JoinColumn(
+         name = "CANDIDATE_USERNAME",
+         referencedColumnName = "USERNAME",
+         unique = true
+    )
     private Person candidate;
     private boolean isAccepted;
 

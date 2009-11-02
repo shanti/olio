@@ -74,7 +74,7 @@ public class UsersResource {
   private static final String USERNAME = "user_name";
   private static final String FIRSTNAME = "first_name";
   private static final String LASTNAME = "last_name";
-  private static final String IMAGEFILE = "imagefile";
+  private static final String IMAGEFILE = "upload_person_image";
   private static final String PASSWORD = "password";
   private static final String SUMMARY = "summary";
   private static final String TELEPHONE = "telephone";
@@ -187,6 +187,7 @@ public class UsersResource {
          summary = getFieldValue(multiPart, SUMMARY, false);
          telephone = getFieldValue(multiPart,TELEPHONE, false);
          email = getFieldValue(multiPart, EMAIL, false);
+         timezone = getFieldValue(multiPart, TIMEZONE, false);
          logger.finer("in POST - multipart first name is "+ firstName);
 
          //address
@@ -200,21 +201,17 @@ public class UsersResource {
 
         
          //image processing
-         if(multiPart.getField("imagefile")!=null){
-            bpe = ((BodyPartEntity) multiPart.getField("imagefile").getEntity());
-            logger.finer("the value of the imageFile body part is "+ multiPart.getField("imagefile").getHeaders());
-            mvMap = multiPart.getField("imagefile").getHeaders();
+         if(multiPart.getField(IMAGEFILE)!=null){
+            bpe = ((BodyPartEntity) multiPart.getField(IMAGEFILE).getEntity());
+            logger.finer("the value of the imageFile body part is "+ multiPart.getField(IMAGEFILE).getHeaders());
+            mvMap = multiPart.getField(IMAGEFILE).getHeaders();
             headerList  =  (List)mvMap.get("Content-Disposition");
             contentHeader = headerList.get(0);
             filename = WebappUtil.parseValueFromHeader(contentHeader, "filename");
             imageStream = bpe.getInputStream();
-         }
-            /* image is not required
-
          } else {
-             throw new Exception("parameter imagefile is missing");
+             logger.finer("parameter " + IMAGEFILE + " is missing");
          }
-          */
 
          /* temporary - testing multipart post
          File tempFile = new File("/tmp/copyImagefile.jpg");
@@ -225,9 +222,9 @@ public class UsersResource {
          fos.close();
          bpe.cleanup();
           */
-
+          
          HashMap<String,String> fileInfo = saveImageWithThumbnail(userName, imageStream, filename);
-
+           
          //create Person
          Person person = new Person(userName, password, firstName, lastName,
                  summary, email, telephone, fileInfo.get(FILE_LOCATION), fileInfo.get(THUMBNAIL_LOCATION), timezone, address);
@@ -272,7 +269,9 @@ public class UsersResource {
                 // Append the extension
                 fileName += ext;
                 fileLocation = serverLocationDir + "/" + fileName;
+                /*** Shanti - commenting as not used and incorrect call
                 WebappUtil.saveImageWithThumbnail(imageInputStream, fileLocation, thumbnailLocation);
+                 ****/
             HashMap imageInfo = new HashMap(2);
             imageInfo.put(FILE_LOCATION, fileLocation);
             imageInfo.put(THUMBNAIL_LOCATION, thumbnailLocation);

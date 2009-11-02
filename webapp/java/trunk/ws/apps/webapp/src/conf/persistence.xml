@@ -28,17 +28,12 @@
     -->
     <jta-data-source>jdbc/BPWebappDB</jta-data-source>
     <properties>
-      <!--property name="toplink.ddl-generation" value="create-tables" /-->
-      <!-- property name="toplink.logging.level" value="SEVERE"/ -->
       <property name="eclipselink.target-server" value="SunAS9"/>
       <!-- for eclipselink 1.0 -->
+      <!--property name="eclipselink.ddl-generation" value="create-tables" -->
       <property name="eclipselink.target-database" value="org.eclipse.persistence.platform.database.MySQLPlatform"/>
 
       <!--property name="eclipselink.logging.level" value="FINE"/-->
-      <!-- for eclipselink 0.9 -->
-      <!--property name="eclipselink.target-database" value="org.eclipse.persistence.platform.database.MySQL4Platform"/-->
-      <!--property name="eclipselink.ddl-generation" value="create-tables"/-->
-      <!--property name="eclipselink.ddl-generation.output-mode" value="database" /-->
       
     </properties>
   </persistence-unit>

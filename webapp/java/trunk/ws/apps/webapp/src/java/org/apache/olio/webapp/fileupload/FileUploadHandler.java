@@ -27,33 +27,23 @@
  */
 package org.apache.olio.webapp.fileupload;
 
-import org.apache.olio.webapp.util.fs.FileSystem;
+import org.apache.commons.fileupload.FileItemIterator;
+import org.apache.commons.fileupload.FileItemStream;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.olio.webapp.controller.WebConstants;
 import org.apache.olio.webapp.util.ServiceLocator;
 import org.apache.olio.webapp.util.WebappConstants;
-import org.apache.olio.webapp.controller.WebConstants;
-import org.apache.olio.webapp.model.Person;
-import org.apache.olio.webapp.security.SecurityHandler;
 import org.apache.olio.webapp.util.WebappUtil;
-import java.io.IOException;
-import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import org.apache.olio.webapp.util.fs.FileSystem;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import org.apache.commons.fileupload.FileItemIterator;
-import org.apache.commons.fileupload.FileItemStream;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import java.io.*;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This class uses Apache Commons FileUpload to parse the multi-part mime that is sent via the HttpServletRequest InputStream.
@@ -66,7 +56,10 @@ public class FileUploadHandler {
 
     private static Logger logger = Logger.getLogger(FileUploadHandler.class.getName());
     private FileUploadStatus fileUploadStatus = null;
-    
+    private FileItemIterator itemIter;
+    private FileItemStream item;
+    private Hashtable<String, String> requestParams;
+
     /**
      * Default location of upload directory is /domain_dir/lib/upload, unless the Sun Appserver system property exits, then it will
      * use the domain's lib/upload directory instead
@@ -157,12 +150,13 @@ public class FileUploadHandler {
     }
 
     /**
-     * Invoke the fileupload process that reads the input from the HttpServletRequest inputStream.  Since this 
-     * component accesses the HttpServletRequest directly, this component currently may not work from within a portlet.  
-     * This method assumes that the fileUploadStatus will be set using the managed property functionality of a backing bean.  
-     * This relationship is specified in the faces-config.xml file. This method is accessed through the Shale-remoting dynamic framework.  
+     * Handles the initial fields up to the first upload field. This will
+     * allow creating the database entry and obtaining the auto-generated
+     * ids.
+     * @return A hash table with the initial field values
      */
-    public Hashtable<String, String> handleFileUpload(HttpServletRequest request, HttpServletResponse response) {
+    public Hashtable<String, String> getInitialParams(HttpServletRequest request, HttpServletResponse response) {
+
         // print out header for
         Enumeration enumx = request.getHeaderNames();
         String key = "";
@@ -172,10 +166,9 @@ public class FileUploadHandler {
             listx += "\n" + key + ":" + request.getHeader(key);
         }
         logger.fine("Incoming Header Item:" + listx);
-
-        // enable progress bar (this managed bean that is in the session could be comp specific, but I can't create the component specific 
+        // enable progress bar (this managed bean that is in the session could be comp specific, but I can't create the component specific
         // session object until I have the components name.  For now use static key through backing bean).
-        // Use session to allow the monitoring of the fileupload based 
+        // Use session to allow the monitoring of the fileupload based
         HttpSession session = request.getSession();
 
         FileUploadStatus status = new FileUploadStatus();
@@ -203,87 +196,103 @@ public class FileUploadHandler {
                 // Now we should have the componentsName and upload directory to setup remaining upload of file items
                 String compName = htUpload.get(FileUploadUtil.COMPONENT_NAME);
                 status.setName(compName);
-                // get directory to dump file into
-                String serverLocationDir = htUpload.get(compName + "_" + FileUploadUtil.SERVER_LOCATION_DIR);
-                logger.fine("\n*** locationDir=" + serverLocationDir);
-
-                File fileDir = null;
-                if (serverLocationDir == null) {
-                    // ??? need to fix incase other than glassfish
-                    // set to default dir location for glassfish
-                    serverLocationDir = System.getProperty("com.sun.aas.instanceRoot");
-                    if (serverLocationDir != null) {
-                        serverLocationDir = WebappConstants.WEBAPP_IMAGE_DIRECTORY;
-                        fileDir = new File(serverLocationDir);
-                        fileDir.mkdirs();
-                    } else {
-                        // use the standard tmp directory
-                        logger.fine("\n*** other default locationDir=" + serverLocationDir);
-
-                        //fileDir = (File) request.getAttribute("javax.servlet.context.tempdir");
-                        // we don't need the tmp directory since we are avoiding writing twice - once to /tmp and then to filestore
-                        // pick this up from the system environment(or web.xml) that WebappUtil sets
-                        serverLocationDir = WebappConstants.WEBAPP_IMAGE_DIRECTORY;
-                        serverLocationDir = fileDir.toString();
-                    }
-                } else {
-                    // make sure directory exists, don't create automatically for security reasons
-                    fileDir = new File(serverLocationDir);
-                }
-
-                // make sure dir exists and is writable
-                if (fileDir == null || !fileDir.isDirectory() || !fileDir.canWrite()) {
-                    // error, directory doesn't exist or isn't writable
-                    status.setUploadError("Directory \"" + fileDir.toString() + "\" doesn't exist!");
-                    logger.log(Level.SEVERE, "directory.inaccessable", fileDir.toString());
-                    return null;
-                }
 
                 // Parse the request and return list of "FileItem" whle updating status
                 FileItemIterator iter = upload.getItemIterator(request);
 
                 status.setReadingComplete();
 
-                FileItemStream item = null;
-                String itemName = null;
-
                 while (iter.hasNext()) {
                     item = iter.next();
                     if (item.isFormField()) {
                         // handle a form item being uploaded
-                        itemName = item.getFieldName();
+                        String itemName = item.getFieldName();
 
-                        // process form(non-file) item
+                        // process form(non-file) item200002
                         int size = formItemFound(item, htUpload);
                         updateSessionStatus(itemName, size);
 
                         logger.fine("Form field item:" + itemName);
 
                     } else {
-                        String username = htUpload.get(WebConstants.SUBMITTER_USER_NAME_PARAM);
-                        if (username == null) {
-                            Person person = SecurityHandler.getInstance().getLoggedInPerson(request);
-                            if (person != null) {
-                                username = person.getUserName();
-                            }
-                        }
-
-                        fileItemFound(item, htUpload, serverLocationDir, username);
+                        // At the first find of an uploaded file, stop.
+                        // We need to insert our record first in order
+                        // to find the id.
+                        break;
                     }
                 }
-
-                // put upload to 100% to handle rounding errors in status calc
-                status.setUploadComplete();
-                logger.fine("Final session status - " + status);
-
+                itemIter = iter;
             } catch (Exception e) {
                 status.setUploadError("FileUpload didn't complete successfully.  Exception received:" + e.toString());
                 logger.log(Level.SEVERE, "file.upload.exception", e);
             }
         }
-
+        fileUploadStatus = status;
+        requestParams = htUpload;
         return htUpload;
     }
+
+
+
+    /**
+     * Invoke the fileupload process that reads the input from the HttpServletRequest inputStream.  Since this 
+     * component accesses the HttpServletRequest directly, this component currently may not work from within a portlet.  
+     * This method assumes that the fileUploadStatus will be set using the managed property functionality of a backing bean.  
+     * This relationship is specified in the faces-config.xml file. This method is accessed through the Shale-remoting dynamic framework.  
+     */
+    public Hashtable<String, String> handleFileUpload(String id, HttpServletRequest request, HttpServletResponse response) {
+        File fileDir = null;
+        String compName = requestParams.get(FileUploadUtil.COMPONENT_NAME);
+        String serverLocationDir = requestParams.get(compName + "_" + FileUploadUtil.SERVER_LOCATION_DIR);
+        logger.finest("\n*** locationDir=" + serverLocationDir);
+        if (serverLocationDir == null) {
+                serverLocationDir = WebappConstants.WEBAPP_IMAGE_DIRECTORY;
+                fileDir = new File(serverLocationDir);
+                fileDir.mkdirs();            
+        } else {
+            // make sure directory exists, don't create automatically for security reasons
+            fileDir = new File(serverLocationDir);
+        }
+        logger.finest("serverLocationDir = " + serverLocationDir);
+        // make sure dir exists and is writable
+        if (fileDir == null || !fileDir.isDirectory() || !fileDir.canWrite()) {
+            // error, directory doesn't exist or isn't writable
+            fileUploadStatus.setUploadError("Directory \"" + fileDir.toString() + "\" doesn't exist!");
+            logger.log(Level.SEVERE, "directory.inaccessable:", fileDir.toString());
+            return null;
+        }
+        try {
+            for (;;) {
+                if (item.isFormField()) {
+                    // handle a form item being uploaded
+                    String itemName = item.getFieldName();
+
+                    // process form(non-file) item
+                    int size = formItemFound(item, requestParams);
+                    updateSessionStatus(itemName, size);
+
+                    logger.fine("Form field item:" + itemName);
+
+                } else {
+                    fileItemFound(item, requestParams, serverLocationDir, id);
+                }
+                if (itemIter.hasNext())
+                    item = itemIter.next();
+                else
+                    break;
+            }
+
+            // put upload to 100% to handle rounding errors in status calc
+            fileUploadStatus.setUploadComplete();
+            logger.fine("Final session status - " + fileUploadStatus);
+
+        } catch (Exception e) {
+            fileUploadStatus.setUploadError("FileUpload didn't complete successfully.  Exception received:" + e.toString());
+            logger.log(Level.SEVERE, "file.upload.exception:", e);
+        }
+        return requestParams;
+    }
+
 
     /**
      * Handle upload of a standard form item
@@ -302,20 +311,15 @@ public class FileUploadHandler {
 
             // Read from the stream
             int i = 0;
-
             while ((i = is.read(buf)) != -1) {
                 strb.append(new String(buf, 0, i));
                 size += i;
             }
-
             String value = strb.toString();
 
             // put in Hashtable for later access
             logger.fine("Inserting form item in map " + key + " = " + value);
-
             htUpload.put(key, value);
-
-
         } catch (IOException ex) {
             Logger.getLogger(FileUploadHandler.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
@@ -336,15 +340,10 @@ public class FileUploadHandler {
      * @param serverLocationDir The Status Hashtable that contains the items that have been uploaded for post-processing use
      */
     protected void fileItemFound(FileItemStream item, Hashtable<String, String> htUpload,
-            String serverLocationDir, String user) throws Exception {
-        if (user == null) {
-            user = "guest";
-        }
+            String serverLocationDir, String id) throws Exception {
+
         String fileLocation = null;
         String fileName = item.getName();
-        //issue is that the same filename on client machine is being used on mastermachine.  this could lead to conflicts.
-        //use the username since is unique for image name.  retrieve this from the Hashtable.
-        String username = htUpload.get(WebConstants.USER_NAME_PARAM);
 
         if (fileName != null && !fileName.equals("")) {
             // see if IE on windows which send full path with item, but just filename
@@ -364,45 +363,35 @@ public class FileUploadHandler {
                 logger.fine("Have full path, need to truncate \n" + item.getName() + "\n" + fileName);
             }
             fileLocation = serverLocationDir + File.separator + fileName;
-            DateFormat dateFormat = new SimpleDateFormat("MMMMddyyyy_hh_mm_ss");
-            Date date = null;
             String thumbnailName;
-            String thumbnailLocation;
             String ext = WebappUtil.getFileExtension(fileName);
 
             if (item.getFieldName().equals(WebConstants.UPLOAD_PERSON_IMAGE_PARAM)) {
-                fileName = "p" + username;
-                thumbnailName = fileName + "_thumb" + ext;
-                thumbnailLocation = serverLocationDir + "/" + thumbnailName;
+                fileName = "P" + id;
+                thumbnailName = fileName + 'T' + ext;
                 // Append the extension
                 fileName += ext;
-                fileLocation = serverLocationDir + "/" + fileName;
-                writeWithThumbnail(item, fileLocation, thumbnailLocation);
+                writeWithThumbnail(item, fileName, thumbnailName);
+                htUpload.put(WebConstants.UPLOAD_PERSON_IMAGE_PARAM, fileName);
                 htUpload.put(WebConstants.UPLOAD_PERSON_IMAGE_THUMBNAIL_PARAM, thumbnailName);
             } else if (item.getFieldName().equals(WebConstants.UPLOAD_PERSON_IMAGE_THUMBNAIL_PARAM)) {
-                fileName = "p" + username + "_t" + ext;
-                fileLocation = serverLocationDir + "/" + fileName;
-                write(item, fileLocation);
+                fileName = "P" + id + "T" + ext;
+                write(item, fileName);
                 htUpload.put(WebConstants.UPLOAD_PERSON_IMAGE_THUMBNAIL_PARAM, fileName);
             } else if (item.getFieldName().equals(WebConstants.UPLOAD_EVENT_IMAGE_PARAM)) {
-                date = new Date();
                 //String submitter = htUpload.get(WebConstants.SUBMITTER_USER_NAME_PARAM);
-                fileName = "e" + user + dateFormat.format(date);
-                thumbnailName = fileName + "_thumb" + ext;
-                thumbnailLocation = serverLocationDir + "/" + thumbnailName;
+                fileName = "E" + id;
+                thumbnailName = fileName + 'T' + ext;
                 fileName += ext;
-                fileLocation = serverLocationDir + "/" + fileName;
-                writeWithThumbnail(item, fileLocation, thumbnailLocation);
+                writeWithThumbnail(item, fileName, thumbnailName);
+                htUpload.put(WebConstants.UPLOAD_EVENT_IMAGE_PARAM, fileName);
                 htUpload.put(WebConstants.UPLOAD_EVENT_IMAGE_THUMBNAIL_PARAM, thumbnailName);
             } else if (item.getFieldName().equals("eventThumbnail")) {
-                date = new Date();
-                fileName = "e" + user + dateFormat.format(date) + "_t" + ext;
-                fileLocation = serverLocationDir + "/" + fileName;
-                write(item, fileLocation);
+                fileName = "E" + id + 'T' + ext;
+                write(item, fileName);
                 htUpload.put(WebConstants.UPLOAD_EVENT_IMAGE_THUMBNAIL_PARAM, fileName);
             } else if (item.getFieldName().equals("upload_event_literature")) {
-                date = new Date();
-                fileName = "e" + user + dateFormat.format(date) + ext;
+                fileName = "E" + id + 'L' + ext;
                 fileLocation = serverLocationDir + "/" + fileName;
                 write(item, fileLocation);
                 htUpload.put(WebConstants.UPLOAD_LITERATURE_PARAM, fileName);
@@ -431,7 +420,8 @@ public class FileUploadHandler {
      * If the post processing method wants to provide a custom response, the method can call the "enableCustomReturn" method on the
      * FileUploadStatus object so that the default fileupload response will not be sent.
      *
-     * @param htUpload The Status Hashtable that contains the items that have been uploaded for post-processing use
+     * @param writer The writer to write the output
+     * @param status The Status object that contains the items that have been uploaded for post-processing use
      */
     public static void writeUploadResponse(PrintWriter writer, FileUploadStatus status) {
         Hashtable<String, String> htUpload = status.getUploadItems();
@@ -510,10 +500,10 @@ public class FileUploadHandler {
      * so the output could be monitored
      *
      * @param item The Commons Fileupload item being loaded
-     * @param file File path to write uploaded data.
+     * @param fileName File name to write uploaded data.
      * @throws Exception Exceptions propagated from Apache Commons Fileupload classes
      */
-    public void write(FileItemStream item, String filePath) throws Exception {
+    public void write(FileItemStream item, String fileName) throws Exception {
         // use name for update of session
         String itemName = item.getName();
 
@@ -523,7 +513,7 @@ public class FileUploadHandler {
 
         logger.fine("Getting fileItem from memory - " + itemName);
 
-        OutputStream fout = fs.create(filePath);
+        OutputStream fout = fs.create(fileName);
 
         // It would have been more efficient to use NIO if we are writing to 
         // the local filesystem. However, since we need to support DFS, 
@@ -531,7 +521,7 @@ public class FileUploadHandler {
         // TO DO: Optimize write if required.
 
         try {
-            byte[] buf = new byte[2048];
+            byte[] buf = new byte[8192];
             int count, size = 0;
             InputStream is = item.openStream();
             while ((count = is.read(buf)) != -1) {
@@ -549,13 +539,54 @@ public class FileUploadHandler {
     /**
      * 
      * @param item FileItemStream from the file upload handler
-     * @param imagePath path to the save the image. 
-     * @param thumbnailPath path prefix to the thumbnail. Extension is appended.
+     * @param imageName name to save the image.
+     * @param thumbnailName name to save the thumbnail. Extension is appended.
      * @throws java.lang.Exception
      */
     public void writeWithThumbnail(FileItemStream item,
-            String imagePath, String thumbnailPath) throws Exception {
-        WebappUtil.saveImageWithThumbnail(item.openStream(), imagePath, thumbnailPath);
+            String imageName, String thumbnailName) throws Exception {
+        // use name for update of session
+        String itemName = item.getName();
+
+        ServiceLocator locator = ServiceLocator.getInstance();
+
+        FileSystem fs = locator.getFileSystem();
+
+        logger.fine("Getting fileItem from memory - " + itemName);
+
+        OutputStream imgOut = null;
+        OutputStream thumbOut = null;
+        InputStream is = null;
+        try {
+            imgOut = fs.create(imageName);
+            thumbOut = fs.create(thumbnailName);
+        // It would have been more efficient to use NIO if we are writing to
+        // the local filesystem. However, since we need to support DFS,
+        // a simple solution is provided.
+        // TO DO: Optimize write if required.
+
+            is = item.openStream();
+            FileUploadStatus status = getFileUploadStatus();
+            status.setCurrentItem(itemName);
+
+            WebappUtil.saveImageWithThumbnail(is, imgOut, thumbOut, status);
+        } finally {
+            if (imgOut != null)
+                try {
+                    imgOut.close();
+                } catch (IOException e) {
+                }
+            if (thumbOut != null)
+                try {
+                    thumbOut.close();
+                } catch (IOException e) {
+                }
+            if (is != null)
+                try {
+                    is.close();
+                } catch (IOException e) {
+                }
+        }
     }
 
     public void updateSessionStatus(String itemName, long incrementAmount) {

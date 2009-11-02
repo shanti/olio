@@ -18,6 +18,8 @@
 
 package org.apache.olio.webapp.util;
 
+import org.apache.olio.webapp.fileupload.FileUploadStatus;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -32,13 +34,20 @@ public class WriteThroughInputStream extends InputStream {
 
     private OutputStream os;
     private InputStream is;
-    
+    private FileUploadStatus status;
+
     public WriteThroughInputStream (InputStream is, OutputStream os) {
         this.is = is;
         this.os = os;
     }
-    
-    @Override
+
+    public WriteThroughInputStream (InputStream is, OutputStream os,
+                                    FileUploadStatus status) {
+        this.is = is;
+        this.os = os;
+        this.status = status;
+    }
+
     public int read() throws IOException {
         byte[] b = new byte[1];
         return read (b);
@@ -49,6 +58,8 @@ public class WriteThroughInputStream extends InputStream {
         int rCount = is.read(buf, offset, length);
         if (os != null && rCount != -1)
             os.write(buf, offset, rCount);
+        if (status != null)
+            status.incrementCurrentSizeWritten(rCount);
         return rCount;
     }
     

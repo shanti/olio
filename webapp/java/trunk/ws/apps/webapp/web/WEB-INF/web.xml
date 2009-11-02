@@ -156,7 +156,7 @@
         <description>Geocoder URL</description>
         <env-entry-name>geocoderURL</env-entry-name>
         <env-entry-type>java.lang.String</env-entry-type>
-        <env-entry-value>http://localhost:8080/geocoder/geocode</env-entry-value>
+        <env-entry-value>http://pae4150-5:8080/geocoder/geocode</env-entry-value>
     </env-entry>
     
     <jsp-config>

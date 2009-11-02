@@ -42,6 +42,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
+import javax.persistence.JoinColumn;
 
 /**
  * Entity class CommentsRating
@@ -139,7 +140,7 @@ public class CommentsRating implements Serializable {
      */
     @Override
     public String toString() {
-        return "com.sun.javaee.blueprints.webapp.model.CommentRating[id=" + commentsRatingId + "]";
+        return "org.apache.olio.webapp.model.CommentRating[id=" + commentsRatingId + "]";
     }
 
     @Lob
@@ -170,6 +171,11 @@ public class CommentsRating implements Serializable {
     }
 
     @OneToOne
+    @JoinColumn(
+         name = "USERNAME_USERNAME",
+         referencedColumnName = "USERNAME",
+         unique = true
+    )
     public Person getUserName() {
         return userName;
     }

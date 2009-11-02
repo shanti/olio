@@ -75,14 +75,17 @@ public class PersonRestAction implements Action {
             if (path.equals("/person/fileuploadPerson")) {
                 // file upload
                 FileUploadHandler fuh = new FileUploadHandler();
-                Hashtable<String, String> htUpload = fuh.handleFileUpload(request, response);
+                Hashtable<String, String> htUpload = fuh.getInitialParams(request, response);
+
                 // file is upload check for error and then write to database
                 if (htUpload != null) {
+                    /*
                     StringBuilder sb = new StringBuilder();
                     for (String key : htUpload.keySet()) {
                         sb.append(key);
                         sb.append(",");
                     }
+                    */
                     //logger.finer("\n***elements  = " + sb.toString());
 
                     //createUser(request, htUpload);
@@ -92,7 +95,7 @@ public class PersonRestAction implements Action {
                     boolean isEditable = Boolean.parseBoolean(request.getParameter("isEditable"));
 
                     if (isEditable) {
-                        newEditPerson = updateUser(request, htUpload, fuh);
+                        newEditPerson = getPerson(request);
                     } else {
                         newEditPerson = createUser(request, htUpload, fuh);
                     }
@@ -100,6 +103,10 @@ public class PersonRestAction implements Action {
                     logger.log(Level.FINER, "A new Person has been added and persisted");
                     request.setAttribute("displayPerson", newEditPerson);
 
+                    String id = String.valueOf(newEditPerson.getUserID());
+                    htUpload = fuh.handleFileUpload(id, request, response);
+
+                    updateUser(newEditPerson, htUpload);
                 }
                 return "/site.jsp?page=personContent.jsp";
 
@@ -246,16 +253,19 @@ public class PersonRestAction implements Action {
         String firstName = htUpload.get(FIRST_NAME_PARAM);
         String lastName = htUpload.get(LAST_NAME_PARAM);
         String summary = htUpload.get(SUMMARY_PARAM);
+    /* We do the address in the update phase.
         String street1 = htUpload.get(STREET1_PARAM);
         String street2 = htUpload.get(STREET2_PARAM);
         String city = htUpload.get(CITY_PARAM);
         String state = htUpload.get(STATE_PARAM);
         String country = htUpload.get(COUNTRY_PARAM);
         String zip = htUpload.get(ZIP_PARAM);
+        */
         String timezone = htUpload.get(TIMEZONE_PARAM);
         String telephone = htUpload.get(TELEPHONE_PARAM);
         String email = htUpload.get(EMAIL_PARAM);
-        Address address = WebappUtil.handleAddress(context, street1, street2, city, state, zip, country);
+        // Address address = WebappUtil.handleAddress(context, street1, street2, city, state, zip, country);
+
 
         // get image from fileupload
         String imageURL = htUpload.get(UPLOAD_PERSON_IMAGE_PARAM);
@@ -271,7 +281,7 @@ public class PersonRestAction implements Action {
                 " last_name" + lastName +
                 " summary" + summary);
 
-        Person person = new Person(userName, password, firstName, lastName, summary, email, telephone, imageURL, thumbImage, timezone, address);
+        Person person = new Person(userName, password, firstName, lastName, summary, email, telephone, imageURL, thumbImage, timezone, null);
         ModelFacade mf = (ModelFacade) context.getAttribute(MF_KEY);
         //do not really need username since you set this value, not sure why it is returned
         //String userName = mf.addPerson(person, userSignOn);
@@ -287,7 +297,7 @@ public class PersonRestAction implements Action {
         return person;
     }
 
-    private Person updateUser(HttpServletRequest request, Hashtable<String, String> htUpload, FileUploadHandler fuh) {
+    private Person updateUser(Person person, Hashtable<String, String> htUpload) {
         String userName = htUpload.get(USER_NAME_PARAM);
         String password = htUpload.get(PASSWORD_PARAM);
         String firstName = htUpload.get(FIRST_NAME_PARAM);
@@ -314,28 +324,39 @@ public class PersonRestAction implements Action {
         //Person loggedInPerson = this.getPerson(request);
         ModelFacade mf = (ModelFacade) context.getAttribute(MF_KEY);
         Person loggedInPerson = mf.getPerson(userName);
-
-        if (thumbImage == null) {
-            thumbImage = loggedInPerson.getImageThumbURL();
+        if (loggedInPerson != null) {
+            if (thumbImage == null) {
+                thumbImage = loggedInPerson.getImageThumbURL();
+            }
+            if (imageURL == null) {
+                imageURL = loggedInPerson.getImageURL();
+            }
         }
-        if (imageURL == null) {
-            imageURL = loggedInPerson.getImageURL();
-        }
-
 
         logger.finer("************** data entered is*** " + "user_name*" + userName +
                 " password=" + password +
-                " first_name=*" + firstName +
-                " last_name" + lastName +
-                " summary" + summary);
-
-        Person person = new Person(userName, password, firstName, lastName, summary, email, telephone, imageURL, thumbImage, timezone, address);
+                " first_name=" + firstName +
+                " last_name=" + lastName +
+                " summary=" + summary + " thumbUrl=" + thumbImage +
+                " imageURL=" + imageURL);
+        //Person person = new Person(userName, password, firstName, lastName, summary, email, telephone, imageURL, thumbImage, timezone, address);
         //ModelFacade mf= (ModelFacade) context.getAttribute(MF_KEY);
         //do not really need username since you set this value, not sure why it is returned
         //String userName = mf.addPerson(person, userSignOn);
         //changed above line to this since username already a variable name
         //userName = mf.addPerson(person, userSignOn);
 
+        // Update person with all field values
+        person.setUserName(userName);
+        person.setPassword(password);
+        person.setAddress(address);
+        person.setTimezone(timezone);
+        person.setTelephone(telephone);
+        person.setFirstName(firstName);
+        person.setLastName(lastName);
+        person.setSummary(summary);
+        person.setImageURL(imageURL);
+        person.setImageThumbURL(thumbImage);
         person = mf.updatePerson(person);
         logger.log(Level.FINER, "Person " + userName + " has been updated");
 

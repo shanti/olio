@@ -89,6 +89,7 @@ public class SocialEvent implements java.io.Serializable {
         this.disabled = 0;
         this.createdTimestamp=new Timestamp(new Date().getTime());
     }
+
    /* EclipseLink 1.0 sometimes generated the same ID 
     * under heavy load leading to transaction failures during the insertion of
     * SocialEvents (PK violation). The problem seems to happen when the allocation size is exceeded.

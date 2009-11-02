@@ -18,6 +18,7 @@
 package org.apache.olio.webapp.rest;
 
 import org.apache.olio.webapp.controller.Action;
+import org.apache.olio.webapp.controller.WebConstants;
 import org.apache.olio.webapp.model.Address;
 import org.apache.olio.webapp.model.ModelFacade;
 import org.apache.olio.webapp.util.WebappUtil;
@@ -83,7 +84,8 @@ public class EventRestAction implements Action {
             // file upload
             logger.finer("AddEvent ... ");
             FileUploadHandler fuh = new FileUploadHandler();
-            Hashtable<String, String> htUpload = fuh.handleFileUpload(request, response);
+            Hashtable<String, String> htUpload = fuh.getInitialParams(request, response);
+
             // file is upload check for error and then write to database
             if (htUpload != null) {
                 StringBuilder sb = new StringBuilder();
@@ -93,22 +95,31 @@ public class EventRestAction implements Action {
                 }
                 logger.finer("\n***elements  = " + sb.toString());
                 SocialEvent event = null;
+                /* Don't check for submit since we're doing upload in 2 phases
+                 * and we may not have read it in. We don't do updates.
                 String type = htUpload.get("submit");
                 if (type == null) {
                     return "/site.jsp?page=error.jsp";
                 }
-
-                if (type != null && type.equals("Update")) {
-                    event = updateEvent(request, modelFacade, htUpload);
+                if (type.equals("Update")) {
+                    event = getEvent(modelFacade, htUpload);
                 } else {
-                    event = createEvent(request, modelFacade, htUpload);
+                */
+                event = createEvent(request, modelFacade, htUpload);
                     if (request.getSession(true).getAttribute("userBean") != null) {
                         UserBean uBean = (UserBean) request.getSession(true).getAttribute("userBean");
                         uBean.setDisplayMessage("Event added successfully");
                         logger.log(Level.FINER, "A new Event has been added and persisted");
                     }
-                }
-                // clear the cache 
+                //}
+
+                String id = String.valueOf(event.getSocialEventID());
+                htUpload = fuh.handleFileUpload(id, request, response);
+
+                // Update the event with the right stuff.
+                updateEvent(event, request, modelFacade, htUpload);
+
+                // clear the cache
                 WebappUtil.clearCache("/event/list");
                 response.sendRedirect(request.getContextPath() + "/event/detail?socialEventID=" + event.getSocialEventID());
                 return null;
@@ -176,7 +187,7 @@ public class EventRestAction implements Action {
 
                 modelFacade.updateSocialEvent(event);
             }
-            String s = this.getAttendeesAsJson(event.getAttendees(), status);
+            String s = getAttendeesAsJson(event.getAttendees(), status);
 
             logger.finer("\n*** people = " + s);
             response.setContentType("application/json;charset=UTF-8");
@@ -265,6 +276,7 @@ public class EventRestAction implements Action {
     }
 
     public SocialEvent createEvent(HttpServletRequest request, ModelFacade modelFacade, Hashtable<String, String> htUpload) {
+        /* We don't worry about the address at creation time. Only do at update.
         String street1 = htUpload.get(STREET1_PARAM);
         String street2 = htUpload.get(STREET2_PARAM);
         String city = htUpload.get(CITY_PARAM);
@@ -272,6 +284,7 @@ public class EventRestAction implements Action {
         String country = htUpload.get(COUNTRY_PARAM);
         String zip = htUpload.get(ZIP_PARAM);
         Address address = WebappUtil.handleAddress(context, street1, street2, city, state, zip, country);
+        */
 
         String title = htUpload.get(TITLE_PARAM);
         String description = htUpload.get(DESCRIPTION_PARAM);
@@ -339,7 +352,7 @@ public class EventRestAction implements Action {
         logger.finer("\n***local = " + localCal + "\n Millis = " + localCal.getTimeInMillis());
         Timestamp eventTimestamp = new Timestamp(localCal.getTimeInMillis());
 
-        SocialEvent socialEvent = new SocialEvent(title, summary, description, submitterUserName, address, telephone, 0, 0,
+        SocialEvent socialEvent = new SocialEvent(title, summary, description, submitterUserName, null, telephone, 0, 0,
                 imagex, thumbImage, literaturex, eventTimestamp);
         logger.finer("Event title = " + socialEvent.getTitle());
 
@@ -352,21 +365,23 @@ public class EventRestAction implements Action {
         return socialEvent;
     }
 
-    public SocialEvent updateEvent(HttpServletRequest request, ModelFacade modelFacade, Hashtable<String, String> htUpload) throws IOException {
-        // Update requires an id
+    public SocialEvent getEvent(ModelFacade modelFacade, Hashtable<String, String> htUpload) {
         String sids = htUpload.get("socialEventID");
         if (sids == null) {
             throw new RuntimeException("socialEventID is not set for updateEVent");
         }
-        SocialEvent event = null;
         try {
             int id = Integer.parseInt(sids);
-            event = modelFacade.getSocialEvent(id);
+            return modelFacade.getSocialEvent(id);
         } catch (Exception e) {
             throw new RuntimeException("updateSocialEvent: SocialEvent could not be retrieved - id = " +
                     sids);
         }
+    }
 
+    public SocialEvent updateEvent(SocialEvent event, HttpServletRequest request, ModelFacade modelFacade, Hashtable<String, String> htUpload) throws IOException {
+
+        // Update requires an id
         String street1 = htUpload.get(STREET1_PARAM);
         String street2 = htUpload.get(STREET2_PARAM);
         String city = htUpload.get(CITY_PARAM);
@@ -413,8 +428,8 @@ public class EventRestAction implements Action {
         String thumbImage;
         thumbImage = htUpload.get(UPLOAD_EVENT_IMAGE_THUMBNAIL_PARAM);
         // get upload location from map
-        String imageLocation = htUpload.get(UPLOAD_EVENT_IMAGE_PARAM + FileUploadUtil.FILE_LOCATION_KEY);
-        logger.finer("\n image path = " + imageLocation);
+        //String imageLocation = htUpload.get(UPLOAD_EVENT_IMAGE_PARAM + FileUploadUtil.FILE_LOCATION_KEY);
+        logger.finer("\n image path = " + imagex);
         // This is done during upload for efficiency.
         // thumbImage=WebappUtil.constructThumbnail(imageLocation);
         logger.finer("\n thumb path = " + thumbImage);
@@ -423,6 +438,9 @@ public class EventRestAction implements Action {
         // If empty, leave the old one alone
         // Delete the old images since it is being replaced
         // Do the same for literature
+        // The following doesn't work for AddEvent. Since we don't support an
+        // updateEvent currently, commenting for now
+        /****
         ServiceLocator locator = ServiceLocator.getInstance();
         FileSystem fs = (FileSystem) locator.getFileSystem();
         if (imagex != null) {
@@ -441,10 +459,12 @@ public class EventRestAction implements Action {
             }
             event.setLiteratureURL(literaturex);
         }
-
-        // Submitter is not necessarily an attendde
+        ****/
+        event.setImageURL(imagex);
+        event.setImageThumbURL(thumbImage);
+        event.setLiteratureURL(literaturex);
+        
         event = modelFacade.updateSocialEvent(event, tags);
-
         logger.log(Level.FINER, "SocialEvent " + event.getSocialEventID() + " has been updated");
 
         return event;

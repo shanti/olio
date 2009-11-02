@@ -22,6 +22,8 @@ import org.apache.olio.webapp.cache.CacheFactory;
 import org.apache.olio.webapp.model.Address;
 import org.apache.olio.webapp.model.SocialEvent;
 import org.apache.olio.webapp.model.SocialEventTag;
+import org.apache.olio.webapp.fileupload.FileUploadStatus;
+
 import java.text.MessageFormat;
 import java.util.PropertyResourceBundle;
 import java.util.logging.Level;
@@ -147,24 +149,25 @@ public class WebappUtil {
 
     /* Load Image, create thumbnail and save images. 
        This does not close the Input Stream */
-    public static boolean saveImageWithThumbnail (InputStream is, String imagePath, 
-                            String thumbnailPath) throws IOException {
+    public static boolean saveImageWithThumbnail (InputStream is,
+                                                  OutputStream imageOut,
+                                                  OutputStream thumbnailOut,
+                                                  FileUploadStatus status)
+            throws IOException {
         ImageScaler scaler = new ImageScaler ();
     
-        FileOutputStream fos = new FileOutputStream (imagePath);
-        WriteThroughInputStream wis = new WriteThroughInputStream (is, fos);
-        // logger.finer(" the imagePath in saveImageWithThumbnail is "+ imagePath);
+        WriteThroughInputStream wis =
+                new WriteThroughInputStream(is, imageOut, status);
         try {
             scaler.customLoad(wis);
         } catch (Exception ex) {
             logger.log(Level.SEVERE, null, ex);
             //ex.printStackTrace();
         }
-        if (thumbnailPath != null) {
-            scaler.resizeWithGraphics(thumbnailPath);
+        if (thumbnailOut != null) {
+            scaler.resizeWithGraphics(thumbnailOut);
         }
         // logger.finer(" the thumbNailPath in saveImageWithThumbnail is "+ thumbnailPath);
-        wis.closeOutputStream();
         return true;
     } 
     
@@ -175,13 +178,24 @@ public class WebappUtil {
         if (idx > 0) {
             thumbPath = path.substring(0, idx)+"_thumb"+path.substring(idx, path.length());
         }
-        
+
+        FileOutputStream thumbOut = null;
         try {
             ImageScaler imgScaler = new ImageScaler(path);
+            thumbOut = new FileOutputStream(thumbPath);
             imgScaler.keepAspectWithWidth();
-            imgScaler.resizeWithGraphics(thumbPath);
+
+            imgScaler.resizeWithGraphics(thumbOut);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "ERROR in generating thumbnail", e);
+        } finally {
+            if (thumbOut != null) {
+                try {
+                    thumbOut.close();
+                } catch (IOException e) {
+                }
+            }
+
         }
         // remove path info and just return the thumb file name
         thumbPath=thumbPath.substring(thumbPath.lastIndexOf("/") + 1);
@@ -218,7 +232,7 @@ public class WebappUtil {
     /**
      * This method uses the default message strings property file to resolve
      * resultant string to show to an end user
-     * @param Key to use in MessageString.properties file
+     * @param key to use in MessageString.properties file
      *
      * @return Formated message for external display
      */
@@ -391,8 +405,8 @@ public class WebappUtil {
         }
         return strb.toString();
     }
-   
-         public static List getPagedList (List list, int index) {
+    
+    public static List<SocialEvent> getPagedList (List<SocialEvent> list, int index) {
         int size = list.size();
         int numPages = getNumPages(list);
         if (size <= WebappConstants.ITEMS_PER_PAGE) {
@@ -408,9 +422,10 @@ public class WebappUtil {
         if (endIndex > size)
             endIndex = size;
 
-        List slist = list.subList(startIndex, endIndex);
+        List<SocialEvent> slist = list.subList(startIndex, endIndex);
         return slist;
     }
+    
     public static int getNumPages (long size) {
         if (size % WebappConstants.ITEMS_PER_PAGE != 0)
             return (int) size/WebappConstants.ITEMS_PER_PAGE + 1;

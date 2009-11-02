@@ -27,7 +27,6 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import java.text.SimpleDateFormat;
 import org.apache.olio.webapp.util.WebappUtil;
-import java.util.List;
 import static org.apache.olio.webapp.controller.WebConstants.*;
 import javax.persistence.CascadeType;
 import javax.persistence.NamedQuery;
@@ -36,6 +35,10 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.TableGenerator;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.JoinColumn;
 import java.util.Set;
 import java.util.HashSet;
 
@@ -46,6 +49,8 @@ import java.util.HashSet;
  */
 @NamedQueries(
 {
+    @NamedQuery(name = "getUserByName",
+    query = "SELECT u FROM Person u WHERE u.userName = :userName"),
     @NamedQuery(name = "getPostedEvents",
     query = "SELECT s FROM SocialEvent s WHERE s.submitterUserName = :submitter"),
     @NamedQuery(name = "getIncomingInvitations",
@@ -58,7 +63,8 @@ import java.util.HashSet;
 @Entity
 @Table (name="PERSON")
 public class Person implements java.io.Serializable {
-    
+
+    private int userID;
     private String userName;
     private String password;
     private String firstName;
@@ -76,10 +82,7 @@ public class Person implements java.io.Serializable {
     private Address address;
     //used for UI display purposes
     private boolean hasReceivedInvitation;
-    private Collection<Person> nonFriendList = new ArrayList<Person>();
-    private int friendshipRequests;
-    
-    
+    private Collection<Person> nonFriendList = new ArrayList<Person>();        
     
     //private Collection<SocialEvent> planToAttendEvents=new Vector<SocialEvent>();
     //private Address location; //do I need some location info for viewing events listing or is it stored as cookie?
@@ -102,7 +105,18 @@ public class Person implements java.io.Serializable {
         this.address = address;
     }
     
+    @TableGenerator(name="PERSON_ID_GEN",
+    table="ID_GEN",
+            pkColumnName="GEN_KEY",
+            valueColumnName="GEN_VALUE",
+            pkColumnValue="PERSON_ID",
+            allocationSize=50000)
+    @GeneratedValue(strategy=GenerationType.TABLE,generator="PERSON_ID_GEN")
     @Id
+    public int getUserID() {
+        return userID;
+    }
+
     public String getUserName() {
         return userName;
     }
@@ -153,6 +167,12 @@ public class Person implements java.io.Serializable {
     }
     
     @ManyToMany(fetch=FetchType.LAZY)
+    /***
+    @JoinTable(
+        name = "PERSON_PERSON",
+        joinColumns = { @JoinColumn(name = "Person_USERNAME", referencedColumnName = "USERNAME"),
+                        @JoinColumn(name = "friends_USERNAME", referencedColumnName = "USERNAME")})
+     */
     public Collection<Person> getFriends() {
         return friends;
     }
@@ -195,6 +215,10 @@ public class Person implements java.io.Serializable {
      @OneToMany(mappedBy="requestor", cascade={CascadeType.PERSIST})
     public Collection<Invitation> getOutgoingInvitations() {
         return outgoingInvitations;
+    }
+
+    public void setUserID(int userID) {
+        this.userID = userID;
     }
 
     public void setOutgoingInvitations(Collection<Invitation> outgoingInvitations) {
