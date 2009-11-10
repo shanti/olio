@@ -49,6 +49,10 @@
             <fileset file="${webapp.lib}/ajax-wrapper-comp-1.8.1.jar"/>
             <fileset file="${webapp.lib}/JSON.jar"/>
             <!-- add jersey files -->
+			<fileset dir="${webapp.lib}/jersey">
+				<include name="*.jar"/>
+            </fileset>
+			<!-- No need to include specific files
             <fileset file="${webapp.lib}/jersey/asm-3.1.jar"/>
             <fileset file="${webapp.lib}/jersey/jackson-lgpl-0.9.4.jar"/>
             <fileset file="${webapp.lib}/jersey/jersey-client-1.1.0-ea.jar"/>
@@ -59,6 +63,7 @@
             <fileset file="${webapp.lib}/jersey/jersey-server-1.1.0-ea.jar"/>
             <fileset file="${webapp.lib}/jersey/jsr311-api-1.1.jar"/>
             <fileset file="${webapp.lib}/jersey/jersey-multipart-1.0.2.jar"/>
+			-->
 
 
         </copy>
