@@ -152,7 +152,7 @@ CREATE TABLE `users` (
   `email` varchar(90) default NULL,
   `telephone` varchar(25) default NULL,
   `summary` varchar(2500) default NULL,
-  `timezone` varchar(25) default NULL,
+  `timezone` varchar(100) default NULL,
   `created_at` datetime default NULL,
   `updated_at` datetime default NULL,
   `address_id` int(11) default NULL,

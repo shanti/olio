@@ -27,7 +27,7 @@ create table PERSON(
    imageurl VARCHAR(100) NOT NULL,
    imagethumburl VARCHAR(100) NOT NULL,
    summary VARCHAR(2500) NOT NULL,
-   timezone VARCHAR(25) NOT NULL,
+   timezone VARCHAR(100) NOT NULL,
    ADDRESS_addressid INTEGER NOT NULL,
    primary key (userid)
 ) ENGINE=InnoDB;
