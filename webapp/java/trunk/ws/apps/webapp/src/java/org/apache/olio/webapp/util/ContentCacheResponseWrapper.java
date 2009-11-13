@@ -88,11 +88,11 @@ public class ContentCacheResponseWrapper extends HttpServletResponseWrapper {
    
 
     @Override public void setBufferSize(int i) {
-        System.err.println("setBufferSize(int i) called.");
+        //System.err.println("setBufferSize(int i) called.");
     }
 
     @Override public void flushBuffer() throws IOException {
-        System.err.println("flushBuffer() called.");
+        //System.err.println("flushBuffer() called.");
         stream.flush();
     }
   
