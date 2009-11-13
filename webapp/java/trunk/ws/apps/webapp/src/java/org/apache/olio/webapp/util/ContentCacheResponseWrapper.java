@@ -38,7 +38,7 @@ public class ContentCacheResponseWrapper extends HttpServletResponseWrapper {
     private int contentLength;
     private String contentType;
     private ServletOutputStream stream;
-    
+
     /** Creates a new instance of ContentCacheResponseWrapper */
     public ContentCacheResponseWrapper(HttpServletResponse response) {
         super (response);
@@ -54,14 +54,17 @@ public class ContentCacheResponseWrapper extends HttpServletResponseWrapper {
         return bos.toByteArray();
     }
 
+    @Override
     public ServletOutputStream getOutputStream(){
         return stream;
     }
 
+    @Override
     public PrintWriter getWriter(){
         return new PrintWriter(getOutputStream(), true);
     }
 
+    @Override
     public void setContentLength(int i) {
         contentLength = i;
         super.setContentLength(i);
@@ -71,15 +74,28 @@ public class ContentCacheResponseWrapper extends HttpServletResponseWrapper {
         return contentLength;
     }
 
+    @Override
     public void setContentType(String s) {
         contentType = s;
         super.setContentType(s);
     }
 
+    @Override
     public String getContentType() {
         return contentType;
     }
-    
+
+   
+
+    @Override public void setBufferSize(int i) {
+        System.err.println("setBufferSize(int i) called.");
+    }
+
+    @Override public void flushBuffer() throws IOException {
+        System.err.println("flushBuffer() called.");
+        stream.flush();
+    }
+  
 }
 
 class CacheContentServletOutputStream extends ServletOutputStream {
