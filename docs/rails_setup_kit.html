@@ -595,11 +595,14 @@ plan to use.</font></p>
 </ol>
 <h2><a name="testWebApp"></a>Testing the Web Application</h2>
 <ul>
+  <li>Two scripts, start_thin and stop_thin are provided in the
+$APP_DIR/bin directory. <br>
+  </li>
   <li>
     <p style="margin-bottom: 0.04in;">Start thin: </p>
   </li>
 </ul>
-<pre style="margin-top: 0.02in; margin-bottom: 0.2in;">      $ cd $APP_DIR<br>      $ thin -d -p 3000 -e production -l /var/log/thin.log &#8211;-pid /var/run/thin.pid -s 4 start</pre>
+<pre style="margin-top: 0.02in; margin-bottom: 0.2in;">      $ cd $APP_DIR<br>      $ chmod a+x bin/*thin<br>      $ bin/start_thin 4</pre>
 <ul>
   <li>
     <p>This will start four thin servers on ports 3000, 3001, 3002, and
