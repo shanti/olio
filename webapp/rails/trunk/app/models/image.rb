@@ -38,7 +38,7 @@ class Image < ActiveRecord::Base
   has_attachment :content_type => :image, 
                  :storage => :file_system, 
                  :max_size => 1.megabytes, 
-                 :thumbnails => { :thumb => '250x250>' }, 
+                 :thumbnails => { :thumb => '120x120>' }, 
                  :path_prefix => IMAGE_STORE_PATH
 
   validates_uniqueness_of :filename
