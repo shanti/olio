@@ -66,7 +66,9 @@ public class RailsService {
 			return;
         }
 		serverType = ctx.getProperty("type");
-		if (serverType.equals("thin")) {
+		if (serverType == null || serverType.trim().length() == 0)
+			serverType = "other";
+		else if (serverType.equals("thin")) {
             thin = new Thin(ctx);
         }
 		appDir = ctx.getProperty("appDir");
