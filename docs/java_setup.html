@@ -592,15 +592,22 @@ for Geocoder URL in
 $WEBAPP/ws/apps/webapp/web/WEB-INF/web.xml to point to where
 your geocoder application is deployed.</li>
   </ul>
-  <li>Set JAVA_HOME, ANT_HOME accordingly in your environment.<br>
+  <li>Set JAVA_HOME, ANT_HOME accordingly in your environment.</li>
+  <li>Set javaee.server.type=&lt;app server type&gt; in
+build.properties file located at <span style="font-family: monospace;">&lt;$WEBAPP&gt;/ws/bp-project.
+Ex: </span>javaee.server.type=glassfish</li>
+  <li>Create &lt;app server type&gt;-app-server.properties and copy
+contents from
+app-server.properties.template file and set the values specific to the
+app server you are using. For example, create
+glassfish-app-server.properties and set the glassfish relevant build
+details.<br>
   </li>
-  <li>In the $WEBAPP/ws/bp-project directory, copy the
-build.properties.template to build.properties. &nbsp;Edit the
-build.properties for the relevant build details.
-&nbsp;Note that $WEBAPP was introduced in the section "Downloading the
+  <li>Note that $WEBAPP was introduced in the section "Downloading the
 Source":<br>
     <span style="font-family: monospace;">$ vi
-&lt;$WEBAPP&gt;/ws/bp-project/build.properties<br>
+&lt;$WEBAPP&gt;/ws/bp-project/&lt;app server
+name&gt;-app-server.properties<br>
     <br>
     </span>Note that javaee.home needs to be pointed to the
 your Java EE 5 application server home directory, or if you're using
@@ -727,6 +734,12 @@ weaving after compilation but before packaging the WAR file. &nbsp;You
 will just have to add the target 'weave' in the -post-compile step.<br>
 <div style="margin-left: 40px;">
 <ol>
+  <li>Set javaee.server.type=weblogic in build.properties file located
+at <span style="font-family: monospace;">&lt;$WEBAPP&gt;/ws/bp-project.</span></li>
+  <li>Create weblogic-app-server.properties and copy contents from
+app-server.properties.template file and set the values specific to
+weblogic.<br>
+  </li>
   <li>Open build.xml in the&nbsp;<span style="font-family: monospace;">&lt;$WEBAPP&gt;/ws/apps/webapp
     </span>directory. &nbsp;</li>
   <li>&nbsp;Comment line 30 of build.xml :<br>
@@ -750,75 +763,84 @@ eclipselink.jar to complete the task.</li>
 (see step 3 of <a
  href="java_setup.html#GlassFish_Installation_and_Configuration">GlassFish
 Installation and Configuration</a>)</li>
-  <li>Specify the weblogic.lib environment variable in the ant call so
-that appropriate jar files can be found:<br>
-    <br>
-eg.<span style="font-family: monospace;"> ant
--Dweblogic.lib=$my_weblogic_path/oracle/middleware/modules<br>
-    </span>Note that the <span style="font-family: monospace;">weblogic.lib</span>
-environment variable needs to be specified on the command line because
-of the call to the&nbsp;StaticWeaveAntTask and cannot read the
-variables within the build.xml or its imported build files.<br>
-  </li>
-  <li>You should note that the <span style="font-family: monospace;">copy-persistence-config,
-define.weave</span> and <span style="font-family: monospace;">weave</span>
-steps has taken place in the output. &nbsp;You can deploy the resulting
-WAR file to WebLogic.<br>
-...<br>
-    <span style="font-family: monospace;">include-jmaki-local:</span><br
- style="font-family: monospace;">
-    <br style="font-family: monospace;">
-    <span style="font-family: monospace;">include-jmaki:</span><br
- style="font-family: monospace;">
-    <span style="font-family: monospace;">copy-persistence-config:</span><br
- style="font-family: monospace;">
-    <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;
-[copy] Copying 1 file to
-/Users/klichong/projects/olio/webapp/java/trunk/ws/apps/webapp/build/classes/META-INF</span><br
- style="font-family: monospace;">
-    <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;
-[copy] Copying 1 file to
-/Users/klichong/projects/olio/webapp/java/trunk/ws/apps/webapp/build/classes/META-INF</span><br
- style="font-family: monospace;">
-    <br style="font-family: monospace;">
-    <span style="font-family: monospace;">define.weave:</span><br
- style="font-family: monospace;">
-    <br style="font-family: monospace;">
-    <span style="font-family: monospace;">weave:</span><br
- style="font-family: monospace;">
-    <br style="font-family: monospace;">
-    <span style="font-family: monospace;">-post-compile:</span><br
- style="font-family: monospace;">
-    <span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;
-[copy] Copying 3 files to
-/Users/klichong/projects/olio/webapp/java/trunk/ws/apps/webapp/build/classes<br>
-....<br>
-    </span></li>
-  <li><span style="font-family: monospace;"></span>
-    <p>You will have to deployed the two libraries in the
+  <li>Copy &nbsp;the jsfcompounds-core-0.0.6.jar and
+javax.jsf_1.2.0.1.jar to the <span style="font-family: monospace;">$WEBAPP_HOME/ws/lib</span>
+directory.</li>
+  <li>You will have to deployed the two libraries in the
 &lt;$weblogic&gt;/common/deployable-libraries for the application to
 work:<br>
-    </p>
     <ul>
       <li> jsf-1.2.war</li>
       <li>jstl-1.2.war <br>
       </li>
     </ul>
-    <p><br>
-CLI command:<br>
+    <p>CLI command:<br>
     </p>
+    <p> </p>
     <pre>java weblogic.Deployer -adminurl http://localhost:7001 -user weblogic</pre>
     <pre>&nbsp;&nbsp;&nbsp; -password weblogic -deploy -targets myserver1,myserver2</pre>
     <pre>&nbsp;&nbsp;&nbsp; -library ./deployable-libraries/XXXX.war</pre>
     <p><br>
-If you're using the weblogic admin UI, then make sure "Install this
+    </p>
+    <p>If you're using the weblogic admin UI, then make sure "Install
+this
 deployment as a library" box is checked and click Next.&nbsp; Accept
 the defaults and click Finish to complete installation. <br>
     </p>
+    <p> </p>
   </li>
 </ol>
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; For the application to use
+the above two deployed libraries, create weblogic.xml file in&nbsp; <span
+ style="font-family: monospace;">&lt;$WEBAPP&gt;/ws/apps/webapp/web/WEB-INF/
+with the following content.&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; </span><br>
+<pre>	&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>	&lt;weblogic-web-app xmlns="http://www.bea.com/ns/weblogic/90" xmlns:j2ee="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" <br>	xsi:schemaLocation="http://www.bea.com/ns/weblogic/90 http://www.bea.com/ns/weblogic/90/weblogic-web-app.xsd"&gt;<br>  	&lt;context-root&gt;/webapp&lt;/context-root&gt;<br>   	&lt;library-ref&gt;<br>    		&lt;library-name&gt;jstl&lt;/library-name&gt;<br>    		&lt;specification-version&gt;1.2&lt;/specification-version&gt;<br>    		&lt;exact-match&gt;true&lt;/exact-match&gt;<br>  	&lt;/library-ref&gt;<br>	&lt;library-ref&gt;<br>    		&lt;library-name&gt;jsf&lt;/library-name&gt;<br>    		&lt;specification-version&gt;1.2&lt;/specification-version&gt;<br>    		&lt;implementation-version&gt;1.2.9.0&lt;/implementation-version&gt;<br>    		&lt;exact-match&gt;false&lt;/exact-match&gt;<br>  	&lt;/library-ref&gt;<br>	&lt;/weblogic-web-app&gt;<br></pre>
 <br>
+&nbsp;&nbsp; 9.&nbsp; Run the ant command from <span
+ style="font-family: monospace;">&lt;$WEBAPP&gt;/ws/apps/webapp
+directory.<br>
+</span><br>
+&nbsp;&nbsp; 10. You should note that the <span
+ style="font-family: monospace;">copy-persistence-config,
+define.weave</span> and <span style="font-family: monospace;">weave</span>
+steps has taken place in the output. &nbsp;You can deploy the resulting
+WAR file to WebLogic.<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ...<br>
+<span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; include-jmaki-local:</span><br
+ style="font-family: monospace;">
+<br style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; include-jmaki:</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; copy-persistence-config:</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; [copy] Copying 1 file to
+/Users/klichong/projects/olio/webapp/java/trunk/ws/apps/webapp/build/classes/META-INF</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; [copy] Copying 1 file to
+/Users/klichong/projects/olio/webapp/java/trunk/ws/apps/webapp/build/classes/META-INF</span><br
+ style="font-family: monospace;">
+<br style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; define.weave:</span><br
+ style="font-family: monospace;">
+<br style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; weave:</span><br style="font-family: monospace;">
+<br style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; -post-compile:</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; [copy] Copying 3 files to
+/Users/klichong/projects/olio/webapp/java/trunk/ws/apps/webapp/build/classes<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; ....</span><br>
+<span style="font-family: monospace;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span>
 </div>
 <h2>Deploying the Web Application</h2>
 Deploy
