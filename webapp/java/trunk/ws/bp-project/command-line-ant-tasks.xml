@@ -25,6 +25,7 @@
 <project name="command-line-ant-tasks" default="default">
 
     <import file="${ant.file.command-line-ant-tasks}/../common-properties.xml"/>
+
     <import file="${ant.file.command-line-ant-tasks}/../app-server-ant.xml"/>
 
     <condition property="module-tasks-file" value="${ant.file.command-line-ant-tasks}/../jar-ant.xml">
@@ -70,8 +71,9 @@
     description="compiles the project"/>
 
     <dirname property="antfile.dir" file="${ant.file}"/>
+
     <path id="classpath">
-        <fileset dir="${javaee.home}" includes="lib/javaee.jar, lib/appserv-rt.jar, lib/appserv-ws.jar"/>
+        <fileset dir="${javaee.lib.dir}" includes="*.jar"/>
         <fileset dir="../../lib" includes="*.jar"/>
         <!-- include jersey jars now -->
         <fileset dir="../../lib/jersey" includes="*.jar"/>
