@@ -15,10 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */ 
-// =================================================================== 
-// Author: Matt Kruse <matt@ajaxtoolbox.com> 
-// WWW: http://www.AjaxToolbox.com/ 
-// =================================================================== 
 /**
  * The AjaxRequest class is a wrapper for the XMLHttpRequest objects which 
  * are available in most modern browsers. It simplifies the interfaces for
