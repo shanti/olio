@@ -1,23 +1,20 @@
-// =================================================================== 
-// Author: Matt Kruse <matt@ajaxtoolbox.com> 
-// WWW: http://www.AjaxToolbox.com/ 
-// NOTICE: You may use this code for any purpose, commercial or 
-// private, without any further permission from the author. You may 
-// remove this notice from your final code if you wish, however it is 
-// appreciated by the author if at least my web site address is kept. 
-// 
-// You may *NOT* re-distribute this code in any way except through its 
-// use. That means, you can include it in your product, or your web 
-// site, or any other form where the code is actually being used. You 
-// may not put the plain javascript up on your site for download or 
-// include it in your javascript libraries for download. 
-// If you wish to share this code with others, please just point them 
-// to the URL instead. 
-// Please DO NOT link directly to my .js files from your site. Copy 
-// the files to your server and use them there. Thank you. 
-// ===================================================================
-
-/**
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ 
 /**
  * The AjaxRequest class is a wrapper for the XMLHttpRequest objects which 
  * are available in most modern browsers. It simplifies the interfaces for
