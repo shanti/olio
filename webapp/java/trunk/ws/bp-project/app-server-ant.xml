@@ -24,8 +24,8 @@
 <project name="app-server-ant" default="compile">
 
   <!-- Define sensible defaults for app-server properties -->
-  <property file="${ant.file.app-server-ant}/../app-server.properties"/>
-  
+   <property file="${ant.file.app-server-ant}/../${javaee.server.type}-app-server.properties"/>
+   
   <!-- This file contains common ant commands that are specific to Java EE
      SDK. To port this application to a different app-server, you will 
      need to write an equivalent file. 
@@ -54,14 +54,14 @@
   </target>
 
   <!-- Construct Java EE classpath -->
-  <path id="javaee.classpath">
-    <pathelement location="${javaee.home}/lib/javaee.jar"/>
-    <pathelement location="${javaee.home}/lib/jsf-api.jar"/>
-    <pathelement location="${javaee.home}/lib/jsf-impl.jar"/>
-    <pathelement location="${javaee.home}/lib/appserv-jstl.jar"/>
-    <pathelement location="${javaee.home}/lib/commons-logging.jar"/>
-    <pathelement location="${javaee.home}/bin"/>
-  </path>
+    <path id="javaee.classpath">
+        <fileset dir="${javaee.lib.dir}">
+            <include name="*.jar"/>
+        </fileset>
+         <pathelement location="${javaee.home}/bin"/>
+    </path>
+    
+   
 
   <!-- Construct path to be used for Java DB -->
   <path id="db.classpath">
