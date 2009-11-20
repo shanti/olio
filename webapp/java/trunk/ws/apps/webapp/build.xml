@@ -27,9 +27,9 @@
     <property name="webapp.lib" value="${basedir}/../../lib"/> 
     <target name="-pre-compile" depends="init"/>
  
-    <target name="-post-compile" depends="init, include-jmaki-local">
+    <!--target name="-post-compile" depends="init, include-jmaki-local"-->
     <!-- uncomment this line below to do static weaving for weblogic bug -->
-    <!--target name="-post-compile" depends="init, include-jmaki-local, weave"-->
+    <target name="-post-compile" depends="init, include-jmaki-local, weave">
         <!-- copy property files into build directory -->
         <copy todir="${build.classes.dir}" overwrite="true">
             <fileset dir="src/java">
@@ -40,32 +40,15 @@
         <mkdir dir="${build.web.dir}/WEB-INF/lib"/>
         <copy todir="${build.web.dir}/WEB-INF/lib">
             <!-- fileset file="${file.reference.mvc.jar}"/ -->
-            <fileset file="${webapp.lib}/jdom.jar"/>
-            <fileset file="${webapp.lib}/rome-0.9.jar"/>
-            <fileset file="${webapp.lib}/rome-fetcher-0.9.jar"/>
-            <fileset file="${webapp.lib}/commons-fileupload-1.2.jar"/>
-            <fileset file="${webapp.lib}/commons-io-1.2.jar"/>
-            <fileset file="${webapp.lib}/java_memcached-release_2.0.1.jar"/>
-            <fileset file="${webapp.lib}/ajax-wrapper-comp-1.8.1.jar"/>
-            <fileset file="${webapp.lib}/JSON.jar"/>
+            <fileset dir="${webapp.lib}">
+				<include name="*.jar"/>
+            </fileset>
+            
             <!-- add jersey files -->
 			<fileset dir="${webapp.lib}/jersey">
 				<include name="*.jar"/>
             </fileset>
-			<!-- No need to include specific files
-            <fileset file="${webapp.lib}/jersey/asm-3.1.jar"/>
-            <fileset file="${webapp.lib}/jersey/jackson-lgpl-0.9.4.jar"/>
-            <fileset file="${webapp.lib}/jersey/jersey-client-1.1.0-ea.jar"/>
-            <fileset file="${webapp.lib}/jersey/jersey-json-1.1.0-ea.jar"/>
-            <fileset file="${webapp.lib}/jersey/jettison-1.1.jar"/>
-            <fileset file="${webapp.lib}/jersey/jackson-lgpl-0.9.4.jar"/>
-            <fileset file="${webapp.lib}/jersey/jersey-core-1.1.0-ea.jar"/>
-            <fileset file="${webapp.lib}/jersey/jersey-server-1.1.0-ea.jar"/>
-            <fileset file="${webapp.lib}/jersey/jsr311-api-1.1.jar"/>
-            <fileset file="${webapp.lib}/jersey/jersey-multipart-1.0.2.jar"/>
-			-->
-
-
+			
         </copy>
 
         <available file="${build.dir}/web/dojo.js" type="file" property="dojo.already.exists"/>        
@@ -122,7 +105,7 @@
         	<fileset dir="../../lib">
                     <include name="**/*.jar"/>
         	</fileset>
-		<fileset dir="${weblogic.lib}">
+		<fileset dir="${javaee.lib.dir}">
 		    <include name="**/*.jar"/>
 		</fileset>
 	</classpath>
@@ -136,7 +119,7 @@
         	<fileset dir="../../lib">
                     <include name="**/*.jar"/>
         	</fileset>
-		<fileset dir="${weblogic.lib}">
+		<fileset dir="${javaee.lib.dir}">
 		    <include name="**/*.jar"/>
 		</fileset>
 	</classpath>
