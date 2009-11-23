@@ -14,6 +14,7 @@ To run RAT on a release, do the following:
   in ~/.ant/lib.
 . Type:  ant php-rat >nightly/php-rat.out
 . Type:  ant rails-rat >nightly/rails-rat.out
+. Type:  ant java-rat >nightly/java-rat.out
 
 NOTES:
 . The running of RAT is not made part of the release generation as it 

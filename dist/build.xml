@@ -46,7 +46,7 @@
     <property name="rails.src.name" value="apache-olio-rails-src-${version.str}"/>
     <property name="rails.relnotes" value="RELEASE-NOTES-rails-${olio.version}.txt"/>
 
-    <property name="java.app.dir" value="${base.dir}/webapp/java/trunk/ws"/>
+    <property name="java.app.dir" value="${base.dir}/webapp/java/trunk/ws/apps/webapp"/>
     <property name="java.workload.dir" value="${base.dir}/workload/java/trunk"/>
     <property name="java.pkg.name" value="apache-olio-java-${version.str}"/>
     <property name="java.src.name" value="apache-olio-java-src-${version.str}"/>
@@ -160,18 +160,18 @@
             <tarfileset dir="stage" prefix="${java.pkg.name}" includes="release,LICENSE,NOTICE"/>
             <tarfileset dir="${relnotes.dir}" prefix="${java.pkg.name}" includes="${java.relnotes}"/>
             <tarfileset dir="${docs.dir}" prefix="${java.pkg.name}" includes="java_setup.html"/>
-            <tarfileset dir="${java.workload.dir}/build" prefix="${java.pkg.name}" includes="JavaOlioDriver.jar"/>
+            <tarfileset dir="${java.workload.dir}/build" prefix="${java.pkg.name}" includes="OlioDriver.jar"/>
             <tarfileset dir="${geocoder.dir}/dist" prefix="${java.pkg.name}" includes="geocoder.war"/>
-            <tarfileset dir="${java.app.dir}" prefix="${java.pkg.name}/oliojava" excludes="build.xml, build.properties"/>
+            <tarfileset dir="${java.app.dir}/dist" prefix="${java.pkg.name}" includes="webapp.war"/>
         </tar>
 
         <zip destfile="${kit.dir}/${java.pkg.name}.zip">
             <zipfileset dir="stage" prefix="${java.pkg.name}" includes="release,LICENSE,NOTICE"/>
             <zipfileset dir="${relnotes.dir}" prefix="${java.pkg.name}" includes="${java.relnotes}"/>
             <zipfileset dir="${docs.dir}" prefix="${java.pkg.name}" includes="java_setup.html"/>
-            <zipfileset dir="${java.workload.dir}/build" prefix="${java.pkg.name}" includes="JavaOlioDriver.jar"/>
+            <zipfileset dir="${java.workload.dir}/build" prefix="${java.pkg.name}" includes="OlioDriver.jar"/>
             <zipfileset dir="${geocoder.dir}/dist" prefix="${java.pkg.name}" includes="geocoder.war"/>
-            <zipfileset dir="${java.app.dir}" prefix="${java.pkg.name}/oliojava" excludes="build.xml, build.properties"/>
+            <zipfileset dir="${java.app.dir}/dist" prefix="${java.pkg.name}" includes="webapp.war"/>
         </zip>
     </target>
 
