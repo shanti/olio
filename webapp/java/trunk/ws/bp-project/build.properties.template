@@ -19,7 +19,7 @@
 
 #Specify the appserver name and create <appservername>-app-server.properties
 #with all the details
-javaee.server.type=weblogic
+javaee.server.type=glassfish
 
 # for platforms other than Windows and MAC
 # Uncomment and set this property to the location of the browser you 
