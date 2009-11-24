@@ -593,14 +593,17 @@ $WEBAPP/ws/apps/webapp/web/WEB-INF/web.xml to point to where
 your geocoder application is deployed.</li>
   </ul>
   <li>Set JAVA_HOME, ANT_HOME accordingly in your environment.</li>
-  <li>Set javaee.server.type=&lt;app server type&gt; in
-build.properties file located at <span style="font-family: monospace;">&lt;$WEBAPP&gt;/ws/bp-project.
+  <li>Copy build.properties.template file located at <span
+ style="font-family: monospace;">&lt;$WEBAPP&gt;/ws/bp-project </span>and
+rename it to build.properties and set javaee.server.type=&lt;app server
+type&gt;<span style="font-family: monospace;">.
 Ex: </span>javaee.server.type=glassfish</li>
-  <li>Create &lt;app server type&gt;-app-server.properties and copy
-contents from
-app-server.properties.template file and set the values specific to the
-app server you are using. For example, create
-glassfish-app-server.properties and set the glassfish relevant build
+  <li>Copy app-server.properties.template file located at <span
+ style="font-family: monospace;">&lt;$WEBAPP&gt;/ws/bp-project </span>and
+rename it to &lt;app server type&gt;-app-server.properties and set the
+values specific to the
+app server you are using. For example, glassfish-app-server.properties
+and set the glassfish relevant build
 details.<br>
   </li>
   <li>Note that $WEBAPP was introduced in the section "Downloading the
@@ -732,12 +735,16 @@ deploying the application on WebLogic.<br>
 There is an existing ant target "weave" that will perform the static
 weaving after compilation but before packaging the WAR file. &nbsp;You
 will just have to add the target 'weave' in the -post-compile step.<br>
-<div style="margin-left: 40px;">
+<div style="margin-left: 40px;"><br>
 <ol>
-  <li>Set javaee.server.type=weblogic in build.properties file located
-at <span style="font-family: monospace;">&lt;$WEBAPP&gt;/ws/bp-project.</span></li>
-  <li>Create weblogic-app-server.properties and copy contents from
-app-server.properties.template file and set the values specific to
+  <li>Copy build.properties.template file located at <span
+ style="font-family: monospace;">&lt;$WEBAPP&gt;/ws/bp-project </span>and
+rename it to build.properties and set javaee.server.type=weblogic.<span
+ style="font-family: monospace;"></span></li>
+  <li>Copy app-server.properties.template file located at <span
+ style="font-family: monospace;">&lt;$WEBAPP&gt;/ws/bp-project </span>and
+rename it to weblogic-app-server.properties and set the values specific
+to
 weblogic.<br>
   </li>
   <li>Open build.xml in the&nbsp;<span style="font-family: monospace;">&lt;$WEBAPP&gt;/ws/apps/webapp
