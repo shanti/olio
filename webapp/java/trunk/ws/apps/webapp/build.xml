@@ -27,9 +27,9 @@
     <property name="webapp.lib" value="${basedir}/../../lib"/> 
     <target name="-pre-compile" depends="init"/>
  
-    <!--target name="-post-compile" depends="init, include-jmaki-local"-->
+    <target name="-post-compile" depends="init, include-jmaki-local">
     <!-- uncomment this line below to do static weaving for weblogic bug -->
-    <target name="-post-compile" depends="init, include-jmaki-local, weave">
+    <!-- target name="-post-compile" depends="init, include-jmaki-local, weave" -->
         <!-- copy property files into build directory -->
         <copy todir="${build.classes.dir}" overwrite="true">
             <fileset dir="src/java">
