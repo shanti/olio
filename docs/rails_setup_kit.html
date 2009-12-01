@@ -208,7 +208,7 @@ will refer to the faban install directory as <code>$FABAN_HOME</code>.</p>
       <li><code>cp
 samples/services/ApacheHttpdService/build/ApacheHttpdService.jar
 services</code></li>
-      <li><code>cp samples/services/MysqlService/build/MysqlService.jar
+      <li><code>cp samples/services/MysqlService/build/MySQLService.jar
 services</code></li>
       <li><code>cp
 samples/services/MemcachedService/build/MemcachedService.jar services</code></li>
@@ -302,9 +302,10 @@ ubuntu), the following command can be used:</p>
 <p style="margin-bottom: 0in;">For <span style="font-weight: bold;">OpenSolaris</span>:</p>
 <ul>
   <li>
-    <p style="margin-bottom: 0in;">Upgrade your Ruby version to the
-latest in the pkg.opensolaris.org/dev repository. This will give you
-Rubygems 1.3.1 and Ruby 1.8.7p72.</p>
+    <p style="margin-bottom: 0in;">If you are running on a version of
+OpenSolaris before 2009.06, upgrade your Ruby version to the
+latest in the pkg.opensolaris.org/dev repository.<br>
+    </p>
   </li>
 </ul>
 <ul>
@@ -318,8 +319,8 @@ for details.</p>
 </ul>
 <ul>
   <li>
-    <p style="margin-bottom: 0in;">Edit <font
- face="Cumberland, monospace">/usr/ruby/1.8/lib/ruby/1.8/i386-solaris2.11/rbconfig.rb</font>
+    <p style="margin-bottom: 0in;">If running on OpenSolaris before
+2009.06, edit <font face="Cumberland, monospace">/usr/ruby/1.8/lib/ruby/1.8/i386-solaris2.11/rbconfig.rb</font>
 as follows :</p>
   </li>
 </ul>
@@ -338,8 +339,8 @@ as follows :</p>
 </ul>
 <p style="margin-bottom: 0in;"><font face="Courier New, monospace"><font
  size="2">&nbsp;&nbsp;&nbsp;&nbsp; gem
-install mysql --with-mysql-lib=/usr/mysql/5.0/lib/mysql
---with-mysql-include=/usr/mysql/5.0/include</font></font></p>
+install mysql --with-mysql-lib=/usr/mysql/lib/mysql
+--with-mysql-include=/usr/mysql/include</font></font></p>
 <ul>
   <li>
     <p style="margin-bottom: 0in;">Install nginx. You can build nginx

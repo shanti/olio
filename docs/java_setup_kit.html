@@ -232,10 +232,10 @@ deployed the driver, a page with the text "Welcome to Java Olio
 Workload"</p>
   </li>
   <li>
-    <p>Copy&nbsp; MySQL Connector/J (JDBC Driver for MySQL) jar to
+    <p><a href="http://dev.mysql.com/downloads/connector/j/5.0.html">Download</a>
+MySQL Connector/J (JDBC Driver for MySQL) and install the jar in
 $FABAN_HOME/benchmarks/OlioDriver/lib. </p>
   </li>
-  <br>
   <li>To deploy the Faban driver, you can either copy
 $WORKLOAD/build/OlioDriver.jar to the
 $FABAN_HOME/benchmarks directory, or execute <span
@@ -434,7 +434,7 @@ for other application servers.<br>
 Installation and Configuration</font></h2>
 <ol>
   <li>
-    <p>Install Glassfish application server V2 UR2 from <a
+    <p>Install Glassfish application server V2.1 from <a
  href="https://glassfish.dev.java.net/public/downloadsindex.html"><span
  style="text-decoration: underline;">https://glassfish.dev.java.net/public/downloadsindex.html.</span></a>
     <br>
@@ -524,8 +524,9 @@ Application Servers</font></h2>
 Extract the mysql-connector-java-5.1.X-bin.jar and put this your
 application server classpath (or external library directory)</li>
   <li>Download a Java Persistence API (JPA) provider, eg.
-EclipseLink. &nbsp;You will have to download the eclipselink.jar
-from <a href="http://www.eclipse.org/eclipselink">http://www.eclipse.org/eclipselink</a>,
+EclipseLink. &nbsp;You will have to <a
+ href="http://www.eclipse.org/eclipselink/downloads">download</a> the
+eclipselink.jar
 and put this in your application server classpath.</li>
   <li>Create JDBC connection pool and resource for connecting to
 mySQL database. &nbsp;Below are examples for the properties used for
@@ -573,9 +574,9 @@ either dropping the war file in the
 $GLASSFISH_HOME/domains/domain1/autodeploy directory. &nbsp;You can
 also
 deploy via different methods by referring to <a
- href="https://glassfish.dev.java.net/downloads/quickstart/index.html#Packaging_and_Deploying_Applications">https://glassfish.dev.java.net/downloads/quickstart/index.html#Packaging_and_Deploying_Applications</a>.&nbsp;
-<br>
-<br>
+ href="https://glassfish.dev.java.net/downloads/quickstart/index.html#Packaging_and_Deploying_Applications">https://glassfish.dev.java.net/downloads/quickstart/index.html#Packaging_and_Deploying_Applications</a>.<br>
+<span style="font-weight: bold;"></span><span
+ style="font-style: italic;"></span><br>
 You must set the geocoderURL property to point to the URL where the
 geocoder is deployed. The default value for this property is
 http://localhost:8080/geocoder/geocode. Set
@@ -583,9 +584,10 @@ http://localhost:8080/geocoder/geocode. Set
 the application server's configuration. For glassfish, you can do this
 by editing the domain.xml file (in domains/domain1/config/domain.xml).<br>
 <br>
-NOTE: If you are deploying Olio to Oracle WebLogic Server 11g Release 1
+<span style="font-weight: bold;">NOTE</span>: If you are deploying Olio
+to Oracle WebLogic Server 11g Release 1
 (10.3.1), there is a WebLogic bug (8448313) that results in a JPA
-exception because lazy fetching is being used. &nbsp; The Exception
+exception because lazy fetching is being used. The Exception
 stack trace will appear:<br>
 <br>
 <span style="font-family: monospace;">javax.persistence.PersistenceException:

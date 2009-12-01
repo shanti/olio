@@ -236,7 +236,8 @@ deployed the driver, a page with the text "Welcome to Java Olio
 Workload"</p>
   </li>
   <li>
-    <p>Copy&nbsp; MySQL Connector/J (JDBC Driver for MySQL) jar to
+    <p><a href="http://dev.mysql.com/downloads/connector/j/5.0.html">Download</a>
+MySQL Connector/J (JDBC Driver for MySQL) and install the jar in
 $FABAN_HOME/benchmarks/OlioDriver/lib. </p>
   </li>
   <li>To deploy the Faban driver, you can
@@ -448,7 +449,7 @@ for other application servers.<br>
 Installation and Configuration</font></h2>
 <ol>
   <li>
-    <p>Install Glassfish application server V2 UR2 from <a
+    <p>Install Glassfish application server V2.1 from <a
  href="https://glassfish.dev.java.net/public/downloadsindex.html"><span
  style="text-decoration: underline;">https://glassfish.dev.java.net/public/downloadsindex.html.</span></a>
     <br>
@@ -463,15 +464,14 @@ is
 $GLASSFISH_HOME/domains/domain1/lib/ext directory (or whatever you have
 named your domain).</p>
   </li>
-  <li>The benchmark utilizes JPA (Java Persistence API) and has been
-benchmarked
-with the EclipseLink implementation. &nbsp;GlassFish v2
+  <li>The application utilizes JPA (Java Persistence API) and has been
+tested
+with the EclipseLink implementation. &nbsp;GlassFish v2.1.1
 uses TopLink as the default JPA implementation so you will have to <a
- href="http://www.eclipse.org/eclipselink/downloads/previous_releases.php">download</a>
+ href="http://www.eclipse.org/eclipselink/downloads/">download</a>
 the eclipselink.jar,
-and &nbsp;put this in $GLASSFISH_HOME/lib directory.&nbsp; An issue was
-found with the latest EclipseLink(1.1.2), so you will need to
-get EclipseLink 1.1.0. </li>
+and &nbsp;put this in $GLASSFISH_HOME/lib directory.<br>
+  </li>
   <br>
   <li>Instructions on how to use the Glassfish admin
 interface is <a
