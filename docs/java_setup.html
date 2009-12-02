@@ -438,7 +438,7 @@ following components:<br>
 <ol>
   <li>Java EE compliant application server (eg. <a
  href="https://glassfish.dev.java.net/public/downloadsindex.html">GlassFish
-v2.1</a>)</li>
+v2.1.1</a>)</li>
   <li>JPA provider &nbsp;( eg. <a
  href="http://www.eclipse.org/eclipselink/">Eclipselink</a>)</li>
 </ol>
@@ -449,7 +449,7 @@ for other application servers.<br>
 Installation and Configuration</font></h2>
 <ol>
   <li>
-    <p>Install Glassfish application server V2.1 from <a
+    <p>Install Glassfish application server V2.1.1 from <a
  href="https://glassfish.dev.java.net/public/downloadsindex.html"><span
  style="text-decoration: underline;">https://glassfish.dev.java.net/public/downloadsindex.html.</span></a>
     <br>
@@ -473,7 +473,17 @@ the eclipselink.jar,
 and &nbsp;put this in $GLASSFISH_HOME/lib directory.<br>
   </li>
   <br>
-  <li>Instructions on how to use the Glassfish admin
+  <li>For ease of use, a sample script, config_glassfish.sh, is
+provided in the $WEBAPP/etc directory.&nbsp; You can use this CLI
+script to create the JDBC pool and resources as well as configure basic
+JVM environment variables necessary to run the application in the event
+you do not want to edit the web.xml.&nbsp; Please look at the script
+carefully before running it since you have to modify the values to fit
+your setup.<br>
+    <br>
+  </li>
+  <li>You may also use the admin interface to configure
+GlassFish.&nbsp; Instructions on how to use the Glassfish admin
 interface is <a
  href="https://glassfish.dev.java.net/javaee5/admin-gui/admin-gui.html#Usage">https://glassfish.dev.java.net/javaee5/admin-gui/admin-gui.html#Usage</a>.
 &nbsp;To edit the classpath prefix, please consult&nbsp; <a
