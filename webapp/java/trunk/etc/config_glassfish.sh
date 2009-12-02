@@ -37,8 +37,8 @@ $GLASSFISH_HOME/bin/asadmin create-jdbc-resource --connectionpoolid BPwebappPool
 ## Create JVM options
 # Edit image directory property to point to your filestore i.e. where you have loaded the images
 $GLASSFISH_HOME/bin/asadmin create-jvm-options --host localhost --port 4848 --user admin "-Dwebapp.image.directory=/Users/klichong/downloads/filestore"
-# Edit geocode property to point to your deployment of the geocoder
-$GLASSFISH_HOME/bin/asadmin create-jvm-options --host localhost --port 4848 --user admin "-DgeocoderURL=http\://jes-x4600-1\:8080/Web20Emulator/geocode"
+# Edit geocode property to point to your deployment of the geocoder -DgeocoderURL="http://<host>:<port>/geocoder/geocode
+$GLASSFISH_HOME/bin/asadmin create-jvm-options --host localhost --port 4848 --user admin "-DgeocoderURL=http\://jes-x4600-1\:8080/geocoder/geocode"
 #####
 # Example asadmin delete-jvm-options command in case of typographical errors:
 # asadmin delete-jvm-options --host localhost --port 4848 --user admin -DcacheOlio=false
