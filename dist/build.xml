@@ -135,7 +135,7 @@
             <tarfileset dir="${geocoder.dir}/dist" prefix="${rails.pkg.name}"
                         includes="geocoder.war"/>
             <tarfileset dir="${rails.app.dir}" prefix="${rails.pkg.name}/oliorails"
-                        excludes="build.xml"/>
+                        excludes="vendor/plugins/rspec/**,vendor/plugins/rspec-rails/**"/>
         </tar>
         <zip destfile="${kit.dir}/${rails.pkg.name}.zip">
             <zipfileset dir="stage" prefix="${rails.pkg.name}" includes="release,LICENSE,NOTICE"/>
@@ -148,7 +148,7 @@
             <zipfileset dir="${geocoder.dir}/dist" prefix="${rails.pkg.name}"
                         includes="geocoder.war"/>
             <zipfileset dir="${rails.app.dir}" prefix="${rails.pkg.name}/oliorails"
-                        excludes="build.xml"/>
+                        excludes="vendor/plugins/rspec/**,vendor/plugins/rspec-rails/**"/>
         </zip>
     </target>
 
@@ -240,6 +240,8 @@
                 <exclude name="**/build/**"/>
                 <exclude name="geocoder/dist/**"/>
                 <exclude name="**/build.properties"/>
+                <exclude name="webapp/rails/trunk/vendor/plugins/rspec/**"/>
+                <exclude name="webapp/rails/trunk/vendor/plugins/rspec-rails/**"/>
             </tarfileset>
         </tar>
         <zip destfile="${kit.dir}/${rails.src.name}.zip">
@@ -257,6 +259,8 @@
                 <exclude name="**/build/**"/>
                 <exclude name="geocoder/dist/**"/>
                 <exclude name="**/build.properties"/>
+                <exclude name="webapp/rails/trunk/vendor/plugins/rspec/**"/>
+                <exclude name="webapp/rails/trunk/vendor/plugins/rspec-rails/**"/>
             </zipfileset>
         </zip>
     </target>
@@ -295,7 +299,7 @@
                 <include name="dist/releasenotes/${java.relnotes}"/>
                 <include name="docs/**"/>
                 <include name="geocoder/**"/>
-                <include name="webapp/javap/trunk/**"/>
+                <include name="webapp/java/trunk/**"/>
                 <include name="workload/java/trunk/**"/>
                 <exclude name="dist/nightly/**"/>
                 <exclude name="dist/release/**"/>

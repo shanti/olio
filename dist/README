@@ -4,6 +4,9 @@ Ensure that the build.properties file has the correct <major>.<minor> numbers.
 Set the property 'build.release' to 'true' if you're generating a release without a time-stamp.
 Create release notes if required. Use the format RELEASE-NOTES-<type>-<version>.txt.
 All release notes should reside in the 'releasenotes' directory.
+The Java app needs to be built by going to 
+webapp/java/trunk/ws/apps/webapp and running ant in that directory.
+
 To build all releases, simply type 'ant'.
 The releases will be built in the 'nightly' directory.
 DO NOT check in the 'nightly' directory into the repository.
