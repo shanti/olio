@@ -392,7 +392,7 @@ machine. The
 following steps describe how to install it.</p>
 <p>For Glassfish:</p>
 <ol>
-  <li>Download and install Glassfish V2 from <a
+  <li>Download and install Glassfish V2.1.1 or GlassFish v3 from <a
  href="https://glassfish.dev.java.net/public/downloadsindex.html">https://glassfish.dev.java.net/public/downloadsindex.html.</a>
     <br>
   </li>
@@ -423,7 +423,10 @@ following components:<br>
 <ol>
   <li>Java EE compliant application server (eg. <a
  href="https://glassfish.dev.java.net/public/downloadsindex.html">GlassFish
-v2.1.1</a>)</li>
+v2.1.1</a> or <a
+ href="https://glassfish.dev.java.net/downloads/v3-final.html">GlassFish
+v3</a>) <br>
+  </li>
   <li>JPA provider &nbsp;( eg. <a
  href="http://www.eclipse.org/eclipselink/">Eclipselink</a>)</li>
 </ol>
@@ -434,12 +437,12 @@ for other application servers.<br>
 Installation and Configuration</font></h2>
 <ol>
   <li>
-    <p>Install Glassfish application server V2.1.1 from <a
- href="https://glassfish.dev.java.net/public/downloadsindex.html"><span
+    <p>Install Glassfish application server V2.1.1 or GlassFish v3 from
+    <a href="https://glassfish.dev.java.net/public/downloadsindex.html"><span
  style="text-decoration: underline;">https://glassfish.dev.java.net/public/downloadsindex.html.</span></a>
     <br>
 The directory where Glassfish has been installed will now be referred
-to as $GLASSFISH_HOME. </p>
+to as $GLASSFISH_HOME.&nbsp;&nbsp; </p>
   </li>
   <li>
     <p>Download the JDBC driver for mysql from <a
@@ -455,9 +458,9 @@ with the EclipseLink implementation. &nbsp;GlassFish v2.1.1
 uses TopLink as the default JPA implementation so you will have to <a
  href="http://www.eclipse.org/eclipselink/downloads/previous_releases.php">download</a>
 the eclipselink.jar,
-and &nbsp;put this in $GLASSFISH_HOME/lib directory. An issue was found
-with the latest EclipseLink (1.1.2), so you will need to
-get EclipseLink 1.1.0.<br>
+and &nbsp;put this in $GLASSFISH_HOME/lib directory. If you are using
+GlassFish v3, you need not download Eclipselink since the default JPA
+implementation is Eclipselink v2.0.<br>
     <br>
   </li>
   <li>For ease of use, a sample script, config_glassfish.sh, is

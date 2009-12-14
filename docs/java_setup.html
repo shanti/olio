@@ -438,7 +438,9 @@ following components:<br>
 <ol>
   <li>Java EE compliant application server (eg. <a
  href="https://glassfish.dev.java.net/public/downloadsindex.html">GlassFish
-v2.1.1</a>)</li>
+v2.1.1</a>, or <a
+ href="https://glassfish.dev.java.net/downloads/v3-final.html">GlassFish
+v3</a>)</li>
   <li>JPA provider &nbsp;( eg. <a
  href="http://www.eclipse.org/eclipselink/">Eclipselink</a>)</li>
 </ol>
@@ -449,7 +451,7 @@ for other application servers.<br>
 Installation and Configuration</font></h2>
 <ol>
   <li>
-    <p>Install Glassfish application server V2.1.1 from <a
+    <p>Install Glassfish application server V2.1.1 or v3 from <a
  href="https://glassfish.dev.java.net/public/downloadsindex.html"><span
  style="text-decoration: underline;">https://glassfish.dev.java.net/public/downloadsindex.html.</span></a>
     <br>
@@ -470,7 +472,9 @@ with the EclipseLink implementation. &nbsp;GlassFish v2.1.1
 uses TopLink as the default JPA implementation so you will have to <a
  href="http://www.eclipse.org/eclipselink/downloads/">download</a>
 the eclipselink.jar,
-and &nbsp;put this in $GLASSFISH_HOME/lib directory.<br>
+and &nbsp;put this in $GLASSFISH_HOME/lib directory.&nbsp; If you are
+using GlassFish v3, you need not download Eclipselink since the default
+JPA implementation is Eclipselink v2.0.<br>
   </li>
   <br>
   <li>For ease of use, a sample script, config_glassfish.sh, is
