@@ -159,7 +159,7 @@
         <tar destfile="${kit.dir}/${java.pkg.name}.tar.gz" longfile="gnu" compression="gzip">
             <tarfileset dir="stage" prefix="${java.pkg.name}" includes="release,LICENSE,NOTICE"/>
             <tarfileset dir="${relnotes.dir}" prefix="${java.pkg.name}" includes="${java.relnotes}"/>
-            <tarfileset dir="${docs.dir}" prefix="${java.pkg.name}" includes="java_setup.html"/>
+            <tarfileset dir="${docs.dir}" prefix="${java.pkg.name}" includes="java_setup_kit.html"/>
             <tarfileset dir="${java.workload.dir}/build" prefix="${java.pkg.name}" includes="OlioDriver.jar"/>
             <tarfileset dir="${geocoder.dir}/dist" prefix="${java.pkg.name}" includes="geocoder.war"/>
             <tarfileset dir="${java.app.dir}/dist" prefix="${java.pkg.name}" includes="webapp.war"/>
@@ -168,7 +168,7 @@
         <zip destfile="${kit.dir}/${java.pkg.name}.zip">
             <zipfileset dir="stage" prefix="${java.pkg.name}" includes="release,LICENSE,NOTICE"/>
             <zipfileset dir="${relnotes.dir}" prefix="${java.pkg.name}" includes="${java.relnotes}"/>
-            <zipfileset dir="${docs.dir}" prefix="${java.pkg.name}" includes="java_setup.html"/>
+            <zipfileset dir="${docs.dir}" prefix="${java.pkg.name}" includes="java_setup_kit.html"/>
             <zipfileset dir="${java.workload.dir}/build" prefix="${java.pkg.name}" includes="OlioDriver.jar"/>
             <zipfileset dir="${geocoder.dir}/dist" prefix="${java.pkg.name}" includes="geocoder.war"/>
             <zipfileset dir="${java.app.dir}/dist" prefix="${java.pkg.name}" includes="webapp.war"/>
