@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+-->
+
+<olio>
+    <jvmConfig xmlns="http://faban.sunsource.net/ns/fabanharness">
+        <javaHome>/usr/jdk/instances/jdk1.6.0</javaHome>
+        <jvmOptions>-Xmx1g -Xms256m -XX:+DisableExplicitGC</jvmOptions>
+    </jvmConfig>
+    
+    <fa:runConfig definition="org.apache.olio.workload.driver.UIDriver" xmlns="http://faban.sunsource.net/ns/fabandriver" xmlns:fa="http://faban.sunsource.net/ns/faban" xmlns:fh="http://faban.sunsource.net/ns/fabanharness">
+        <fh:description>Enter description for this run here</fh:description>
+        
+        <fa:hostConfig>
+            <fa:host>driverHost</fa:host>
+            <fh:enabled>true</fh:enabled>
+            <fh:cpus>0</fh:cpus>
+            <fh:tools>vmstat 10</fh:tools>
+            <fh:userCommands/>
+        </fa:hostConfig>
+        
+        <fa:scale>50</fa:scale>
+        
+        <fa:runControl>
+            <fa:rampUp>30</fa:rampUp>
+            <fa:steadyState>300</fa:steadyState>
+            <fa:rampDown>10</fa:rampDown>
+            <fa:variableLoad>false</fa:variableLoad>
+            <fa:variableLoadFile>/faban/load.txt</fa:variableLoadFile>
+        </fa:runControl>
+        
+        <outputDir>/tmp</outputDir>
+        
+        <audit>false</audit>
+        <threadStart>            
+            <delay>100</delay>
+            <simultaneous>false</simultaneous>            
+            <parallel>false</parallel>
+        </threadStart>
+        
+        <stats>
+            <maxRunTime>6</maxRunTime>
+            <interval>30</interval>
+        </stats>
+        
+        <runtimeStats enabled="false">
+            <interval>5</interval>
+        </runtimeStats>
+        
+        <driverConfig name="UIDriver">            
+            <agents>1</agents>            
+            <stats>
+                <interval>30</interval>
+            </stats>            
+            <runtimeStats target="9988"/>
+	    
+            <properties>
+                <property name="serverType">rails</property>
+            </properties>            
+        </driverConfig>
+    </fa:runConfig>
+    <proxyServer>
+        <fa:hostConfig xmlns="http://faban.sunsource.net/ns/fabanharness" xmlns:fa="http://faban.sunsource.net/ns/faban">
+            <fa:hostPorts>proxyHost:80</fa:hostPorts>
+            <enabled>true</enabled>
+            <cpus>0</cpus>
+            <tools>vmstat 10; mpstat 10; nicstat 10</tools>
+            <userCommands/>
+        </fa:hostConfig>
+        <type>nginx</type>
+        <fh:service xmlns:fh="http://faban.sunsource.net/ns/fabanharness">
+            <fh:name>NginxService</fh:name>
+            <fh:tools>NONE</fh:tools>
+            <fh:restart>true</fh:restart>
+            <fh:config>
+                <cmdPath>/usr/nginx/sbin/nginx</cmdPath>
+                <logsDir>/var/nginx/logs</logsDir>
+                <pidDir>/var/nginx/logs</pidDir>
+                <confPath>/etc/nginx/nginx.conf</confPath>
+				<getAccLog>false</getAccLog>
+             </fh:config>
+        </fh:service>
+     </proxyServer>
+    
+    <webServer>
+        <fa:hostConfig xmlns="http://faban.sunsource.net/ns/fabanharness" xmlns:fa="http://faban.sunsource.net/ns/faban">
+            <fa:hostPorts>serverHost:3000</fa:hostPorts>
+            <enabled>true</enabled>
+            <cpus>0</cpus>
+            <tools>vmstat 10; mpstat 10; nicstat 10</tools>           
+            <userCommands/>            
+        </fa:hostConfig>
+        <fh:service xmlns:fh="http://faban.sunsource.net/ns/fabanharness">
+            <fh:name>RailsService</fh:name>
+            <fh:tools>NONE</fh:tools>
+            <fh:restart>true</fh:restart>
+            <fh:config>
+                <type>thin</type>
+			    <appDir>/export/home/olio</appDir>
+                <cmdPath>/var/ruby/1.8/gem_home/bin/thin</cmdPath>
+                <logsDir>/var/log</logsDir>
+                <pidsDir>/var/run</pidsDir>
+                <numInstances>16</numInstances>
+				<rakePath>/var/ruby/1.8/gem_home/bin/rake</rakePath>
+             </fh:config>
+        </fh:service>
+     </webServer>
+    <dbServer>
+        <fa:hostConfig xmlns="http://faban.sunsource.net/ns/fabanharness" xmlns:fa="http://faban.sunsource.net/ns/faban">
+            <fa:host>dbHost</fa:host>
+            <enabled>true</enabled>
+            <cpus>0</cpus>
+            <tools>vmstat 10; mpstat 10; nicstat 10; iostat -xn 10</tools>
+            <userCommands/>
+        </fa:hostConfig>
+        <dbDriver>com.mysql.jdbc.Driver</dbDriver>
+        <connectURL>jdbc:mysql://dbHost/olio?user=olio&amp;password=olio&amp;relaxAutoCommit=true&amp;sessionVariables=FOREIGN_KEY_CHECKS=0</connectURL>
+        <reloadDB>true</reloadDB>
+        <scale>50</scale>
+        <fh:service xmlns:fh="http://faban.sunsource.net/ns/fabanharness">
+            <fh:name>MySQLService</fh:name>
+            <fh:tools>Mysqlstats</fh:tools>
+            <fh:restart>false</fh:restart>
+            <fh:config>
+                <serverHome>/var/mysql</serverHome>
+                <user>olio</user>
+                <password>olio</password>
+                <confPath>/etc/my.cnf</confPath>
+             </fh:config>
+        </fh:service>
+    </dbServer>
+    <dataStorage>
+        <fa:hostConfig xmlns:fa="http://faban.sunsource.net/ns/faban"
+                       xmlns="http://faban.sunsource.net/ns/fabanharness">
+            <fa:host>storageHost</fa:host>
+            <enabled>true</enabled>
+            <cpus>0</cpus>
+            <tools>NONE</tools>
+            <userCommands></userCommands>
+        </fa:hostConfig>
+        <reloadMedia>false</reloadMedia>        
+		<mediaDir>/filestore</mediaDir>
+    </dataStorage>
+    <cacheServers>
+        <fa:hostConfig xmlns="http://faban.sunsource.net/ns/fabanharness" xmlns:fa="http://faban.sunsource.net/ns/faban">
+		    <fa:hostPorts>cacheHost:11211</fa:hostPorts>
+            <enabled>false</enabled>
+            <cpus>0</cpus>
+            <tools>NONE</tools>
+            <userCommands/>
+        </fa:hostConfig>
+        <fh:service xmlns:fh="http://faban.sunsource.net/ns/fabanharness">
+            <fh:name>MemcachedService</fh:name>
+            <fh:tools>MemcacheStats -i 10</fh:tools>
+            <fh:restart>true</fh:restart>
+            <fh:config>
+                <cmdPath>/usr/lib/memcached</cmdPath>
+                <serverMemSize>256</serverMemSize>
+             </fh:config>
+        </fh:service>
+    </cacheServers>
+</olio>

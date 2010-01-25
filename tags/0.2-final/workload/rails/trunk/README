@@ -1,0 +1,35 @@
+This directory contains the source code for the Olio Rails workload
+and data generators. The directory structure is standard to Faban.
+The directories of interest (where source code resides) are bin, 
+deploy and src. 
+
+To build, create 'build.properties' from the corresponding template and
+execute 'ant deploy.jar'. Once the faban master is started, you can
+also automatically deploy the benchmark, by using 'ant deploy'.
+
+An explanation of the directory structure follows:
+- build.properties.template: This file is a template for build.properties
+  that needs to exist in this directory before you can build and deploy
+  the driver code.
+  The faban.home property needs to be set to home directory where faban
+  is installed. 
+  The faban.url property needs to be set to the url of the faban master
+  where the benchmark needs to be deployed.
+
+- The bin directory contains workload specific scripts and executables.
+
+- The deploy directory contains the run parameters (run.xml) and Xforms
+  configuration (config.xhtml). 
+
+- The src directory contains the source code for the driver, dbloader
+  and fileloader. Corresponding shell-script wrappers reside in 'bin'.
+
+- The resources directory contains static files used by the file loader.
+
+- The config and lib directories hold standard faban content.
+
+- The sbin directory contains utilities to run a benchmark outside
+  the Faban harness. This will not be packaged into the deployment
+  jar files. Benchmark-specific scripts and binaries should be places
+  into the bin directory.
+
