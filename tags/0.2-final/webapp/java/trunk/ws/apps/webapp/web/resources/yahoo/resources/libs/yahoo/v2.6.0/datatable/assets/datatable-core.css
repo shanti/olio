@@ -1,0 +1,97 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ 
+/* foundational CSS */
+
+/* mask */
+.yui-skin-sam .yui-dt-mask {
+    position:absolute;
+    z-index:9500;
+}
+
+/* scrollable */
+.yui-dt-tmp {
+    position:absolute;
+    left:-9000px;
+}
+
+.yui-dt-scrollable .yui-dt-bd {
+    overflow:auto;
+}
+.yui-dt-scrollable .yui-dt-hd {
+    overflow:hidden;
+    position:relative; /* for ie overflow bug http://rowanw.com/bugs/overflow_relative.htm */
+} 
+
+.yui-dt-scrollable .yui-dt-bd thead tr,
+.yui-dt-scrollable .yui-dt-bd thead th {
+    position:absolute;
+    left:-1500px;
+}
+
+.yui-dt-scrollable tbody {
+    -moz-outline:none;
+}
+
+/* draggable columns */
+.yui-dt-draggable {
+    cursor: move;
+}
+.yui-dt-coltarget {
+    position: absolute;
+    z-index: 999;
+}
+
+/* resizeable columns */
+.yui-dt-hd {
+    zoom:1; 
+}
+th.yui-dt-resizeable .yui-dt-resizerliner {
+    position:relative;
+}
+.yui-dt-resizer {
+    position:absolute;
+    right:0;
+    bottom:0;
+    height:100%;
+    cursor:e-resize;
+    cursor:col-resize;
+    background-color:#CCC;opacity:0;filter: alpha(opacity=0); /* Bug 1952811: IE transparency z-index */
+}
+.yui-dt-resizerproxy {
+    visibility:hidden;
+    position:absolute;
+    z-index:9000;
+}
+
+/* hidden columns */
+th.yui-dt-hidden .yui-dt-liner, 
+td.yui-dt-hidden .yui-dt-liner,
+th.yui-dt-hidden .yui-dt-resizer {
+    /*TODO: document change from 2.5.2 to 2.6
+    margin:0;
+    padding:0;
+    white-space:nowrap;
+    width:1px;
+    overflow:hidden;*/
+    display:none;
+}
+
+/* editing */
+.yui-dt-editor {
+    position:absolute;z-index:9000;
+}

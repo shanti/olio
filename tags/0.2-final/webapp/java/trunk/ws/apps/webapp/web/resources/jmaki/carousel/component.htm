@@ -1,0 +1,36 @@
+<!--
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+-->
+<div id="${uuid}" class="jmk-carousel">
+    <div id="${uuid}_scrollpane" class="jmk-carousel-content">
+        <div id="${uuid}_content" class="jmk-carousel-content-scroller">
+    </div>
+    </div>
+<div id="${uuid}_nav" class="jmk-carousel-nav" style="display:none">
+        <div id="${uuid}_mid" class="jmk-carousel-mid"></div>
+</div>
+
+<div id="${uuid}_template" style="display:none"><div  class="jmk-carousel-item">
+        <div class="jmk-carousel-title"><a href="@{link}" target="_top">@{title}</a></div>
+        <div class="jmk-carousel-item-content" id="${uuid}_item_@{id}">
+            @{body}
+        </div>
+        <div class="jmk-posted">Posted : @{date}</div>
+    </div>
+</div>
+
+</div>

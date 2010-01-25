@@ -1,0 +1,61 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ 
+{
+    "name": "RGB Slider",
+    "type": "yahoo",
+    "version": "1.8.1", 
+    "jmakiVersion" : "1.8.1",
+    "image": "images/yahoo-rgbslider.jpg",
+    "description": "An RGB/HSV color slider widget.",
+    "args":  [ 
+         {"sliderType":{"type":"STRING", "defaultValue": "RGB", "values": [
+         {"name" : "RGB", "value" : "RGB", "description" : "RGB slider."},
+         {"name" : "HSV", "value" : "HSV", "description" : "HSV slider."}
+     ]}}
+     ],
+     "config" : {
+         "type": {
+             "id" : "yahoo.rgbslider",
+             "libs": [
+             "../resources/libs/yahoo/v2.6.0/yahoo-dom-event/yahoo-dom-event.js",
+             "../resources/libs/yahoo/v2.6.0/animation/animation-min.js",
+             "../resources/libs/yahoo/v2.6.0/dragdrop/dragdrop-min.js",
+             "../resources/libs/yahoo/v2.6.0/slider/slider-min.js",
+             "../resources/libs/yahoo/v2.6.0/element/element-beta-min.js",
+             "../resources/libs/yahoo/v2.6.0/container/container_core-min.js",
+             "../resources/libs/yahoo/v2.6.0/button/button-min.js"
+             ],
+             "styles": [
+             "../resources/libs/yahoo/v2.6.0/fonts/fonts-min.css",
+             "../resources/libs/yahoo/v2.6.0/button/assets/skins/sam/button.css"],
+	    "resources": [
+                "../resources/libs/yahoo/v2.6.0/assets",
+                "../resources/libs/yahoo/v2.6.0/button/assets"]        
+         }
+     },
+    "topicInfo": {
+       "type": "publish",
+       "defaultPublish": "/yahoo/rgbslider",
+       "events" : [ 
+       {"name": "onRGBChange",
+       "description":" publish to the topicName when the rgb color has changed by the user. Publish an object with id and value where value is {r,g,b}."},
+       {"name": "onHSVChange",
+       "description":"publish to the topicName when the hsv color has changed by the user. Publish an object with id and value where value is {h,s,v}."}
+       ]
+    }
+}

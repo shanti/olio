@@ -1,0 +1,56 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ 
+{"name": "Map",
+ "type": "Yahoo",
+ "version": "1.8.1",
+ "jmakiVersion": "1.8.1",
+ "image" : "images/yahoo-map.jpg",
+ "description": "A configurable map.",
+ "args": [
+         {"zoom":{"type":"NUMBER", "defaultValue": 7, "description": "The map zoom."}},
+         {"location" : {"type":"STRING", "defaultValue": "Santa Clara, CA", "description": "The default location to center. Location takes precedence over setting centerLat and centerLong properties."}},
+         {"centerLat":{"type":"NUMBER", "defaultValue": 37.4041960114344, "description": "The center latititude."}},
+         {"centerLon":{"type":"NUMBER", "defaultValue": -122.008194923401, "description": "The center longitude."}},
+         {"mapType":{"type":"STRING", "defaultValue": "SATELLITE", "values": [
+               {"name" : "Hybrid", "value" : "HYBRID", "description" : "Hybrid view."},
+               {"name" : "Regular", "value" : "REGULAR", "description" : "Regular view."},
+               {"name" : "Satellite", "value" : "SATELLITE", "description" : "Satellite view."}
+              ], "description": "The map type."}},
+         {"height":{"type":"NUMBER", "defaultValue": 320, "description": "A static height."}},
+         {"width":{"type":"NUMBER", "defaultValue": 500, "description": "A static width."}}
+    ],
+ "hasCSS" : false, 
+ "config" : {
+     "type" : {
+         "id" :  "yahoo.map",
+         "hasCss" : false,
+         libs: [
+            "../resources/libs/yahoo/v2.6.0/yahoo-dom-event/yahoo-dom-event.js",
+            "../resources/libs/yahoo/v2.6.0/dragdrop/dragdrop-min.js",
+            "../resources/libs/yahoo/v2.6.0/animation/animation-min.js",
+            "../resources/libs/yahoo/v2.6.0/connection/connection-min.js",
+            "http://us.js2.yimg.com/us.js.yimg.com/lib/map/js/api/ymapapi_3_7_1_11.js"]
+        },
+  "apikeys" : [
+     {"id": "yahoo", "keys": [{"url" : "*", "key" : "jmaki-key"}]}
+    ]
+  },
+    "topicInfo": {
+       "defaultPublish" : "/yahoo/map",        "events" : [           {"name" :  "onClick",           "description" : "publish the id and value of the map when clicked.  value structured as follows {lat,lon,prevZoom,currZoom}."},
+            {"name" :  "onChangeZoom",           "description" : "publish the id and value of the map when the zoom is changed.  value structured as follows {lat,lon,prevZoom,currZoom}."}         ]    }  
+}

@@ -1,0 +1,98 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ 
+/*Menu */
+
+.jmk-menu-title {
+  width : 100%;
+}
+
+.jmk-menu-bar {
+    height:14px;
+    font-family: "Lucida Grande",Arial,Helvetica,clean,sans-serif;
+    padding:0 0 5px 0;
+    font-size:12px;
+    color : #FFF;
+}
+
+.jmk-menu-endSpacer{
+    height:12px;
+    width:35px;
+}
+
+.jmk-menu-separator{
+    color : #FFF;
+    margin-top: 5px;
+    width: 6px;
+    list-style : none;  
+    margin-left: 3px;
+    float : right;
+}
+
+.jmk-menu-top-item{
+    
+    text-align : left;
+    position: absolute;
+    cursor:pointer;
+}
+
+.jmk-menu-top-hover {
+    padding : 0;
+    margin : 0;
+    float:right;
+    margin-top: 2px;
+    list-style : none;
+    text-decoration:underline;    
+    margin-left:5px;
+    margin-right:5px;
+    cursor:pointer;
+}
+
+.jmk-menu-top {
+    padding : 0;
+    margin : 0;
+    float:right;
+    margin-top: 2px;
+    list-style : none;  
+    text-decoration:none;
+    margin-left:5px;
+    margin-right:5px;
+    cursor:pointer;
+}
+
+.jmk-menu-separator {
+    width:1px;
+    height : 6px;
+    border-right:1px solid #fff;
+    overflow:hidden;
+    margin-right:5px;
+}
+
+.jmk-menu-endSpacer {
+    width:0px;
+}
+
+.jmk-menu-container { 
+    list-style : none;
+    background:#fff;
+    padding : 3px;
+    position: absolute;
+    z-index:9999;
+    width:90px;
+    display:none;
+    font-size:12px;
+}

@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+-->
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+    <listener>
+        <listener-class>org.apache.olio.webapp.model.ModelFacade</listener-class>
+    </listener>
+    <context-param>
+        <description>Switch off caching. You can remove this parameter or comment it out when this app goes into production.</description>
+        <param-name>jmaki-usecache</param-name>
+        <param-value>false</param-value>
+    </context-param>
+    <servlet>
+        <servlet-name>ControllerServlet</servlet-name>
+        <servlet-class>org.apache.olio.webapp.controller.ControllerServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+        </servlet>
+    <servlet>
+        <servlet-name>XmlHttpProxy</servlet-name>
+        <servlet-class>jmaki.xhp.XmlHttpProxyServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>Jersey</servlet-name>
+        <servlet-class>com.sun.jersey.server.impl.container.servlet.ServletAdaptor</servlet-class>
+        <init-param>
+            <param-name>com.sun.jersey.config.feature.Redirect</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <init-param>
+            <param-name>unit:BPWebappPu</param-name>
+            <param-value>persistence/olio</param-value>
+        </init-param>
+         
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+<!--
+    <servlet-mapping>
+        <servlet-name>Jersey</servlet-name>
+        <url-pattern>/resources/*</url-pattern>
+    </servlet-mapping>
+-->
+   <!--
+   <servlet>
+        <servlet-name>jersey</servlet-name>
+        <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+        <init-param>
+            <param-name>com.sun.jersey.config.property.packages</param-name>
+            <param-value>org.apache.olio.webapp.rest</param-value>
+        </init-param>
+        <init-param>
+            <param-name>com.sun.jersey.config.property.resourceConfigClass</param-name>
+            <param-value>com.sun.jersey.api.core.PackagesResourceConfig</param-value>
+            </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>jersey</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+   -->
+
+
+
+    <!-- end jersey changes -->
+    <servlet-mapping>
+        <servlet-name>ControllerServlet</servlet-name>
+        <url-pattern>/api/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ControllerServlet</servlet-name>
+        <url-pattern>/rss</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ControllerServlet</servlet-name>
+        <url-pattern>/getRssFeed</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ControllerServlet</servlet-name>
+        <url-pattern>/person/*</url-pattern>
+    </servlet-mapping>    
+    <servlet-mapping>
+        <servlet-name>ControllerServlet</servlet-name>
+        <url-pattern>/event/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ControllerServlet</servlet-name>
+        <url-pattern>/EventRSS</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ControllerServlet</servlet-name>
+        <url-pattern>/logout</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ControllerServlet</servlet-name>
+        <url-pattern>/tag/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ControllerServlet</servlet-name>
+        <url-pattern>/util/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ControllerServlet</servlet-name>
+        <url-pattern>/access-artifacts/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>XmlHttpProxy</servlet-name>
+        <url-pattern>/xhp</url-pattern>
+    </servlet-mapping>
+    <session-config>
+        <session-timeout>
+            30
+        </session-timeout>
+    </session-config>
+    
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+        </welcome-file-list>
+    <error-page>
+        <exception-type>java.lang.RuntimeException</exception-type>
+        <location>/site.jsp?page=error.jsp</location>
+    </error-page>
+     <persistence-unit-ref>
+        <persistence-unit-ref-name>persistence/olio</persistence-unit-ref-name>
+        <persistence-unit-name>BPWebappPu</persistence-unit-name>
+    </persistence-unit-ref>
+    <resource-ref>
+        <res-ref-name>jdbc/BPWebappDB</res-ref-name>
+        <res-type>javax.sql.DataSource</res-type>
+        <res-auth>Container</res-auth>
+        <res-sharing-scope>Shareable</res-sharing-scope>
+    </resource-ref>
+  
+    <env-entry>
+        <description>Name of class used as the cache factory</description>
+        <env-entry-name>cacheFactoryClass</env-entry-name>
+        <env-entry-type>java.lang.String</env-entry-type>
+        <env-entry-value>org.apache.olio.webapp.cache.SimpleMapCacheFactory</env-entry-value>
+    </env-entry>
+    <env-entry>
+        <description>Geocoder URL</description>
+        <env-entry-name>geocoderURL</env-entry-name>
+        <env-entry-type>java.lang.String</env-entry-type>
+        <env-entry-value>http://pae4150-5:8080/geocoder/geocode</env-entry-value>
+    </env-entry>
+    
+    <jsp-config>
+        <jsp-property-group>
+            <url-pattern>*.jsp</url-pattern>
+            <trim-directive-whitespaces>true</trim-directive-whitespaces>
+        </jsp-property-group>
+    </jsp-config>
+    <persistence-context-ref>
+        <description>
+                Persistence context for the olio webapp
+        </description>
+        <persistence-context-ref-name>
+                persistence/olio/entity-manager
+        </persistence-context-ref-name>
+        <persistence-unit-name>
+                BPWebappPu <!-- Defined in persistence.xml -->
+        </persistence-unit-name>
+    </persistence-context-ref>
+    <persistence-unit-ref>
+        <persistence-unit-ref-name>persistence/olio/factory</persistence-unit-ref-name>
+        <persistence-unit-name>BPWebappPu</persistence-unit-name>
+    </persistence-unit-ref>
+ 
+            
+</web-app>

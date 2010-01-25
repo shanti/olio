@@ -1,0 +1,63 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ 
+{
+    "name": "Slider",
+    "type": "yahoo",
+    "version": "1.0",
+    "jmakiVersion" : "1.8",
+    "image": "images/yahoo-slider.jpg",
+    "description": "A horizontal/vertical/button slider with a value selection of a finite range.",
+    "args": [
+            {"sliderType":{"type":"STRING", "defaultValue": "H", "values": [
+              {"name" : "Button", "value" : "B", "description" : "Button horizontal slider."},
+              {"name" : "Horizontal", "value" : "H", "description" : "Horizontal slider."},
+              {"name" : "Vertical", "value" : "V", "description" : "Vertical slider."}
+             ],
+            "description": "The orientation of the slider."}},
+            {"sizeInPixels":{"type":"NUMBER", "defaultValue": 200, "description": "Size of slider in pixels"}},    
+	    {"animate":{"type":"BOOLEAN", "defaultValue": "true", "description": "Animation flag"}},
+	    {"tickSize":{"type":"NUMBER", "defaultValue": 10, "description": "Tick size"}},
+	    {"minValue":{"type":"NUMBER", "defaultValue": 0, "description": "Minimum value"}},
+	    {"maxValue":{"type":"NUMBER", "defaultValue": 100, "description": "Maximum value"}},
+	    {"initialValue":{"type":"NUMBER", "defaultValue": 50, "description": "The initial value"}}
+    ],
+    "config" : {
+    	"type": {
+		"id" : "yahoo.slider",
+	        "libs": [
+			    "../resources/libs/yahoo/v2.6.0/yahoo-dom-event/yahoo-dom-event.js",
+			    "../resources/libs/yahoo/v2.6.0/animation/animation-min.js",
+			    "../resources/libs/yahoo/v2.6.0/dragdrop/dragdrop-min.js",
+			    "../resources/libs/yahoo/v2.6.0/slider/slider-min.js",
+			 ],
+             "styles": [
+                     "../resources/libs/yahoo/v2.6.0/slider/assets/skins/sam/slider.css"],
+             "resources": [
+                    "../resources/libs/yahoo/v2.6.0/assets",
+                    "../resources/libs/yahoo/v2.6.0/slider/assets"]
+	    }
+     },
+    "topicInfo": {
+       "type": "publish",
+       "defaultPublish": "/yahoo/slider",
+       "events" : [
+       { "name": "onSelect",
+       "description":"onChange publishes to its topicName when the slider's value is selected. It publishes an object with widgetId and value. The value is the slider's value."}
+       ]
+    }
+}

@@ -1,0 +1,47 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ 
+{
+    "name": "Weather",
+    "type": "yahoo",
+    "version": "1.0",
+    "jmakiVersion" : "1.8",
+    "image": "images/yahoo-weather.jpg",
+    "description": "This widget lets you find the weather forecast using Yahoo Weather RSS feed.",
+    "args": [
+    {"location":{"type":"STRING", "defaultValue": "94089", "description": "The location for the forcast."}},
+    {"unit":{
+       "type":"STRING", "defaultValue": "c",
+       "values" : [
+         { "name" : "Celsius", value : "c", "description" : "Temperature in celcius."},
+         { "name" : "Farenheit", value : "f", "description" : "Temperature in farenheit."}
+      ],
+      "description": "The location for the forcast."}},
+    {"showConfig":{"type":"BOOLEAN", "defaultValue": false, "description": "Whether to show the widget form."}}
+    ],
+    "topicInfo": {
+       "defaultPublish": "/yahoo/weather/",
+       "defaultSubscribe": "/yahoo/weather/",
+       "commands": [
+       {"name": "getForecast", "description": "Get the forecast of the location passed in (city or zipcode).  Optionally can specify if the return value should be in Celsius (c) or Fahrenheit(f)"}
+       ],
+       "events": [
+       {"name": "onChange",
+       "description":"This publish to its topicName when getForecast is called. Publish an object with id and value. The value is {success, data: { ok, lastUpdated, city, region, country, temparature_unit, distance_unit, pressure_unit, speed_unit, chill,direction,speed,humidity,visibility,pressure,rising, sunrise,sunset,latitude,longitude, forecast: [{date,text,code,temparature},{day,date,text,code,low,high}+]}}"}
+       ]
+    }    
+}

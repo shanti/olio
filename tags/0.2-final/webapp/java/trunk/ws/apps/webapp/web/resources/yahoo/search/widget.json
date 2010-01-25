@@ -1,0 +1,46 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ 
+{
+    "name": "Search",
+    "type": "yahoo",
+    "version": "1.8.1",
+    "jmakiVersion" : "1.8.1",
+    "image": "images/yahoo-search.jpg",
+    "description": "This widget lets you use Yahoo! Search to search the web or find suggested spelling for a query.",
+    "args": [
+    {"topic":{"type":"STRING", "defaultValue": "/yahoo/search", "description": "The topic published to"}},
+    {"shown":{"type":"BOOLEAN", "defaultValue": "true", "description": "Whether to show the widget controls or not"}}],
+    "config" : {
+        "type": {
+            "id" : "yahoo.search",
+            "libs": [
+            "../resources/libs/yahoo/v2.6.0/yahoo-dom-event/yahoo-dom-event.js"
+            ]
+        }
+    },
+    "topicInfo": {
+       "type": "publish",
+       "defaultPublish": "/yahoo/search",
+       "events": [
+       {"name": "onSearchWeb",
+       "description":"This publishes to its topicName when searchWeb function is called an object with id and value. The value is {results} for onSearchWeb. See Yahoo JSON Search documentation for more information."},
+       {"name": "onSuggestSpell",
+       "description":"This publishes to its topicName when suggestSpell function is called an object with id and value. The value is {result} for onSuggestSpell."}
+       ]
+    }    
+}

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+-->
+<project name="webapp" default="default" basedir=".">
+    <description>Builds, tests, and runs the project webapp</description>
+
+    <property name="is.war.module" value="true"/>
+    <property name="dojo.zip" value="../../lib/dojo/dojo-0.4.1-ajax.zip" />
+    <property name="mvc.dir" value="../../commons/mvc"/>
+    <available property="mvc_jar.present" file="${file.reference.mvc.jar}"/>
+    <property name="webapp.lib" value="${basedir}/../../lib"/> 
+    <target name="-pre-compile" depends="init"/>
+ 
+    <target name="-post-compile" depends="init, include-jmaki-local">
+    <!-- uncomment this line below to do static weaving for weblogic bug -->
+    <!-- target name="-post-compile" depends="init, include-jmaki-local, weave" -->
+        <!-- copy property files into build directory -->
+        <copy todir="${build.classes.dir}" overwrite="true">
+            <fileset dir="src/java">
+                <include name="**/*.properties"/>
+            </fileset>
+        </copy>
+       
+        <mkdir dir="${build.web.dir}/WEB-INF/lib"/>
+        <copy todir="${build.web.dir}/WEB-INF/lib">
+            <!-- fileset file="${file.reference.mvc.jar}"/ -->
+            <fileset dir="${webapp.lib}">
+				<include name="*.jar"/>
+            </fileset>
+            
+            <!-- add jersey files -->
+			<fileset dir="${webapp.lib}/jersey">
+				<include name="*.jar"/>
+            </fileset>
+			
+        </copy>
+
+        <available file="${build.dir}/web/dojo.js" type="file" property="dojo.already.exists"/>        
+        <antcall target="dojo"/>
+
+        <antcall target="insert-proxy-settings"/>
+    </target>        
+    
+    
+    <target name="insert-proxy-settings">
+        <copy todir="${build.web.dir}/WEB-INF/" file="web/WEB-INF/web.xml"/>
+        <concat destfile="${build.dir}/proxy.properties">proxy.host=${proxy.host}
+            proxy.port=${proxy.port}
+            <filterchain>
+                <expandproperties/>
+            </filterchain>
+        </concat>
+        <!-- Replace value of the proxy settings in web.xml for Google maps -->
+        <replace file="${build.web.dir}/WEB-INF/web.xml" propertyFile="${build.dir}/proxy.properties">          
+            <replacefilter token="@@proxy.host@@" property="proxy.host"/>
+            <replacefilter token="@@proxy.port@@" property="proxy.port"/>
+        </replace>        
+    </target>
+    
+    <target name="checkLines">
+        <fixcrlf srcdir="./src" tab="remove" tablength="4" eol="unix" includes="**/*.properties,**/*.jsp,**/*.html,**/*.sh,**/*.java,**/*.xml" excludes="**/ja/**" />
+    </target>
+    
+    <target name="dojo" unless="dojo.already.exists" description="Unzips the dojo.zip to the right place">
+        <echo message="Unzipping dojo framework..."/>
+        <unzip src="${dojo.zip}" dest="${build.dir}/web" >
+            <patternset>
+                <include name="**/dojo.js"/>
+                <include name="**/iframe_history.html"/>
+                <include name="**/src/**"/>
+            </patternset>
+        </unzip>
+    </target>
+ 
+   <target name="include-jmaki-local">
+        <ant dir="../../" inheritAll="true" target="include-jmaki">
+            <property name="jmaki.zip" value="lib/ajax-wrapper-comp-1.8.1.jar" />
+            <property name="target.dir" value="${basedir}/${build.dir}/web"/>
+        </ant>
+    </target>
+<target name="copy-persistence-config">
+	<mkdir dir="${build.classes.dir}/META-INF"/>
+	<copy file="${src.conf}/persistence.xml" todir="${build.classes.dir}/META-INF" overwrite="true"/>
+	<copy file="${src.conf}/orm.xml" todir="${build.classes.dir}/META-INF" overwrite="true"/>
+</target>
+<target name="define.weave">
+    <taskdef name="weave" classname="org.eclipse.persistence.tools.weaving.jpa.StaticWeaveAntTask">
+     <classpath>
+        	<fileset dir="../../lib">
+                    <include name="**/*.jar"/>
+        	</fileset>
+		<fileset dir="${javaee.lib.dir}">
+		    <include name="**/*.jar"/>
+		</fileset>
+	</classpath>
+</taskdef>
+</target>
+
+<target name="weave" description="perform weaving" depends="copy-persistence-config, define.weave">
+    <weave  source="${build.classes.dir}"
+            target="${build.classes.dir}">
+	<classpath>
+        	<fileset dir="../../lib">
+                    <include name="**/*.jar"/>
+        	</fileset>
+		<fileset dir="${javaee.lib.dir}">
+		    <include name="**/*.jar"/>
+		</fileset>
+	</classpath>
+    </weave>
+</target>
+    <import file="../../bp-project.xml"/>
+    
+</project>

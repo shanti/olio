@@ -1,0 +1,62 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ 
+{
+    "name": "Color Picker",
+    "type": "yahoo",
+    "version": "1.8.1",
+    "jmakiVersion" : "1.8.1",
+    "image": "images/yahoo-colorpicker.jpg",
+    "description": "An advanced color picker widget.",
+    "args":  [
+        {"mode":{"type":"STRING", "defaultValue": "normal", "values": [
+        {"name" : "normal", "value" : "normal", "description" : "Normal color picker."},
+        {"name" : "button", "value" : "button", "description" : "Color picker button."}]}},
+        {"showControls":{"type":"BOOLEAN", "defaultValue": true,"description":"Hide/show the entire set of controls. "}},
+        {"showHexControls":{"type":"BOOLEAN", "defaultValue": true,"description":"Hide/show the hex controls."}},
+        {"showHexSummary":{"type":"BOOLEAN", "defaultValue": true,"description":"Hide/show the hex summary."}},
+        {"showHsvControls":{"type":"BOOLEAN", "defaultValue": false,"description":"Hide/show the HSV controls."}},
+        {"showRgbControls":{"type":"BOOLEAN", "defaultValue": true,"description":"Hide/show the HSV controls."}},
+        {"showWebSafe":{"type":"BOOLEAN", "defaultValue": true,"description":"Hide/show the websafe-color swatch."}}
+    ],
+    "config" : {
+        "type": {
+             "id" : "yahoo.colorpicker",
+             "libs": [
+                "../resources/libs/yahoo/v2.6.0/utilities/utilities.js",
+                "../resources/libs/yahoo/v2.6.0/slider/slider-min.js",
+                "../resources/libs/yahoo/v2.6.0/colorpicker/colorpicker-min.js"
+             ],
+             "styles": [
+                "../resources/libs/yahoo/v2.6.0/button/assets/skins/sam/button.css",
+                "../resources/libs/yahoo/v2.6.0/slider/assets/skins/sam/slider.css",
+                "../resources/libs/yahoo/v2.6.0/colorpicker/assets/skins/sam/colorpicker.css"],
+            "resources": [
+                "../resources/libs/yahoo/v2.6.0/assets",
+                "../resources/libs/yahoo/v2.6.0/button/assets",
+                "../resources/libs/yahoo/v2.6.0/colorpicker/assets"]
+        }
+    },
+       "topicInfo": {
+       "defaultPublish" : "/yahoo/colorpicker",
+        "commands" : [
+          {"name" : "select",
+          "description" : "Sets the color to the value provided."}
+          ],
+        "events" : [           {"name" :  "onSelect",           "description" : "publishes an object with id and value. The The data is formatted as a {rgb:[red,green,blue],hsv:[hue,saturation,value],hex:hexColor} object."}         ]
+    }
+}

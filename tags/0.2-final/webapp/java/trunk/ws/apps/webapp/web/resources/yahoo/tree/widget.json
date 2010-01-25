@@ -1,0 +1,78 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ 
+{
+    "name": "Tree",
+    "type": "yahoo",
+    "version": "1.8.1",
+    "jmakiVersion": "1.8.1",
+    "image": "images/yahoo-tree.jpg",
+    "description": "This widget is a dynamic tree that can easily be configured.",
+    "docs": {
+        "modelURL" : "http://wiki.java.net/bin/view/Projects/jMakiTreeDataModel"
+    },
+    "hasCSS" : false, 
+    "args": [
+    {"topic":{"type":"STRING", "defaultValue": "/yahoo/tree", "description": "The topic published to"}}
+    ],
+    "value": {"required":"true",
+    "type": "OBJECT",
+    "defaultValue":{ 
+        "root":{"title": "Default Yahoo Tree Root Node",
+        "expanded": true,
+        "children": [
+        {"title":"Yahoo Node 1.1", "onclick": {"url":"foo"}},
+        {"title":"Yahoo Node 1.2", "children": [{"title":"Node 3.1"}]}
+        ] 
+        }
+    }
+    },
+    "config" : {
+        "type" :
+        { "id" : "yahoo.tree", 
+          "libs" : [
+          "../resources/libs/yahoo/v2.6.0/yahoo-dom-event/yahoo-dom-event.js",
+          "../resources/libs/yahoo/v2.6.0/treeview/treeview-min.js"
+          ],
+          "styles" : [
+          "../resources/libs/yahoo/v2.6.0/treeview/assets/skins/sam/treeview.css"
+          ],
+          "resources" : [
+           "../resources/libs/yahoo/v2.6.0/assets",
+          "../resources/libs/yahoo/v2.6.0/treeview/assets"
+          ]
+        }
+    },
+    "topicInfo": {
+       "defaultPublish" : "/dojo/dijit/tree",       "defaultSubscribe" : ["/dojo/dijit/tree", "/tree"],
+      "commands" : [
+          {"name" : "addNodes",
+          "description" : "Adds a node or subtree to the node matching the provided id in the tree."},
+          {"name" : "removeNode",
+          "description" : "Removes the node matching the provided id in the tree. "},
+          {"name" : "removeChildren",
+          "description" : "Remove the subtree matching the provided id in the tree. "},
+          {"name" : "expandNode",
+          "description" : "Expand the node matching the id provided."
+          },
+          {"name" : "collapseNode",
+          "description" : "Collapse the node matching the id provided."
+          }
+      ],       "events" : [           {"name" :  "onExpand",           "description" : "publish the label of the expanded node."},
+           {"name" :  "onCollapse",           "description" : "publish the label of the collapsed node."},
+           {"name" :  "onClick",           "description" : "publish the label of the selected node."}         ]    }    
+}

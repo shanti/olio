@@ -1,0 +1,53 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ 
+ {
+    "name": "Logger",
+    "type": "yahoo",
+    "version": "1.0",
+    "jmakiVersion" : "1.8",
+    "image": "images/yahoo-logger.jpg",
+    "hasCSS" : false, 
+    "description": "The Logger widget provides a simple way to read or write log messages in JavaScript",
+    "args": [
+        {"topic":{"type":"STRING", "defaultValue": "/yahoo/logger", "description": "The topic published to"}},
+        {"width":{"type":"STRING", "defaultValue": "31em", "description": "Width of console"}},
+        {"height":{"type":"STRING", "defaultValue": "20em", "description": "Height of container"}},
+        {"left":{"type":"STRING", "defaultValue": "10%", "description": "Position from left edge of viewport"}},
+        {"top":{"type":"STRING", "defaultValue": "20px", "description": "Position from top edge of viewport"}},
+        {"right":{"type":"STRING", "defaultValue": "30em", "description": "Position from right edge of viewport"}},
+        {"bottom":{"type":"STRING", "defaultValue": "40%", "description": "Position from bottom edge of viewport"}},
+        {"fontSize":{"type":"STRING", "defaultValue": "100%", "description": "Increase default font size"}}
+    ],
+    "config" : {
+    	"type": {
+    	"id" : "yahoo.logger",
+         "libs": [
+                "../resources/libs/yahoo/v2.6.0/yahoo-dom-event/yahoo-dom-event.js",
+                "../resources/libs/yahoo/v2.6.0/dragdrop/dragdrop-min.js",
+                "../resources/libs/yahoo/v2.6.0/logger/logger-min.js"
+                 ],
+         "postload" : "if (typeof YAHOO != \"undefined\") {jmaki.log = YAHOO.log;jmaki.debugGlue=true;}",
+         "styles": [
+                "../resources/libs/yahoo/v2.6.0/logger/assets/logger.css"
+                   ],
+         "resources": [
+                "../resources/libs/yahoo/v2.6.0/logger/assets"
+                   ]
+	    }
+    }
+}

@@ -1,0 +1,66 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ 
+{"name": "Horizontal Menu",
+         "type": "jmaki",
+         "version" : "1.8",
+         "jmakiVersion" : "1.8",
+         "author" : "Greg Murray",
+         "url" : "https://widgets.dev.java.net",         
+         "image" : "images/jmaki-menu.jpg",
+         "description":"An object containing an array of row objects. Each column object has a label property and contains an array of menu items which url that maps to an external resource or a content attribute which contains inline text.",
+		 "docs" : {        	"modelURL" : "http://wiki.java.net/bin/view/Projects/jMakiMenuDataModel",   			"jsDoc" : "http://jmaki.dev.java.net/jsdoc/jmaki_menu"		 },
+         "value":{"type" : "OBJECT",
+                "defaultValue":
+                {"menu" : [
+                 {"label": "Some Topic",
+              	"menu": [
+             	  {"label":"Some Item", "href":"http://www.sun.com"},
+                  {"label":"Some Item 2", "href":"http://www.jmaki.com"}
+               	 ]},
+		         {"label": "Some Other Topic",
+                  "menu": [
+		          {"label":"Some Other Item", "href":"http://www.java.sun.com"},
+                  {"label":"Some Other Item 2",  "action" : {"topic": "/mytopic", "message": "2.jsp"}}
+               	 ]}
+            ]
+        }
+    },
+    "config" : {
+          "type" :
+           { "id" : "jmaki",
+              "themes" : [
+                   {"id" : "kame",
+                    "default" : true,
+                     "style" : "../resources/styles/themes/kame/theme.css"
+                   },
+                   {"id" : "ocean",
+                     "style" : "../resources/styles/themes/ocean/theme.css"
+                   },
+                   {"id" : "orange",
+                     "style" : "../resources/styles/themes/orange/theme.css"
+                   }
+               ],
+               "resources" : [
+                   "../resources/styles"
+               ]
+          }  
+    },
+    "topicInfo": {
+       "defaultPublish" : "/jmaki/menu",       "defaultSubscribe" : ["/jmaki/menu"],
+       "description":"on onclick event publish to /jmaki/menu topic passing the cooresponding string for the menu item if the active property is used.  If the href property is used then navigation goes to the URL represented by that cooresponding string.",       "events" : [           {"name" :  "onClick",           "description" : "publish the value of the selected node"}         ]    }
+ }

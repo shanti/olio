@@ -1,0 +1,47 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ 
+.yui-navset .yui-nav li { /* tabs */
+    font:77%/1.2 verdana;
+    margin-bottom:-10px; /* pointer overlap */
+    padding-bottom:6px; /* make room for pointer */
+    position:relative;
+    top:-2px; /* pull above nav */
+}
+
+
+.yui-navset .yui-content { /* content pane */
+    background:#fff;
+    border:1px solid #dcdcdc;
+}
+
+.yui-navset .yui-nav {
+    background:#e1e1e1 url(img/newcats_bkgd.gif) repeat-x; 
+    border:1px solid #dcdcdc;
+}
+
+.yui-navset .yui-nav li a em {
+    padding:0.5em;
+}
+
+.yui-navset .yui-nav .selected a {
+    background:#293852 url(img/tab_right.gif) no-repeat top right;
+    color:#fff;
+}
+
+.yui-navset .yui-nav .selected { background:url(img/ptr.gif) no-repeat bottom center; }
+.yui-navset .yui-nav .selected em { background:url(img/tab_left.gif) no-repeat; }

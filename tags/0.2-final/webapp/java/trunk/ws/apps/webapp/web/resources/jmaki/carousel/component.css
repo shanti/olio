@@ -1,0 +1,235 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ 
+.jmk-carousel {
+  height: auto;
+  border : 0px solid #000;
+  position : relative;
+}
+ 
+.jmk-carousel a {
+  color : #363F53;
+  text-decoration:none;
+}
+
+.jmk-carousel li div {
+    font-size:1.0em;  
+}  
+
+.jmk-carousel-title {
+    height : 17px;
+    overflow : hidden;
+    color : #494D7C;
+    text-decoration:none; 
+}
+
+.jmk-carousel-id {
+    text-align : center;
+    height : 18px;
+    color : #FFF;
+    float : left;
+    text-decoration:none; 
+}
+
+.jmk-carousel-id a {
+  cursor : pointer;
+  color : #FFF;
+  text-decoration : none;
+}
+
+.jmk-carousel-id a:hover {
+  text-decoration : underline;
+}
+
+.jmk-carousel-title a {
+    font-size:1.1em;
+}
+
+.jmk-carousel .jmk-posted {
+    font-size:.8em;
+}
+
+.jmk-carousel- a:hover {
+  text-decoration : underline;
+}
+  
+.jmk-carousel-item {
+  z-index : 2;
+  background : #FFF;
+  -moz-border-radius: 7px;
+  -webkit-border-radius: 7x;
+  /* -opera-border-radius: 7px; */
+  border-radius: 7px;
+  border : 1px solid #000;
+  padding : 3px;
+  margin-top : 2px;
+  margin-left : 2px;
+  margin-right : 2px;
+  overflow : hidden;
+}
+
+.jmk-carousel-content {  
+  font-size:.8em;
+  z-index :1;
+  position : relative;
+  overflow : hidden;
+}
+
+.jmk-carousel-content-scroller  {
+  z-index :1;    
+  position : absolute;
+  overflow-x:hidden;
+  overflow-y:hidden;     
+}
+
+.jmk-carousel-item-content {
+  height : 65px;
+  overflow : hidden;  
+  
+}
+
+.jmk-carousel-nav {
+    clear:both;
+    height : 25px;
+}
+
+.jmk-carousel-mid {
+    margin-left : auto;
+    margin-right : auto;
+}
+
+.jmk-carousel-item-selected {
+  background : #99D481;
+}
+
+.jmk-carousel-item-content {
+    padding:0 0.5em;
+    position:relative;
+    top:5px;
+}
+
+.jmk-carousel-title {
+    padding:0 0.5em;
+    font-size:12px;
+    position:relative;
+}
+
+.jmk-carousel-id {
+    width : 15px;
+    height : 20px;
+    margin-left : 3px;
+    margin-right : 3px;
+    padding-left : 2px;
+    padding-right : 2px;
+    cursor : pointer;
+}
+
+/*Carousel kame*/
+.jmk-carousel-kame {
+    font-family: "Lucida Grande",Arial,Helvetica,clean,sans-serif;
+    background: #e8f5e4;
+    border: 1px solid #D7F2CF !important;
+    padding:5px;
+}
+
+.jmk-carousel-item-kame {
+    border: 1px solid #B8E9AA !important;
+    background:#fff;
+    position:relative;
+}
+
+.jmk-carousel-title-kame {
+    color:#fff;
+}
+
+.jmk-carousel-title-kame a:link, .jmk-carousel-title-kame a:visited {
+    color: #0046A2;
+}
+
+.jmk-carousel-id-kame {
+    background:#41b51d;
+    border: 1px solid #B8E9AA !important;
+}
+
+.jmk-carousel-id-selected-kame {
+    color:#41b51d;
+    background : #FFF;
+}
+
+/*Carousel Ocean*/
+.jmk-carousel-ocean {
+    font-family: "Lucida Grande",Arial,Helvetica,clean,sans-serif;
+    background: #E3EDF7;
+    border: 1px solid #CDDFEC !important;
+    padding:5px;
+}
+
+.jmk-carousel-item-ocean {
+    border: 1px solid #B1CBDF !important;
+    background:#fff;
+    position:relative;
+}
+
+.jmk-carousel-title-ocean {
+    color:#fff;
+}
+
+.jmk-carousel-title-ocean a:link, .jmk-carousel-title-ocean a:visited {
+    color: #0046A2;
+}
+
+.jmk-carousel-id-ocean {
+    background:#1279c6;
+    border: 1px solid #B1CBDF !important;
+}
+
+.jmk-carousel-id-selected-ocean {
+    color:#1279c6;
+    background : #FFF;
+}
+
+/*Carousel Orange*/
+.jmk-carousel-orange {
+    font-family: "Lucida Grande",Arial,Helvetica,clean,sans-serif;
+    background: #fdd7c3;
+    border: 1px solid #fc5d0a !important;
+    padding:5px;
+}
+
+.jmk-carousel-item-orange {
+    border: 1px solid #fc5d0a !important;
+    background:#fff;
+    position:relative;
+}
+
+.jmk-carousel-title-orange {
+    color:#fff;
+}
+
+.jmk-carousel-title-orange a:link, .jmk-carousel-title-orange a:visited {
+    color: #ff7a34;
+}
+
+.jmk-carousel-id-orange {
+    background:#ff7a34;
+    border: 1px solid #fc5d0a !important;
+}
+
+.jmk-carousel-id-selected-orange {
+    color:#ff7a34;
+    background : #FFF;
+}
