@@ -1,0 +1,63 @@
+<!--
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+-->
+<%= error_messages_for 'user' %>
+<%= error_messages_for 'address' %>
+
+<!--[form:users]-->
+<label for="user_username">Username</label>
+<%= text_field 'user', 'username' %>
+<%= observe_field "user_username", :frequency => 3, :url => { :action => :check_name }, :update => :name_validity, :with => "'name='+escape(value)" %><span id="name_validity"></span>
+<br />
+
+<label for="user_password">Password</label>
+<%= password_field 'user', 'password'  %>
+<br />
+
+<label for="user_password_confirmation">Confirm Password</label>
+<%= password_field 'user', 'password_confirmation' %>
+<br />
+
+<label for="user_firstname">Firstname</label>
+<%= text_field 'user', 'firstname'  %>
+<br />
+
+<label for="user_lastname">Lastname</label>
+<%= text_field 'user', 'lastname'  %>
+<br />
+
+<label for="user_email">Email</label>
+<%= text_field 'user', 'email'  %>
+<br />
+
+<label for="user_telephone">Telephone</label>
+<%= text_field 'user', 'telephone'  %>
+<br />
+
+<label for="event_image">Image</label>
+<%= file_field_tag 'user_image' %>
+<br />
+
+<label for="user_summary">Summary</label>
+<%= text_area 'user', 'summary'  %>
+<br />
+
+<label for="user_timezone">Timezone</label>
+<%= time_zone_select('user', 'timezone', nil, {}, {:selected => "Eastern Time (US & Canada)"}) %>
+<!--[eoform:users]-->
+

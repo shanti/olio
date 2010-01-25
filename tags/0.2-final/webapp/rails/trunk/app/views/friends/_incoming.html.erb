@@ -1,0 +1,34 @@
+<!--
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+-->
+<div id="incoming">
+<% unless @incoming.empty? -%>
+  <fieldset id="incoming_requests">
+    <legend>Incoming friendship invitations</legend>
+    <ol>
+      <% @incoming.each do |i| -%>
+        <li id="incoming_friend_request_<%= i.user.id %>">
+          <%= link_to full_name(i.user), user_path(i.user) %>
+          <%= render :partial => 'friends/approve_link', :locals => { :user => @user, :target => i.user } %>
+          <%= render :partial => 'friends/reject_link', :locals => { :user => @user, :target => i.user } %>
+        </li>
+      <% end -%>
+    </ol>
+  </fieldset>
+<% end -%>
+</div>

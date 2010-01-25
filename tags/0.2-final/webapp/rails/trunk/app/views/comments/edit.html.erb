@@ -1,0 +1,44 @@
+<!--
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+-->
+<h1>Editing your comment</h1>
+
+<fieldset id="comment_before_edit">
+  <legend>Your current comment</legend>
+  <%= display_name(@comment.author) %> (<%= output_date(@comment.created_at) %>):
+
+  <% unless @comment.rating == 0 %>
+    <span id="rating">
+      <% @comment.rating.times do -%>
+        <%= image_tag("16-star-hot.png") %>
+      <% end -%>
+      <% (5 - @comment.rating).times do -%>
+        <%= image_tag("16-star-cold.png") %>
+      <% end -%>
+    </span>
+  <% end -%>
+  
+  <p id="comment_text"><%=white_list @comment.comment %></p>
+</fieldset>
+
+<%= error_messages_for :comment %>
+
+<% form_for [@comment.event, @comment] do |f| %>
+  <%= render :partial => "form", :locals => {:f => f, :comment => @comment} %>
+  <p><%= f.submit "Update" %></p>
+<% end -%>

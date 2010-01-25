@@ -1,0 +1,52 @@
+<!--
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+-->
+<% cache({:controller => "events", :action => "index", :part => "index_event_list"}, {:expire => 30.seconds.to_i}) do -%>
+  <div id="event_table">
+    <% if @events.empty? -%>
+      No events.
+    <% else -%>
+      <ol id="event_list" style="list-style-type: none;">
+      <% @events.each do |event| -%>
+        <% which_class = cycle('even_event', 'odd_event') -%>
+        <li id="event_<%= event.id %>_details" class="event_item <%= which_class %>" style="padding: 7px;" onmouseover="Element.findChildren(this, 'extra_details', true, 'div').first().show();" onmouseout="Element.findChildren(this, 'extra_details', true, 'div').first().hide();">
+          <div class="thumbnail_for_list">
+            <%= thumbnail(get_image(event), event_path(event), :small) %>
+          </div>
+          <div class="event_details_for_list">
+            <h2 class="tight_heading"><%= link_to h(event.title), event %></h2>
+            <%= simple_date(event.event_timestamp) %>
+          
+            <div class="extra_details" style="display: none;">
+              <%= edit_delete_links(event) if logged_in? %>
+              <br />
+              Created: <%= output_date(event.created_at) %> <br/><br/>
+              <%=white_list event.summary %>
+            </div>
+          </div>
+          <div class="clr"></div>
+        </li>
+        <% if which_class == 'odd_event' -%>
+          <li class="clr"></li>
+        <% end -%>
+      <% end -%>
+      </ol>
+    <% end -%>
+    <%= will_paginate @events if @events.respond_to? :page_count %>  
+  </div>
+<% end -%>

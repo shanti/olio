@@ -1,0 +1,8 @@
+<h1>Comment on "<%=h @event.title %>"</h1>
+
+<%= error_messages_for :comment %>
+
+<% form_for [@event, @comment] do |f| %>
+  <%= render :partial => "form", :locals => {:f => f, :comment => @comment} %>
+  <p><%= f.submit "Comment" %></p>
+<% end -%>

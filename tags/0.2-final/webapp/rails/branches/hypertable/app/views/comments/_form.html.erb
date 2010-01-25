@@ -1,0 +1,44 @@
+  <p>
+    <strong>Comment</strong><br />
+    <%= f.text_area :comment %>
+  </p>
+  
+  <p>
+    <strong>Rating</strong><br />
+    
+    <div class="simple_comment_rating">
+      <%= select :comment, :rating, 1..5 %>
+    </div>
+    
+    <div class="hover_comment_rating" style="display: none;">
+  		<% comment.rating.times do |x| -%>
+  			<span id="starspan<%= x+1 %>">
+  			  <%= link_to_function(image_tag("16-star-hot.png", :id => "starimage#{x+1}"), nil, :id => "star#{x+1}") do |page|
+  					amount = x+1
+  					5.times do |a|
+  						page["starimage#{a+1}"].src = "/images/16-star-cold.png"
+  					end
+  					amount.times do |a|
+  						page["starimage#{a+1}"].src = "/images/16-star-hot.png"	
+  					end
+  			    page[:srating].value = amount
+  			  end %>
+  			</span>
+  		<% end -%>
+  		<% (5-comment.rating).times do |x| -%>
+  			<span id="starspan<%= comment.rating + x + 1 %>">
+  			  <%= link_to_function(image_tag("16-star-cold.png", :id => "starimage#{comment.rating+x+1}"), nil, :id => "star#{comment.rating+x+1}") do |page|
+  					amount = comment.rating+x+1
+  					5.times do |a|
+  						page["starimage#{a+1}"].src = "/images/16-star-cold.png"
+  					end
+  					amount.times do |a|
+  						page["starimage#{a+1}"].src = "/images/16-star-hot.png"	
+  					end
+  			    page[:srating].value = amount
+  			  end %>
+  			</span>
+  		<% end -%>
+  	</div>
+    <%= f.hidden_field :rating, :value => comment.rating, :id => "srating" %>    
+  </p>

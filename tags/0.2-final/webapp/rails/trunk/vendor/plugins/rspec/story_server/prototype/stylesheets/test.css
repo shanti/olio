@@ -1,0 +1,107 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ 
+body, div, p, h1, h2, h3, ul, ol, span, a, table, td, form, img, li {
+  font-family: sans-serif;
+}
+
+body {
+  font-size:0.8em;
+}
+
+.navigation {
+  background: #9DC569;
+  color: #fff;
+}
+
+.navigation h1 {
+  font-size: 20px;
+}
+
+.navigation h2 {
+  font-size: 16px;
+  font-weight: normal;
+  margin: 0;
+  border: 1px solid #e8a400;
+  border-bottom: 0;
+  background: #ffc;
+  color: #E8A400;
+  padding: 8px;
+  padding-bottom: 0;
+}
+
+.navigation ul {
+  margin-top: 0;
+  border: 1px solid #E8A400;
+  border-top: none;
+  background: #ffc;
+  padding: 8px;
+  margin-left: 0;
+}
+
+.navigation ul li {
+  font-size: 12px;
+  list-style-type: none;
+  margin-top: 1px;
+  margin-bottom: 1px;
+  color: #555;
+}
+
+.navigation a {
+  color: #ffc;
+}
+
+.navigation ul li a {
+  color: #000;
+}
+
+#log {
+  padding-bottom: 1em;
+  border-bottom: 2px solid #000;
+  margin-bottom: 2em;
+}
+
+#logsummary {
+  margin-bottom: 1em;
+  padding: 1ex;
+  border: 1px solid #000;
+  font-weight: bold;
+}
+
+#logtable {
+  width:100%;
+  border-collapse: collapse;
+  border: 1px dotted #666;
+}
+
+#logtable td, #logtable th {
+  text-align: left;
+  padding: 3px 8px;
+  border: 1px dotted #666;
+}
+
+#logtable .passed {
+  background-color: #cfc;
+}
+
+#logtable .failed, #logtable .error {
+  background-color: #fcc;
+}
+
+#logtable .nameCell {
+  cursor: pointer;
+}

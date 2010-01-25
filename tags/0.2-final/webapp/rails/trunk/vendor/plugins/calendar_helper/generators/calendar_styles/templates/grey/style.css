@@ -1,0 +1,95 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ 
+/*
+  A grey based theme, inspired by Blinksale and their ColorBurn widget. http://firewheeldesign.com
+  
+  AUTHOR: Geoffrey Grosenbach http://nubyonrails.com
+  
+  Colors: 
+    dk: 787888
+    lt: 4f4f5b
+    lter: a8a8a8
+    white: ffffff
+*/
+
+/* TODO */
+
+.calendar {
+  margin: auto;
+  color: white;
+  text-align: center;
+}
+
+.monthName th {
+  font-weight: normal;
+  text-align: right;
+  padding-top: 1em;
+  padding-bottom: 0.7em;
+  color: black;
+}
+
+.dayName th {
+  font-size: 0.7em;
+  padding-top: 0.6em;
+  padding-bottom: 0.3em;
+  background-color: #303030;
+  color: white;
+  border-bottom: 1px solid white;
+}
+
+.otherMonth, .day, .specialDay {
+  padding: 0.7em 1em;
+  border-right: 1px solid #111111;
+}
+
+.otherMonth {
+  color: #999999;
+  background-color: #4f4f5b;
+}
+
+.day, .specialDay {
+  border-bottom: 1px solid #111111;
+  background-color: #333333;
+}
+.specialDay {
+  background-color: #a8a8a8;
+  color: black;
+}
+.specialDay a, .specialDay a:visited, .specialDay a:hover {
+  color: white;
+  text-decoration: none;
+  padding: 1em;
+}
+.specialDay a:hover {
+  color: white;
+  background-color: black;
+}
+.weekendDay {
+  background-color: #787888;
+}
+.today {
+	background-color: white;
+	color: black;
+}
+
+Colors: 
+  dk: 787888
+  lt: 4f4f5b
+  lter: a8a8a8
+  white: ffffff
+

@@ -1,0 +1,3 @@
+page[:attendees].reload
+page[:upcoming_subset].reload
+page.refresh_messages

@@ -1,0 +1,62 @@
+<!--
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+-->
+  <p>
+    <strong>Comment</strong><br />
+    <%= f.text_area :comment %>
+  </p>
+  
+  <p>
+    <strong>Rating</strong><br />
+    
+    <div class="simple_comment_rating">
+      <%= select :comment, :rating, 1..5 %>
+    </div>
+    
+    <div class="hover_comment_rating" style="display: none;">
+  		<% comment.rating.times do |x| -%>
+  			<span id="starspan<%= x+1 %>">
+  			  <%= link_to_function(image_tag("16-star-hot.png", :id => "starimage#{x+1}"), nil, :id => "star#{x+1}") do |page|
+  					amount = x+1
+  					5.times do |a|
+  						page["starimage#{a+1}"].src = "/images/16-star-cold.png"
+  					end
+  					amount.times do |a|
+  						page["starimage#{a+1}"].src = "/images/16-star-hot.png"	
+  					end
+  			    page[:srating].value = amount
+  			  end %>
+  			</span>
+  		<% end -%>
+  		<% (5-comment.rating).times do |x| -%>
+  			<span id="starspan<%= comment.rating + x + 1 %>">
+  			  <%= link_to_function(image_tag("16-star-cold.png", :id => "starimage#{comment.rating+x+1}"), nil, :id => "star#{comment.rating+x+1}") do |page|
+  					amount = comment.rating+x+1
+  					5.times do |a|
+  						page["starimage#{a+1}"].src = "/images/16-star-cold.png"
+  					end
+  					amount.times do |a|
+  						page["starimage#{a+1}"].src = "/images/16-star-hot.png"	
+  					end
+  			    page[:srating].value = amount
+  			  end %>
+  			</span>
+  		<% end -%>
+  	</div>
+    <%= f.hidden_field :rating, :value => comment.rating, :id => "srating" %>    
+  </p>

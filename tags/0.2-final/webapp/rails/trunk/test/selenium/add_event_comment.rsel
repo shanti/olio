@@ -1,0 +1,48 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# 
+open '/selenium/setup?clear_tables=users,addresses,events,documents,images,invites,taggings,tags,events_users&fixtures=events,login_user'
+include_partial 'login'
+
+click_and_wait 'link=Event 0'
+verify_text '//div[@id="main_event_details"]/h1', 'Event 0'
+
+fire_event 'link=Add a comment', 'click'
+wait_for_text '//div[@id="comment_form"]//p/strong', 'Comment'
+
+type_tiny_mce 'comment[comment]', "This event sucked!"
+
+fire_event "star3", 'click'
+wait_for_attribute '//a[@id="star3"]/img/', 'src', '/images/16-star-hot.png'
+
+verify_attribute '//a[@id="star1"]/img/', 'src', '/images/16-star-hot.png'
+verify_attribute '//a[@id="star2"]/img/', 'src', '/images/16-star-hot.png'
+verify_attribute '//a[@id="star4"]/img/', 'src', '/images/16-star-cold.png'
+verify_attribute '//a[@id="star5"]/img/', 'src', '/images/16-star-cold.png'
+
+click 'comment_submit'
+wait_for_text_present 'Thanks for your comment.'
+verify_text '//ol[@id="comment_list"]/li', "*You*"
+verify_text 'comment_text', 'This event sucked!'
+
+verify_attribute '//span[@id="rating"]/img[1]/', 'src', '/images/16-star-hot.png*'
+verify_attribute '//span[@id="rating"]/img[2]/', 'src', '/images/16-star-hot.png*'
+verify_attribute '//span[@id="rating"]/img[3]/', 'src', '/images/16-star-hot.png*'
+verify_attribute '//span[@id="rating"]/img[4]/', 'src', '/images/16-star-cold.png*'
+verify_attribute '//span[@id="rating"]/img[5]/', 'src', '/images/16-star-cold.png*'
+
+
