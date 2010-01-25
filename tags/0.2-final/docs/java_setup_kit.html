@@ -1,0 +1,942 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="CONTENT-TYPE"
+ content="text/html; charset=iso-8859-1">
+  <title>Olio/Java Install and Setup Guide</title>
+  <meta name="generator" content="Bluefish 1.0.7">
+  <meta name="author" content="Akara Sucharitakul">
+  <meta name="CREATED" content="20070926;10111500">
+  <meta name="CHANGEDBY" content="Shanti Subramanyam">
+  <meta name="CHANGED" content="20071002;14122900">
+<!-- Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+     with the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing,
+     software distributed under the License is distributed on an
+     "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+     specific language governing permissions and limitations
+     under the License.    
+-->
+</head>
+<body style="direction: ltr;" lang="en-US">
+<h1 align="center">Olio/Java<br>
+Install and Setup Guide From Tarball<br>
+</h1>
+<h2>Overview</h2>
+<p>Java Olio is a macro-level benchmark consisting of the
+following
+components:</p>
+<ol>
+  <li>
+    <p style="margin-bottom: 0in;">The web application</p>
+  </li>
+  <li>
+    <p style="margin-bottom: 0in;">The main database </p>
+  </li>
+  <li>
+    <p style="margin-bottom: 0in;">Distributed storage servers (NFS or
+MogileFS)</p>
+  </li>
+</ol>
+<ol start="4">
+  <li>An optional caching server (memcached)<br>
+  </li>
+</ol>
+<ol start="5">
+  <li>
+    <p style="margin-bottom: 0in;">Storage metadata database (for
+MogileFS)</p>
+  </li>
+  <li>
+    <p style="margin-bottom: 0in;">Geocoder emulator </p>
+  </li>
+  <li>
+    <p>Workload driver</p>
+  </li>
+</ol>
+<p>If your primary interest is in setting up the application
+alone, you need items 1-3 above and they can all be setup on a single
+system. If on the other hand, you would like to drive load against the
+application, you will need at least 2 systems. At higher loads, you may
+need multiple systems. At a minimum, we need to separate the SUT
+(System Under Test) components and the non-SUT components to get valid
+results. The non-SUT components are the Geocoder emulator and the
+workload driver. It is best to connect the driver machine to the SUT
+machine on a local private network. This ensures that latencies
+measured do not include arbitrary delays.</p>
+<p>For a horizontally scaled workload, or to measure the
+performance of the individual components, you can deploy the SUT
+components on separate physical or virtual machines. &nbsp;Keep in
+mind though that the
+bulk of cpu is spent in the application server component. <br>
+<br>
+In the following sections, we'll go over the steps
+needed to configure each component :</p>
+<a href="#Extracting_the_Contents">Extracting the Contents</a><br>
+<br>
+<a href="#Prerequisite_Software:">Prerquisite Software</a><br>
+<p><a href="#setupDriver">Setting up the Driver</a></p>
+<p><a href="#setupDB">Setting up the Database</a></p>
+<p><a href="#loadDB">Loading the Database</a></p>
+<p><a href="#Setting_up_Caching">Setting up Caching<br>
+</a></p>
+<p><a href="#setupEmulator">Setting up the Geocoder Emulator</a><br>
+</p>
+<p><a href="#Installing_the_Web_Application_">Setting up the
+Application Server</a><br>
+</p>
+<p><a href="#installWebApp">Building the Web Application</a><br>
+</p>
+<p><a href="#testWebApp">Testing the Web Application</a></p>
+<p><a href="#startRun">Starting a benchmark run</a></p>
+<h2><a name="Prerequisite_Software:"></a>Prerequisite Software</h2>
+<ul>
+  <li><a href="http://java.sun.com/javase/downloads/index.jsp">Java SE 6</a></li>
+  <li><a href="http://ant.apache.org/">Apache Ant&nbsp;</a></li>
+  <li><a href="http://subversion.tigris.org/">Subversion:&nbsp;</a>
+(if you are going to be installing from the source repository)</li>
+  <li><a href="http://faban.sunsource.net/">Faban</a>
+a facility for developing and running benchmarks.</li>
+  <li>Java EE 5 compliant application server - eg. <a
+ href="https://glassfish.dev.java.net/public/downloadsindex.html">GlassFish</a></li>
+  <li>Java Persistence API (JPA) provider - eg. <a
+ href="http://www.eclipse.org/eclipselink/">Eclipselink</a></li>
+  <li>Database server - e.g. MySQL(minimum 5.0)<br>
+  </li>
+</ul>
+<h2><a name="Extracting_the_Contents"></a>Extracting the Contents</h2>
+The Olio/Java kit is packaged as a gzipped tar file. The first task is
+to unzip the file and untar it to extract it's contents. Because of the
+long pathnames, please use gtar to extract. This is the default tar on
+Linux but on Solaris, use '/usr/sfw/bin/gtar'. This can be done as
+follows:<br>
+<br>
+<font face="Courier New, monospace"><font style="font-size: 11pt;"
+ size="2">#
+tar -xvzf </font></font><font face="Courier New, monospace"><font
+ style="font-size: 11pt;" size="2"><i>olio-java-&lt;version&gt;</i>.tar.gz
+(on Linux)<br>
+# </font></font><font face="Courier New, monospace"><font
+ style="font-size: 11pt;" size="2">gzcat <i>olio-java-&lt;version&gt;</i>.tar.gz
+| /usr/sfw/bin/gtar xvf - (on Solaris)</font></font><br>
+<br>
+This will cause a directory named olio-java-&lt;version&gt; to be
+created whose contents should look like:<br>
+<br>
+<code># ls olio-java-0.2*<br>
+<br>
+LICENSE OlioDriver.jar RELEASE-NOTES-java-0.2.txt geocoder.war
+java_setup_kit.html<br>
+<br>
+NOTICE webapp.war release<br>
+<br>
+#</code>
+<br>
+<br>
+We will use $OLIO_HOME to designate the name of this directory. A
+description of the contents follows :<br>
+<ul>
+  <li>&nbsp;<span style="font-style: italic;">webapp.war</span>
+contains the web application. This
+application will be deployed on the webserver. <br>
+    <br>
+  </li>
+  <li>&nbsp;<span style="font-style: italic;">OlioDriver.jar</span>
+contains the load generator/driver
+(which we typically refer to simply as <span
+ style="font-style: italic;">driver</span>). The driver is
+implemented using <a href="http://sunsource.faban.net">Faban</a>, an
+open source benchmarking toolkit.<br>
+    <br>
+  </li>
+  <li><span style="font-style: italic;">geocoder.war</span> contains
+the simple servlet used to emulate the geocoder.<br>
+    <br>
+  </li>
+  <li><span style="font-style: italic;">java_setup_kit.html</span> is
+this
+document.<br>
+    <br>
+  </li>
+  <li><span style="font-style: italic;">release</span> contains the
+release name. LICENSE and NOTICE contain the licenses.</li>
+</ul>
+<ul>
+  <li><code><span style="font-style: italic;">RELEASE-NOTES-java-0.2.txt</span>
+contains the release notes for this release.<br>
+    </code></li>
+</ul>
+<h2><a name="setupDriver"></a>Setting up the Driver</h2>
+Even if you don't plan to drive load against the application, this
+setup is required as the database and file loaders are part of the
+workload driver&nbsp; - in this case feel free to install the driver on
+the same
+system as the web application.
+<ol>
+  <li>
+    <p align="left">See <a
+ href="http://faban.sunsource.net/docs/guide/harness/install.html">http://faban.sunsource.net/docs/guide/harness/install.html</a>
+for Faban installation instructions. Note that faban needs to be
+installed on all the machines used for the benchmark.&nbsp; Please
+also read the <span style="font-style: italic;">Getting
+Started Guide</span> to get a high-level understanding of Faban
+terminology and how it works.&nbsp; From now on, we
+will refer to the faban install directory as $FABAN_HOME.</p>
+  </li>
+  <li>Install the required Faban services : <br>
+  </li>
+  <ul>
+    <li><code>cd $FABAN_HOME</code></li>
+    <li><code>cp
+samples/services/GlassfishService/build/GlassfishService.jar
+services&nbsp; (if using Glassfish)<br>
+      </code></li>
+    <li><code>cp samples/services/MysqlService/build/MysqlService.jar
+services</code></li>
+    <li><code>cp
+samles/services/MemcachedService/build/MemcachedService.jar
+services&nbsp; (if using Memcached)</code></li>
+  </ul>
+  <br>
+  <li>Copy $OLIO_HOME/Olio<span style="">Driver</span><i><span style="">.</span></i><span
+ style="font-style: normal;"><span style="">jar</span></span> to the
+$FABAN_HOME/benchmarks directory. Also copy the OlioDriver.jar file to
+the $FABAN_HOME/benchmarks directory on the web server system.</li>
+  <br>
+  <li> For the driver to work, you will need
+JDK 1.6. Set JAVA_HOME to the path of the JDK in the faban user's
+environment. <br>
+  </li>
+  <br>
+  <li>Start the faban master on the master driver machine
+:</li>
+  <ul>
+    <li>
+      <p align="left">$FABAN_HOME/master/bin/startup.sh</p>
+    </li>
+  </ul>
+  <li>
+    <p align="left">Test that you can connect to the
+master by pointing your browser at http://<i>&lt;driver_machine&gt;</i>:9980.
+&nbsp;You should see the Faban welcome page or if you have already
+deployed the driver, a page with the text "Welcome to Java Olio
+Workload"</p>
+  </li>
+  <li>
+    <p><a href="http://dev.mysql.com/downloads/connector/j/5.0.html">Download</a>
+MySQL Connector/J (JDBC Driver for MySQL) and install the jar in
+$FABAN_HOME/benchmarks/OlioDriver/lib. </p>
+  </li>
+  <li>To deploy the Faban driver, you can either copy
+$WORKLOAD/build/OlioDriver.jar to the
+$FABAN_HOME/benchmarks directory, or execute <span
+ style="font-family: monospace;">ant deploy</span>.
+&nbsp;Executing the deploy target will deploy the build jar file on
+the Faban master that you specified as the 'faban.url' in the
+build.properties file. &nbsp;To use ant deploy you must have completed
+steps 4, 6 and 7 and have Faban up and running.</li>
+</ol>
+<span style="font-weight: bold;"></span>
+<h2><a name="Setting_Up_the_Database"></a>Setting Up the Database</h2>
+Sun Web Stack is one pre-integrated suite
+of open source applications
+optimized for Solaris and RHEL. You can <a
+ href="https://cds.sun.com/is-bin/INTERSHOP.enfinity/WFS/CDS-CDS_SMI-Site/en_US/-/USD/ViewProductDetail-Start?ProductRef=Web-Stack-1.4-OTH-G-F@CDS-CDS_SMI">download</a>
+the official Sun binaries for Sun Web Stack if you are on Solaris or
+Red Hat Linux (it comes pre-installed on OpenSolaris). If you are
+running on any other operating system,
+please install MySQL on the database system. &nbsp;
+<span style="font-weight: bold;"></span>
+<ol>
+  <li>If you plan to run MySQL on a separate machine, install MySQL on
+that system. We will refer to the MySQL installation directory as
+MYSQL_HOME.</li>
+  <li>
+    <p>Setup the mysql user/group and permissions for its
+directories: <br>
+    <span style="font-family: monospace;"></span><span
+ style="font-family: monospace;"># groupadd mysql </span><br
+ style="font-family: monospace;">
+    <span style="font-family: monospace;"># useradd
+-d&nbsp;$MYSQL_HOME -g mysql -s /usr/bin/bash&nbsp;</span><span
+ style="font-family: monospace;">mysql</span><span
+ style="font-family: monospace;"><br>
+# chown -R
+mysql:mysql $MYSQL_HOME</span><br>
+    <span style="font-family: monospace;"></span></p>
+  </li>
+  <li>
+    <p>Create the database :<br>
+    <span style="font-family: monospace;"># su - mysql</span><br
+ style="font-family: monospace;">
+    <span style="font-family: monospace;">$ cd&nbsp;bin</span><br
+ style="font-family: monospace;">
+    <span style="font-family: monospace;">$
+./mysql_install_db</span></p>
+  </li>
+  <li>A sample MySQL configuration file (my.cnf) is included in the
+$WEBAPP/etc. Please read the embedded comments and edit the file
+appropriately after copying it to /etc. &nbsp; Note that the data
+directory that the <span style="font-style: italic;">innodb_data_home_dir</span>
+variable refers to must be writable by the mysql user.<br>
+  </li>
+  <li>
+    <p>Start the mysql server. Substitute your own password for <i>pwd
+    </i><span style="font-style: normal;">(we
+typically use</span><i> adminadmin</i><span style="font-style: normal;">)</span><br>
+    <span style="font-family: monospace;">$&nbsp;</span><span
+ style="font-family: monospace;">./mysqld_safe
+--defaults-file=/etc/my.cnf &amp;</span><br
+ style="font-family: monospace;">
+    <span style="font-family: monospace;">$ ./mysqladmin
+-u root password <span style="font-style: italic;">&lt;your-</span></span><i
+ style="font-family: monospace;"><span style="font-style: italic;">password&gt;</span><br>
+$ </i><span style="font-family: monospace;">./mysqladmin
+-u root -h &lt;machine-name&gt; password</span><i
+ style="font-family: monospace;">
+&lt;your-password&gt;</i></p>
+  </li>
+  <li>
+    <p>Create the olio user and grant privileges :<br>
+    <span style="font-family: monospace;">$ ./mysql -uroot
+-p</span><i style="font-family: monospace;">pwd</i><br
+ style="font-family: monospace;">
+    <span style="font-family: monospace;">mysql&gt;
+create user 'olio'@'%' identified by 'olio';</span><br
+ style="font-family: monospace;">
+    <span style="font-family: monospace;">mysql&gt;
+grant all privileges </span><span style="font-family: monospace;">on
+*.* to 'olio'@'%'
+identified by 'olio' with grant option;</span><span
+ style="font-family: monospace;"></span><span
+ style="font-family: monospace;"><br>
+    </span><span style="font-family: monospace;"></span><span
+ style="font-family: monospace;"><br>
+    <br>
+    </span>In some cases the wildcard '%' does not work reliably
+as a
+substitution for all hosts. You need to grant the privileges to
+'olio'@'&lt;hostname&gt;' individually, where hostname are the
+names of the driver and apache systems.<br>
+    <span style="font-family: monospace;"></span>Eg.<span
+ style="font-family: monospace;"> mysql&gt;
+grant all </span><span style="font-family: monospace;">privileges </span><span
+ style="font-family: monospace;">on
+*.* to 'olio'@'localhost' identified by 'olio' with grant option;</span><br>
+    </p>
+  </li>
+  <li>Create database<br>
+    <span style="font-family: monospace;">mysql&gt;
+create database bpwebapp;</span><br style="font-family: monospace;">
+    <span style="font-family: monospace;">mysql&gt;
+use bpwebapp;<br>
+    <br>
+    </span></li>
+  <li>Although it is possible to create the database schema
+automatically by JPA upon
+deployment or when the application server starts, it recommended to
+create the schema via the&nbsp;<span style="font-style: italic;">schema.sql</span>
+file provided found in the $WEBAPP/etc/, $WORKLOAD/bin or
+$FABAN_HOME/benchmarks/OlioDriver/bin if you have already deployed
+the driver to the Faban master.<br>
+    <br>
+    <span style="font-family: monospace;">mysql&gt; \.</span><span
+ style="font-style: italic; font-family: monospace;">
+&lt;location&gt;</span><span style="font-family: monospace;">/schema.sql<br>
+mysql&gt; exit</span><span style="font-family: monospace;"><br>
+    </span>&nbsp;Now, if you login as the user olio, you
+should be able to see the
+database created by the root user.</li>
+</ol>
+<h2><a name="loadDB"></a> <font size="4">Loading the Database</font></h2>
+<p><font size="3">It is best to load the database
+manually the first
+time so that we can test the web application. However, while doing
+benchmark runs, the benchmark driver can be configured to
+automatically re-load the database before the run.</font></p>
+<ol>
+  <li>
+    <p><font size="3">Login to the machine running
+the Faban master driver. Only this machine has the loader at this time.</font></p>
+  </li>
+  <li><font size="3">Go to the directory containing the loader script:<br>
+    </font><font size="3"><span style="font-family: monospace;"># cd </span></font><span
+ style="font-family: monospace;"><span style="font-style: italic;">$FABAN_HOME</span>/benchmarks/OlioDriver/bin</span></li>
+  <li>Ensure the script has execute permissions. Faban takes care
+of this for the runs, but since we have not yet started the first run,
+we will need to change that ourselves:<br>
+    <span style="font-family: monospace;"># chmod +x dbloader.sh</span></li>
+  <li>Run the loader script:<br>
+    <span style="font-family: monospace;"># ./dbloader.sh <span
+ style="font-style: italic;">&lt;dbserver&gt;
+&lt;load_scale&gt;</span></span><br>
+For a fully loaded T2000 (8x1.2Ghz) we are currently running a scale of
+around 1000. You can start small with a SCALE of 50 or so for initial
+testing<span style="font-weight: bold;">.</span></li>
+  <span style="font-family: monospace;"></span>
+</ol>
+<h2><a name="setupEmulator"><font size="4">Setting up the Geocoder
+Emulator</font></a></h2>
+<p>The Geocoder Emulator is a simple Java EE application that you
+can deploy on Glassfish or Tomcat. It is typically run on a driver
+machine. The
+following steps describe how to install it.</p>
+<p>For Glassfish:</p>
+<ol>
+  <li>Download and install Glassfish V2.1.1 or GlassFish v3 from <a
+ href="https://glassfish.dev.java.net/public/downloadsindex.html">https://glassfish.dev.java.net/public/downloadsindex.html.</a>
+    <br>
+  </li>
+  <li>Copy $OLIO_HOME/geocoder.war from&nbsp; to
+$GLASSFISH_HOME/domains/domain1/autodeploy (domain1 is the default
+domain created with Glassfish)</li>
+  <li>Start Glassfish by using $GLASSFISH_HOME/bin/asadmin
+start-domain domain1.</li>
+</ol>
+For Tomcat:
+<ol>
+  <li>
+    <p>Download and install Tomcat (<a href="http://tomcat.apache.org/">http://tomcat.apache.org</a>)
+on the driver machine. The install directory doesn't matter &#8211;
+we will refer to it as $TOMCAT_HOME. </p>
+  </li>
+  <li>Copy $OLIO_HOME/geocoder.war to
+$TOMCAT_HOME/webapps.</li>
+  <li>
+    <p>Start Tomcat using $TOMCAT_HOME/bin/startup.sh.</p>
+  </li>
+</ol>
+<h2><a name="Installing_the_Web_Application_"></a>Setting up the
+Application Server<br>
+</h2>
+The web application is a Java EE 5 web application. It requires the
+following components:<br>
+<ol>
+  <li>Java EE compliant application server (eg. <a
+ href="https://glassfish.dev.java.net/public/downloadsindex.html">GlassFish
+v2.1.1</a> or <a
+ href="https://glassfish.dev.java.net/downloads/v3-final.html">GlassFish
+v3</a>) <br>
+  </li>
+  <li>JPA provider &nbsp;( eg. <a
+ href="http://www.eclipse.org/eclipselink/">Eclipselink</a>)</li>
+</ol>
+Install the necessary components outlined above.&nbsp; GlassFish
+specific instructions are given below. See <a href="#OtherAppServers">instructions</a>
+for other application servers.<br>
+<h2><font size="4"><a name="Glassfish_Installation_and_Configuration"></a>&nbsp;Glassfish
+Installation and Configuration</font></h2>
+<ol>
+  <li>
+    <p>Install Glassfish application server V2.1.1 or GlassFish v3 from
+    <a href="https://glassfish.dev.java.net/public/downloadsindex.html"><span
+ style="text-decoration: underline;">https://glassfish.dev.java.net/public/downloadsindex.html.</span></a>
+    <br>
+The directory where Glassfish has been installed will now be referred
+to as $GLASSFISH_HOME.&nbsp;&nbsp; </p>
+  </li>
+  <li>
+    <p>Download the JDBC driver for mysql from <a
+ href="http://dev.mysql.com/downloads/connector/j/5.1.html">http://dev.mysql.com/downloads/connector/j/5.1.html.</a>
+&nbsp; Extract the mysql-connector-java-5.1.X-bin.jar and drop this
+is
+$GLASSFISH_HOME/domains/domain1/lib/ext directory (or whatever you have
+named your domain).</p>
+  </li>
+  <li>The benchmark utilizes JPA (Java Persistence API) and has been
+benchmarked
+with the EclipseLink implementation. &nbsp;GlassFish v2.1.1
+uses TopLink as the default JPA implementation so you will have to <a
+ href="http://www.eclipse.org/eclipselink/downloads/previous_releases.php">download</a>
+the eclipselink.jar,
+and &nbsp;put this in $GLASSFISH_HOME/lib directory. If you are using
+GlassFish v3, you need not download Eclipselink since the default JPA
+implementation is Eclipselink v2.0.<br>
+    <br>
+  </li>
+  <li>For ease of use, a sample script, config_glassfish.sh, is
+provided in
+the $WEBAPP/etc directory.&nbsp; You can use this CLI script to create
+the
+JDBC pool and resources as well as configure basic JVM environment
+variables necessary to run the application in the event you do not want
+to edit the web.xml.&nbsp; Please look at the script carefully before
+running it since you have to modify the values to fit your setup.<br>
+  </li>
+  <br>
+  <li>Instructions on how to use the Glassfish admin
+interface is <a
+ href="https://glassfish.dev.java.net/javaee5/admin-gui/admin-gui.html#Usage">https://glassfish.dev.java.net/javaee5/admin-gui/admin-gui.html#Usage</a>.
+&nbsp;To edit the classpath prefix, please consult&nbsp; <a
+ href="https://glassfish.dev.java.net/javaee5/docs/AG/ablwj.html#ablwm">https://glassfish.dev.java.net/javaee5/docs/AG/ablwj.html#ablwm</a>.
+&nbsp;<br>
+Note:
+&nbsp;To use the admin interface, you will have to start Glassfish.
+&nbsp;To do
+so,&nbsp; use $GLASSFISH_HOME/bin/asadmin start-domain domain1 (or
+whatever your
+domain name is if you are using the default domain1).<br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;To
+stop Glassfish, use $GLASSFISH_HOME/bin/asadmin stop-domain domain1.</li>
+  <li>
+    <p>Create JDBC connection pool and resource. &nbsp;Please
+consult <a
+ href="https://glassfish.dev.java.net/javaee5/docs/AG/ablih.html">https://glassfish.dev.java.net/javaee5/docs/AG/ablih.html</a>
+for details. &nbsp;MM MySQL Type 4 Driver (Non-XA)<br>
+The JAR file for the MySQL driver is
+mysql-connector-java-version-bin.jar, for example,
+mysql-connector-java-5.1.6-bin.jar. Configure the connection pool
+using the following settings:<br>
+    </p>
+    <ul>
+      <li>Name: Use this name when you configure the JDBC resource.
+&nbsp;eg. BPwebappPool</li>
+      <li>Resource Type: Specify the appropriate value, eg.
+javax.sql.DataSource</li>
+      <li>Database Vendor: mysql</li>
+      <li>DataSource Classname: Specify one of the following:</li>
+      <ul>
+        <li>com.mysql.jdbc.jdbc2.optional.MysqlDataSource</li>
+      </ul>
+      <li>Properties:</li>
+      <ul>
+        <li>serverName - Specify the host name or IP address of the
+database server.</li>
+      </ul>
+      <ul>
+        <li>port - Specify the port number of the database server eg.
+3306</li>
+      </ul>
+      <ul>
+        <li>user - Set as appropriate, &nbsp;eg. olio</li>
+        <li>&nbsp;password - Set as appropriate, eg. olio</li>
+        <li>databaseName - Set as appropriate, eg. bpwebapp</li>
+        <li>URL
+- If you are using global transactions, you can set this property
+instead of serverName, port, and databaseName, eg.
+jdbc:mysql://&lt;dbhost&gt;:3306/bpwebapp</li>
+        <li>Keep the rest of properties created.</li>
+      </ul>
+    </ul>
+6. &nbsp;Create the JDBC resource with the JNDI name
+jdbc/BPWebappDB pointing to new resource created above. </li>
+</ol>
+<h2><a name="OtherAppServers"></a><font size="4">Configuring other
+Application Servers</font></h2>
+<ol>
+  <li>Download the JDBC driver for mysql from <a
+ href="http://dev.mysql.com/downloads/connector/j/5.1.html">http://dev.mysql.com/downloads/connector/j/5.1.html.</a>&nbsp;
+Extract the mysql-connector-java-5.1.X-bin.jar and put this your
+application server classpath (or external library directory)</li>
+  <li>Download a Java Persistence API (JPA) provider, eg.
+EclipseLink. &nbsp;You will have to <a
+ href="http://www.eclipse.org/eclipselink/downloads">download</a> the
+eclipselink.jar
+and put this in your application server classpath.</li>
+  <li>Create JDBC connection pool and resource for connecting to
+mySQL database. &nbsp;Below are examples for the properties used for
+the
+connection pool:<br>
+&nbsp;&nbsp;&nbsp; * Name: Use this name when you configure
+the JDBC resource.&nbsp; eg. BPwebappPool<br>
+&nbsp;&nbsp;&nbsp; * Resource Type: Specify the appropriate
+value, eg. javax.sql.DataSource<br>
+&nbsp;&nbsp;&nbsp; * Database Vendor: mysql<br>
+&nbsp;&nbsp;&nbsp; * DataSource Classname: Specify one of
+the following:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+o com.mysql.jdbc.jdbc2.optional.MysqlDataSource<br>
+&nbsp;&nbsp;&nbsp; * Properties:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+o serverName -
+Specify the host name or IP address of the database server.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+o port - Specify the port number of the database server eg. 3306<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+o user - Set as appropriate.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+o&nbsp; password - Set as appropriate.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+o databaseName - Set as appropriate, eg. bpwebapp<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+o URL - If you
+are using global transactions, you can set this property instead of
+serverName, port, and databaseName, eg.
+jdbc:mysql://&lt;dbhost&gt;:3306/bpwebapp<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+o Keep the rest of properties created.<br>
+    <br>
+6.&nbsp; Create the JDBC resource with the JNDI name
+jdbc/BPWebappDB pointing to new resource created above.</li>
+</ol>
+<h2>Deploying the Web Application</h2>
+Deploy
+the $OLIO_HOME/webapp.war file to your
+Java EE 5 application server. &nbsp;
+<br>
+If you are using GlassFish, you can do so by
+either dropping the war file in the
+$GLASSFISH_HOME/domains/domain1/autodeploy directory. &nbsp;You can
+also
+deploy via different methods by referring to <a
+ href="https://glassfish.dev.java.net/downloads/quickstart/index.html#Packaging_and_Deploying_Applications">https://glassfish.dev.java.net/downloads/quickstart/index.html#Packaging_and_Deploying_Applications</a>.<br>
+<span style="font-weight: bold;"></span><span
+ style="font-style: italic;"></span><br>
+You must set the geocoderURL property to point to the URL where the
+geocoder is deployed. The default value for this property is
+http://localhost:8080/geocoder/geocode. Set
+'-DgeocoderURL="http://&lt;host&gt;:&lt;port&gt;/geocoder/geocode"' in
+the application server's configuration. For glassfish, you can do this
+by editing the domain.xml file (in domains/domain1/config/domain.xml).<br>
+<br>
+<span style="font-weight: bold;">NOTE</span>: If you are deploying Olio
+to Oracle WebLogic Server 11g Release 1
+(10.3.1), there is a WebLogic bug (8448313) that results in a JPA
+exception because lazy fetching is being used. The Exception
+stack trace will appear:<br>
+<br>
+<span style="font-family: monospace;">javax.persistence.PersistenceException:
+Exception [EclipseLink-0] (Eclipse Persistence Services -
+1.1.1.v20090430-r4097):
+org.eclipse.persistence.exceptions.IntegrityException</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">Descriptor Exceptions:</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">---------------------------------------------------------</span><br
+ style="font-family: monospace;">
+<br style="font-family: monospace;">
+<span style="font-family: monospace;">Descriptor Exceptions:</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">---------------------------------------------------------</span><br
+ style="font-family: monospace;">
+<br style="font-family: monospace;">
+<span style="font-family: monospace;">Exception [EclipseLink-60]
+(Eclipse Persistence Services - 1.1.1.v20090430-r4097):
+org.eclipse.persistence.exceptions.DescriptorException</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">Exception Description: The method
+[_persistence_setaddress_vh] or [_persistence_getaddress_vh] is not
+defined in the object [org.apache.olio.webapp.model.Person].</span><br
+ style="font-family: monospace;">
+<span style="font-family: monospace;">Internal Exception:
+java.lang.NoSuchMethodException:
+org.apache.olio.webapp.model.Person._persistence_getaddress_vh()</span><br>
+<br>
+This bug is&nbsp; related to loading classes before the weaver has a
+chance to execute that has been fixed in later editions and is
+available through support.&nbsp; <br>
+You can workaround the issue by build the web application yourself from
+the Olio source kit. See the documentation in the source kit for
+details.<br>
+<h2><a name="installWebApp"></a><font size="4">Tuning Glassfish</font></h2>
+<ol>
+  <li>Go to the administration interface, eg. http://localhost:4848.</li>
+  <li>
+    <p>Ensure that you have the JVM option "-server" and the heap
+size has been adequately sized. &nbsp;For benchmarking purposes, we
+have
+sized Xmx and Xms to 3G.</p>
+  </li>
+  <li>
+    <p>Start Glassfish. Check that you can connect to it from your
+browser (http://<i>host</i>:8080), but don't try to access
+any of the application pages yet !&nbsp;&nbsp;To do
+so :<br>
+    </p>
+    <ul>
+      <li>use $GLASSFISH_HOME/bin/asadmin start-domain domain1</li>
+      <li>To
+stop Glassfish, use $GLASSFISH_HOME/bin/asadmin stop-domain domain1.</li>
+    </ul>
+  </li>
+</ol>
+<h2><a name="Setting_up_Caching"></a><font size="4">Setting up Caching</font></h2>
+For the Olio Java application, there are multiple caching options which
+are set by -D options in the appserver config file (For glassfish, this
+is in domains/domain1/config/domain.xml) :<br>
+<ul>
+  <li>No cache. This option is useful if you want to stress MySQL. In
+this
+case, set <code>-DcacheOlio=false.</code></li>
+  <li><code></code> MapCache. This is the default and doesn't require
+any additional setting. It does a good job of off-loading the database.
+It is activated by the <code>cacheFactorClass=org.apache.olio.webapp.cache.SimpleMapCacheFactory</code>
+property.<br>
+  </li>
+  <li>Memcache. In this case, the home page contents are cached in
+memcached. Set <code>-DcacheFactoryClass=org.apache.olio.webapp.cache.MemCachedFactory</code>
+and <code>-DmemcachedInstances=&lt;host&gt;:&lt;port&gt;</code>
+where &lt;host&gt;:&lt;port&gt; point to the memcached instance.
+&lt;port&gt; is 11211 if you use the default port when starting
+memcached.<br>
+  </li>
+</ul>
+To use memcached, you will need to setup an instance of the server.
+This can typically run on the same system as the application server.
+<ol>
+  <li>Download and install memcached on the system you plan to
+use. </li>
+  <li>
+    <p style="margin-bottom: 0in;"><font size="3">Start the memcached
+server thus :<br>
+    </font><font size="3"><span style="font-family: monospace;">#
+nohup /opt/coolstack/bin/memcached -m 256 -u mysql &amp;</span></font></p>
+  </li>
+</ol>
+<h2><font size="4">Setting up the Filestore</font></h2>
+<p><font size="3">Olio for Java EE can be configured to
+use either a local
+filesystem (typically NFS-mounted off a file server) or MogileFS for
+the object data. Our initial testing with
+MogileFS found some severe performance issues, so for now we advice
+using a normal filesystem. </font><font size="3">You
+will need about 50GB of
+space for the data, as the data does grow over runs</font>.
+&nbsp;Using a single spindle does work but may create performance
+bottlenecks. &nbsp;We recommend striping the filesystem across at
+least 3 spindles to avoid such bottlenecks. &nbsp;A local file system
+needs to be setup on the same machine as the web application. &nbsp;A
+network file system can reside on a separate server but needs to be
+exported
+and mounted on the system running the web application.</p>
+<ol>
+  <li>
+    <p><font size="3">Create a directory (or mount a
+filesystem) designated for storing the image and binary files. This
+directory is referred to as &lt;filestore&gt;. Any valid name
+for the OS should be fine. Ensure that everyone has read and write
+access to
+it:<br>
+    </font><font size="3"><span style="font-family: monospace;"># mkdir
+-p <span style="font-style: italic;">&lt;filestore&gt;</span></span><br
+ style="font-family: monospace;">
+    <span style="font-family: monospace;"># chmod a+rwx <span
+ style="font-style: italic;">&lt;filestore&gt;</span></span></font></p>
+  </li>
+  <li>
+    <p><font size="3">Now load the filestore.
+&nbsp;You should have the $FABAN_HOME/benchmarks/OlioDriver.jar
+file on this system.</font><br>
+    <font size="3"><font style="font-family: monospace;" size="3">#&nbsp;<span
+ style="font-style: italic;"></span></font></font>cd
+$FABAN_HOME/benchmarks; mkdir olio<br>
+    <br>
+# cd olio; jar xvf ../OlioDriver.jar; chmod a+x bin/*<br>
+# $FABAN_HOME/benchmarks/olio/bin/fileloader.sh
+&lt;load_scale&gt; $FILESTORE<br>
+    <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; This loads files for
+use for up to<span style="font-style: italic;"> load_scale</span>
+number of active users.<font size="3"><font
+ style="font-family: monospace;" size="3">&nbsp;<br>
+    <br>
+    </font></font><font size="3"><font size="3"><span
+ style="font-family: monospace;"></span></font></font><font size="3"><font
+ size="3"><font>Eg.
+To load the filestore for 1000 users, you would do the following:</font></font></font><font
+ size="3"><font size="3"><span style="font-family: monospace;"></span></font></font><br>
+    <span style="font-family: monospace;"># cd
+/filestore/artifacts</span><br style="font-family: monospace;">
+    <span style="font-family: monospace;">#
+/opt/faban/benchmarks/OlioDriver/bin/fileloader.sh 1000 .</span></p>
+    <font size="3"><font size="3"><span style="font-family: monospace;"></span></font></font>
+    <p><font size="3"><font size="3">This
+loads files for use for up to <span
+ style="font-family: monospace; font-style: italic;">load_scale</span>
+number of concurrent users.&nbsp;</font></font></p>
+  </li>
+  <li><font size="3"><font size="3">The filestore location is read
+from the application server as a Java environment
+variable,&nbsp;webapp.image.directory. &nbsp;To set the value of the
+filestore, simply add an JVM argument eg.
+-Dwebapp.image.directory=/export/myfilestore. &nbsp;If you are using
+GlassFish, you use the administration interface to add this JVM
+argument by looking at the<a
+ href="#Glassfish_Installation_and_Configuration"> GlassFish
+Installation and Configuration</a> section, step 3. <br>
+    </font></font><font size="3"><font size="3"><span
+ style="font-family: monospace;"><br>
+    </span></font></font><font size="3"><font size="3"><span
+ style="font-family: monospace;"></span></font></font></li>
+</ol>
+<font size="3"><font size="3"><span style="font-family: monospace;"></span></font></font>
+<h2><font><font size="4">Testing the Application</font></font></h2>
+<ol>
+  <li>
+    <p><font size="3">Check the home page (HomePage)
+http://&lt;web_server&gt;:8080/webapp/index.jsp. If there are
+no error messages and all images get loaded, that's a great start !</font></p>
+  </li>
+  <li>
+    <p><font size="3">Click on an event (EventDetail). Make sure the
+whole page looks OK. </font> </p>
+  </li>
+  <li>
+    <p><font size="3">Click on an attendee (PersonDetail) to see a
+person's profile. </font> </p>
+  </li>
+  <li>
+    <p><font size="3">Go back to the home page and
+click on a tag in the tag cloud. Choose a big tag and check that we
+have good results and images get loaded OK. </font> </p>
+  </li>
+  <li>
+    <p><font size="3">Click on the Register button on the top left of
+the home page. Fill
+in the form and create a user. Make sure you find some jpeg images to
+upload. If not, take them from
+$FABAN_HOME/benchmarks/OlioDriver/resources. <br>
+Submit the form. Make sure the form goes through. This completes the
+AddPerson transaction. </font> </p>
+  </li>
+  <li>
+    <p><font size="3">Login using your new login
+name you just created. The top right of the screen should show that
+you're logged on. </font> </p>
+  </li>
+  <li>
+    <p><font size="3">Select an event, go back to
+the EventDetail page but this time as a logged on user. <br>
+Add yourself as an attendee. This is the EventDetail transaction with
+attendee added (about 8-9% of all EventDetail views). </font> </p>
+  </li>
+  <li>
+    <p><font size="3">Click on the add event tab and
+add an event. Make sure to include an image and some literature. You
+can also use the files from <br>
+$FABAN_HOME/benchmarks/OlioDriver/resources. Fill in the form and
+submit.
+This is the AddEvent transaction. <br>
+    <br>
+    </font> </p>
+  </li>
+</ol>
+<h2><a name="startRun"></a><font size="4">Starting a benchmark run</font></h2>
+<p style="margin-bottom: 0in;">Now that we know that the web
+application is running and the faban harness is up, it is time to
+kick off a benchmark run. </p>
+<ol>
+  <li>Kill memcached. Memcached is always started by the driver
+before the run to ensure a clean cache and will cause port conflicts if
+it is already running.</li>
+  <li>
+    <p>Point your browser at http://<i>&lt;driver_machine&gt;</i>:9980</p>
+  </li>
+  <li>
+    <p>Click on the <span style="font-style: normal;"><b>Schedule Run</b></span>
+link.</p>
+  </li>
+  <li>
+    <p>Under the JAVA tab, set the JAVA_HOME. You can accept the
+default value for JVM options. <span style="font-weight: bold;">DO
+NOT</span> click on the OK button yet !</p>
+  </li>
+  <li>
+    <p>Select the Driver tab. </p>
+    <p style="margin-bottom: 0in;">Enter a Description for
+the run (say 'First test run' for this case). In general, the
+Description field is very useful to get a quick idea of what a
+particular run is testing. </p>
+    <p style="margin-bottom: 0in;">Enter the name of your
+driver(s) machine for Host (when using more than one machine, simply
+separate them by a space). </p>
+    <p style="margin-bottom: 0in;">Enter 10 for
+'Concurrent Users' (we want to start small).</p>
+    <p style="margin-bottom: 0in;">Enter 'vmstat 10' for
+Tools. This indicates the measurement tools that will be run on the
+driver machine. It's a good idea to keep an eye on the driver cpu
+utilization.</p>
+    <p style="margin-bottom: 0in;">Now enter 30, 30, 10
+for the Ramp up, Steady State and Ramp down times. This is a very short
+test run. For normal runs, you may need a ramp up of 200 seconds and a
+steady state of at least 600 seconds during which measurements are made.</p>
+    <p style="margin-bottom: 0in;">For current systems,
+the time between client startup of 200 milliseconds is good enough.
+Some servers or slower systems may not be able to accept
+connections very frequently. In that case we may want to increase this
+value to 1000 milliseconds. <br>
+    </p>
+  </li>
+</ol>
+<p style="margin-bottom: 0in;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+The number of Agents needs to be set based on the number of concurrent
+users - we start with 1 and add an agent for every 500 users.<br>
+</p>
+<ol start="6">
+  <li>
+    <p style="margin-bottom: 0in;">Select the Web Server tab.<br>
+    <br>
+The Host:Port Pairs field takes the host
+port pairs where the web applications are running. The host and port is
+separated by a colon. Each pair is separated by space. &nbsp;Note that
+you cannot use the string "localhost" - you must specify a valid
+hostname or IP address.&nbsp; <br>
+    <br>
+In the tools box, enter the tools you
+want to run. Here are the
+tools we typically run : vmstat
+10; mpstat 10; nicstat 10; iostat -x 10.<br>
+    <br>
+For Application Server, select "GlassFish" or leave the field blank if
+you're using some other server. Only the GlassFish server is supported
+at this
+time - for other servers, you will have to manually start/stop the
+servers before and after a run. Then provide the application server's
+bin, log, and config
+directories. For Glassfish, faban will automatically capture the server
+config and log file and make it available via the 'Statistics' tab of a
+run. <br>
+    <br>
+The "restart" field indicates whether
+you want the Faban harness to automatically start and stop the
+GlassFish server before and after each run. &nbsp;By default, it is set
+to true which indicates that the Faban harness will restart the
+GlassFish server, assuming that the path information for the server is
+entered correctly.<br>
+    <br>
+    </p>
+  </li>
+  <li>
+    <p style="margin-bottom: 0in;">Select the Data Servers tab.</p>
+    <p style="margin-bottom: 0in;">For the database
+server, enter the Host name. Edit the hostname part in the JDBC
+Connection URL.&nbsp; Note that you cannot use the string
+"localhost" - you must specify a valid hostname or IP number. <br>
+This is used by the loader program to reload the
+database before a run. Set the 'Loader for Concurrent Users' to 25
+(this is the minimum number of users we can load for and is good for up
+to 25 concurrent users). You can set the loader to run a larger number
+so that you don't have to edit this field every time. It is not
+absolutely necessary to reload the database and files every time, but
+you should do so for all performance runs. In that case, set the reload
+fields to true every time.<br>
+    </p>
+    <p style="margin-bottom: 0in;">Set the Data Storage
+server. For local storage this is the same host as the application
+server.&nbsp;</p>
+    <p style="margin-bottom: 0in;">Set the memcached
+server instances to the servers you've configured in web.xml of the web
+application. The driver harness will start the
+memcached server instances accordingly. Note that the memcached server
+instances are given as host:port pairs, separated by space. If a port
+is not given, the default memcached port of 11211 is assumed. &nbsp;<br>
+    </p>
+  </li>
+  <li>
+    <p>That's it. Click OK and the run should be scheduled. You
+can click on the View Results link on the left to monitor the run.</p>
+  </li>
+</ol>
+<br>
+<br>
+</body>
+</html>

@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+-->
+<project name="Olio" default="package-all">
+
+    <property file="build.properties"/>
+    <property name="base.dir" value=".."/>
+    <property name="relnotes.dir" value="releasenotes"/>
+    <property name="geocoder.dir" value="${base.dir}/geocoder"/>
+    <property name="docs.dir" value="${base.dir}/docs"/>
+    <property name="kit.dir" value="nightly"/>
+    <property name="stage.dir" value="stage"/>
+
+    <tstamp>
+        <format property="build.date" pattern="MMddyy"/>
+    </tstamp>
+	<condition property="version.str" value="${olio.version}" else="${olio.version}b${build.date}">
+		<isset property="build.release"/>
+    </condition>
+
+    <property name="php.app.dir" value="${base.dir}/webapp/php/trunk"/>
+    <property name="php.workload.dir" value="${base.dir}/workload/php/trunk"/>
+    <property name="php.pkg.name" value="apache-olio-php-${version.str}"/>
+    <property name="php.src.name" value="apache-olio-php-src-${version.str}"/>
+    <property name="php.relnotes" value="RELEASE-NOTES-php-${olio.version}.txt"/>
+
+    <property name="rails.app.dir" value="${base.dir}/webapp/rails/trunk"/>
+    <property name="rails.workload.dir" value="${base.dir}/workload/rails/trunk"/>
+    <property name="rails.pkg.name" value="apache-olio-rails-${version.str}"/>
+    <property name="rails.src.name" value="apache-olio-rails-src-${version.str}"/>
+    <property name="rails.relnotes" value="RELEASE-NOTES-rails-${olio.version}.txt"/>
+
+    <property name="java.app.dir" value="${base.dir}/webapp/java/trunk/ws/apps/webapp"/>
+    <property name="java.workload.dir" value="${base.dir}/workload/java/trunk"/>
+    <property name="java.pkg.name" value="apache-olio-java-${version.str}"/>
+    <property name="java.src.name" value="apache-olio-java-src-${version.str}"/>
+    <property name="java.relnotes" value="RELEASE-NOTES-java-${olio.version}.txt"/>
+
+    <defaultexcludes add="**/nbproject/**"/>
+    <defaultexcludes add="**/*.iml"/>
+
+    <target name="init">
+        <mkdir dir="stage"/>
+    </target>
+
+    <target name="geocoder">
+        <ant dir="${geocoder.dir}"/>
+    </target>
+
+    <target name="package-php-driver">
+        <ant dir="${php.workload.dir}"/>
+    </target>
+
+    <target name="package-rails-driver">
+        <ant dir="${rails.workload.dir}"/>
+    </target>
+
+    <target name="package-java-driver">
+        <ant dir="${java.workload.dir}"/>
+    </target>
+
+    <target name="release-file" depends="init">
+        <copy file="release.template"
+              tofile="stage/release" overwrite="true" verbose="true"/>
+        <replace file="stage/release" token="@@olio.version@@" value="${olio.version}"/>
+        <replace file="stage/release" token="@@build.date@@" value="${build.date}"/>
+    </target>
+
+    <target name="package-php" depends="package-php-driver, geocoder, release-file">
+		<copy file="${base.dir}/LICENSE_php.txt"
+			  tofile="stage/LICENSE" overwrite="true" verbose="true"/>
+		<copy file="${base.dir}/NOTICE_php.txt"
+			  tofile="stage/NOTICE" overwrite="true" verbose="true"/>
+        <tar destfile="${kit.dir}/${php.pkg.name}.tar.gz"
+            longfile="gnu" compression="gzip">
+            <tarfileset dir="stage" prefix="${php.pkg.name}" includes="release,LICENSE,NOTICE"/>
+            <tarfileset dir="${relnotes.dir}" prefix="${php.pkg.name}"
+                        includes="${php.relnotes}"/>
+            <tarfileset dir="${docs.dir}" prefix="${php.pkg.name}"
+                        includes="php_setup_kit.html"/>
+            <tarfileset dir="${php.workload.dir}/build" prefix="${php.pkg.name}"
+                        includes="OlioDriver.jar"/>
+            <tarfileset dir="${geocoder.dir}/dist" prefix="${php.pkg.name}"
+                        includes="geocoder.war"/>
+            <tarfileset dir="${php.app.dir}" prefix="${php.pkg.name}/oliophp"
+                        excludes="build.xml, build.properties"/>
+        </tar>
+        <zip destfile="${kit.dir}/${php.pkg.name}.zip">
+            <zipfileset dir="stage" prefix="${php.pkg.name}" includes="release,LICENSE,NOTICE"/>
+            <zipfileset dir="${relnotes.dir}" prefix="${php.pkg.name}"
+                        includes="${php.relnotes}"/>
+            <zipfileset dir="${docs.dir}" prefix="${php.pkg.name}"
+                        includes="php_setup_kit.html"/>
+            <zipfileset dir="${php.workload.dir}/build" prefix="${php.pkg.name}"
+                        includes="OlioDriver.jar"/>
+            <zipfileset dir="${geocoder.dir}/dist" prefix="${php.pkg.name}"
+                        includes="geocoder.war"/>
+            <zipfileset dir="${php.app.dir}" prefix="${php.pkg.name}/oliophp"
+                        excludes="build.xml, build.properties"/>
+        </zip>
+    </target>
+
+
+    <target name="package-rails" depends="package-rails-driver, geocoder,
+                    release-file">
+		<copy file="${base.dir}/LICENSE_rails.txt"
+			  tofile="stage/LICENSE" overwrite="true" verbose="true"/>
+		<copy file="${base.dir}/NOTICE_rails.txt"
+			  tofile="stage/NOTICE" overwrite="true" verbose="true"/>
+        <tar destfile="${kit.dir}/${rails.pkg.name}.tar.gz"
+            longfile="gnu" compression="gzip">
+            <tarfileset dir="stage" prefix="${rails.pkg.name}" includes="release,LICENSE,NOTICE"/>
+            <tarfileset dir="${relnotes.dir}" prefix="${rails.pkg.name}"
+                        includes="${rails.relnotes}"/>
+            <tarfileset dir="${docs.dir}" prefix="${rails.pkg.name}"
+                        includes="rails_setup_kit.html"/>
+            <tarfileset dir="${rails.workload.dir}/build" prefix="${rails.pkg.name}"
+                        includes="OlioDriver.jar"/>
+            <tarfileset dir="${geocoder.dir}/dist" prefix="${rails.pkg.name}"
+                        includes="geocoder.war"/>
+            <tarfileset dir="${rails.app.dir}" prefix="${rails.pkg.name}/oliorails"
+                        excludes="vendor/plugins/rspec/**,vendor/plugins/rspec-rails/**"/>
+        </tar>
+        <zip destfile="${kit.dir}/${rails.pkg.name}.zip">
+            <zipfileset dir="stage" prefix="${rails.pkg.name}" includes="release,LICENSE,NOTICE"/>
+            <zipfileset dir="${relnotes.dir}" prefix="${rails.pkg.name}"
+                        includes="${rails.relnotes}"/>
+            <zipfileset dir="${docs.dir}" prefix="${rails.pkg.name}"
+                        includes="rails_setup_kit.html"/>
+            <zipfileset dir="${rails.workload.dir}/build" prefix="${rails.pkg.name}"
+                        includes="OlioDriver.jar"/>
+            <zipfileset dir="${geocoder.dir}/dist" prefix="${rails.pkg.name}"
+                        includes="geocoder.war"/>
+            <zipfileset dir="${rails.app.dir}" prefix="${rails.pkg.name}/oliorails"
+                        excludes="vendor/plugins/rspec/**,vendor/plugins/rspec-rails/**"/>
+        </zip>
+    </target>
+
+    <target name="package-java" depends="package-java-driver, geocoder, release-file">
+        <copy file="${base.dir}/LICENSE_java.txt" tofile="stage/LICENSE" overwrite="true" verbose="true"/>
+        <copy file="${base.dir}/NOTICE_java.txt" tofile="stage/NOTICE" overwrite="true" verbose="true"/>
+
+        <tar destfile="${kit.dir}/${java.pkg.name}.tar.gz" longfile="gnu" compression="gzip">
+            <tarfileset dir="stage" prefix="${java.pkg.name}" includes="release,LICENSE,NOTICE"/>
+            <tarfileset dir="${relnotes.dir}" prefix="${java.pkg.name}" includes="${java.relnotes}"/>
+            <tarfileset dir="${docs.dir}" prefix="${java.pkg.name}" includes="java_setup_kit.html"/>
+            <tarfileset dir="${java.workload.dir}/build" prefix="${java.pkg.name}" includes="OlioDriver.jar"/>
+            <tarfileset dir="${geocoder.dir}/dist" prefix="${java.pkg.name}" includes="geocoder.war"/>
+            <tarfileset dir="${java.app.dir}/dist" prefix="${java.pkg.name}" includes="webapp.war"/>
+        </tar>
+
+        <zip destfile="${kit.dir}/${java.pkg.name}.zip">
+            <zipfileset dir="stage" prefix="${java.pkg.name}" includes="release,LICENSE,NOTICE"/>
+            <zipfileset dir="${relnotes.dir}" prefix="${java.pkg.name}" includes="${java.relnotes}"/>
+            <zipfileset dir="${docs.dir}" prefix="${java.pkg.name}" includes="java_setup_kit.html"/>
+            <zipfileset dir="${java.workload.dir}/build" prefix="${java.pkg.name}" includes="OlioDriver.jar"/>
+            <zipfileset dir="${geocoder.dir}/dist" prefix="${java.pkg.name}" includes="geocoder.war"/>
+            <zipfileset dir="${java.app.dir}/dist" prefix="${java.pkg.name}" includes="webapp.war"/>
+        </zip>
+    </target>
+
+    <target name="package-php-src">
+		<copy file="${base.dir}/LICENSE_php.txt"
+			  tofile="stage/LICENSE" overwrite="true" verbose="true"/>
+		<copy file="${base.dir}/NOTICE_php.txt"
+			  tofile="stage/NOTICE" overwrite="true" verbose="true"/>
+        <tar destfile="${kit.dir}/${php.src.name}.tar.gz"
+            longfile="gnu" compression="gzip">
+            <tarfileset dir="stage" prefix="${php.src.name}" includes="release,LICENSE,NOTICE"/>
+            <tarfileset dir="${base.dir}" prefix="${php.src.name}">
+                <include name="dist/*"/>
+                <include name="dist/*"/>
+				<include name="dist/releasenotes/${php.relnotes}"/>
+                <include name="docs/**"/>
+                <include name="geocoder/**"/>
+                <include name="webapp/php/trunk/**"/>
+                <include name="workload/php/trunk/**"/>
+                <exclude name="dist/nightly/**"/>
+                <exclude name="dist/release/**"/>
+                <exclude name="dist/stage/**"/>
+                <exclude name="**/build/**"/>
+                <exclude name="geocoder/dist/**"/>
+                <exclude name="**/build.properties"/>
+            </tarfileset>
+        </tar>
+        <zip destfile="${kit.dir}/${php.src.name}.zip">
+            <zipfileset dir="stage" prefix="${php.src.name}" includes="release,LICENSE,NOTICE"/>
+            <zipfileset dir="${base.dir}" prefix="${php.src.name}">
+                <include name="dist/*"/>
+                <include name="dist/*"/>
+				<include name="dist/releasenotes/${php.relnotes}"/>
+                <include name="docs/**"/>
+                <include name="geocoder/**"/>
+                <include name="webapp/php/trunk/**"/>
+                <include name="workload/php/trunk/**"/>
+                <exclude name="dist/nightly/**"/>
+                <exclude name="dist/release/**"/>
+                <exclude name="dist/stage/**"/>
+                <exclude name="**/build/**"/>
+                <exclude name="geocoder/dist/**"/>
+                <exclude name="**/build.properties"/>
+            </zipfileset>
+        </zip>
+    </target>
+
+    <target name="package-rails-src">
+		<copy file="${base.dir}/LICENSE_rails.txt"
+			  tofile="stage/LICENSE" overwrite="true" verbose="true"/>
+		<copy file="${base.dir}/NOTICE_rails.txt"
+			  tofile="stage/NOTICE" overwrite="true" verbose="true"/>
+        <tar destfile="${kit.dir}/${rails.src.name}.tar.gz"
+            longfile="gnu" compression="gzip">
+            <tarfileset dir="stage" prefix="${rails.src.name}" includes="release,LICENSE,NOTICE"/>
+            <tarfileset dir="${base.dir}" prefix="${rails.src.name}">
+                <include name="dist/*"/>
+				<include name="dist/releasenotes/${rails.relnotes}"/>
+                <include name="docs/**"/>
+                <include name="geocoder/**"/>
+                <include name="webapp/rails/trunk/**"/>
+                <include name="workload/rails/trunk/**"/>
+                <exclude name="dist/nightly/**"/>
+                <exclude name="dist/release/**"/>
+                <exclude name="dist/stage/**"/>
+                <exclude name="**/build/**"/>
+                <exclude name="geocoder/dist/**"/>
+                <exclude name="**/build.properties"/>
+                <exclude name="webapp/rails/trunk/vendor/plugins/rspec/**"/>
+                <exclude name="webapp/rails/trunk/vendor/plugins/rspec-rails/**"/>
+            </tarfileset>
+        </tar>
+        <zip destfile="${kit.dir}/${rails.src.name}.zip">
+            <zipfileset dir="stage" prefix="${rails.src.name}" includes="release,LICENSE,NOTICE"/>
+            <zipfileset dir="${base.dir}" prefix="${rails.src.name}">
+                <include name="dist/*"/>
+				<include name="dist/releasenotes/${rails.relnotes}"/>
+                <include name="docs/**"/>
+                <include name="geocoder/**"/>
+                <include name="webapp/rails/trunk/**"/>
+                <include name="workload/rails/trunk/**"/>
+                <exclude name="dist/nightly/**"/>
+                <exclude name="dist/release/**"/>
+                <exclude name="dist/stage/**"/>
+                <exclude name="**/build/**"/>
+                <exclude name="geocoder/dist/**"/>
+                <exclude name="**/build.properties"/>
+                <exclude name="webapp/rails/trunk/vendor/plugins/rspec/**"/>
+                <exclude name="webapp/rails/trunk/vendor/plugins/rspec-rails/**"/>
+            </zipfileset>
+        </zip>
+    </target>
+
+  
+  <target name="package-java-src">
+        <copy file="${base.dir}/LICENSE_java.txt" tofile="stage/LICENSE" overwrite="true" verbose="true"/>
+        <copy file="${base.dir}/NOTICE_java.txt" tofile="stage/NOTICE" overwrite="true" verbose="true"/>
+
+        <tar destfile="${kit.dir}/${java.src.name}.tar.gz" longfile="gnu" compression="gzip">
+            <tarfileset dir="stage" prefix="${java.src.name}" includes="release,LICENSE,NOTICE"/>
+
+            <tarfileset dir="${base.dir}" prefix="${java.src.name}">
+                <include name="dist/*"/>
+                <include name="dist/*"/>
+                <include name="dist/releasenotes/${java.relnotes}"/>
+                <include name="docs/**"/>
+                <include name="geocoder/**"/>
+                <include name="webapp/java/trunk/**"/>
+                <include name="workload/java/trunk/**"/>
+                <exclude name="dist/nightly/**"/>
+                <exclude name="dist/release/**"/>
+                <exclude name="dist/stage/**"/>
+                <exclude name="**/build/**"/>
+                <exclude name="geocoder/dist/**"/>
+                <exclude name="**/build.properties"/>
+            </tarfileset>
+        </tar>
+
+        <zip destfile="${kit.dir}/${java.src.name}.zip">
+            <zipfileset dir="stage" prefix="${java.src.name}" includes="release,LICENSE,NOTICE"/>
+
+            <zipfileset dir="${base.dir}" prefix="${java.src.name}">
+                <include name="dist/*"/>
+                <include name="dist/*"/>
+                <include name="dist/releasenotes/${java.relnotes}"/>
+                <include name="docs/**"/>
+                <include name="geocoder/**"/>
+                <include name="webapp/java/trunk/**"/>
+                <include name="workload/java/trunk/**"/>
+                <exclude name="dist/nightly/**"/>
+                <exclude name="dist/release/**"/>
+                <exclude name="dist/stage/**"/>
+                <exclude name="**/build/**"/>
+                <exclude name="geocoder/dist/**"/>
+                <exclude name="**/build.properties"/>
+            </zipfileset>
+        </zip>
+    </target> 
+
+    <target name="package-all" depends="package-php, package-rails, package-php-src, package-rails-src, package-java, package-java-src"/>
+
+    <target name="-taskdef">
+       <typedef resource="rat/anttasks/antlib.xml" uri="antlib:rat.anttasks">
+	      <!-- The rat-0.5.1.jar and commons-lang-2.4.jar should be located in ~/.ant/lib
+         <classpath>
+           <fileset dir="/home/shanti/web2.0/rat/trunk">
+              <include name="**/apache-rat*.jar"/>
+              <include name="**/commons-*.jar"/>
+           </fileset>
+         </classpath>
+	     -->
+       </typedef>
+     </target>
+
+    <target name="php-rat" depends="-taskdef"
+       description="runs the rat task over the php binary tarball">
+       <rat:report xmlns:rat="antlib:rat.anttasks">
+         <tarfileset>
+           <gzipresource>
+             <file file="${kit.dir}/${php.pkg.name}.tar.gz"/>
+           </gzipresource>
+         </tarfileset>
+       </rat:report>
+     </target>
+    <target name="php-rat-src" depends="-taskdef"
+       description="runs the rat task over the php src tarball">
+       <rat:report xmlns:rat="antlib:rat.anttasks">
+         <tarfileset>
+           <gzipresource>
+             <file file="${kit.dir}/${php.src.name}.tar.gz"/>
+           </gzipresource>
+         </tarfileset>
+       </rat:report>
+     </target>
+
+    <target name="rails-rat" depends="-taskdef"
+       description="runs the rat task over the rails binary tarball">
+       <rat:report xmlns:rat="antlib:rat.anttasks">
+         <tarfileset>
+           <gzipresource>
+             <file file="${kit.dir}/${rails.pkg.name}.tar.gz"/>
+           </gzipresource>
+         </tarfileset>
+       </rat:report>
+     </target>
+    <target name="rails-rat-src" depends="-taskdef"
+       description="runs the rat task over the rails src tarball">
+       <rat:report xmlns:rat="antlib:rat.anttasks">
+         <tarfileset>
+           <gzipresource>
+             <file file="${kit.dir}/${rails.src.name}.tar.gz"/>
+           </gzipresource>
+         </tarfileset>
+       </rat:report>
+     </target>
+
+     <target name="java-rat" depends="-taskdef" description="runs the rat task over the java binary tarball">
+
+         <rat:report xmlns:rat="antlib:rat.anttasks">
+
+            <tarfileset>
+
+                <gzipresource>
+                    <file file="${kit.dir}/${java.pkg.name}.tar.gz"/>
+                </gzipresource>
+            </tarfileset>
+        </rat:report>
+    </target>
+
+    <target name="java-rat-src" depends="-taskdef" description="runs the rat task over the java src tarball">
+
+         <rat:report xmlns:rat="antlib:rat.anttasks">
+
+            <tarfileset>
+
+                <gzipresource>
+                    <file file="${kit.dir}/${java.src.name}.tar.gz"/>
+                </gzipresource>
+            </tarfileset>
+        </rat:report>
+    </target>
+
+</project> 

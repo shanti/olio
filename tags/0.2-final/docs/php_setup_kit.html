@@ -1,0 +1,643 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=utf-8">
+  <title>Olio/PHP Install and Setup Guide</title>
+  <meta name="GENERATOR" content="NeoOffice 2.2  (Unix)">
+  <meta name="AUTHOR" content="Akara Sucharitakul">
+  <meta name="CREATED" content="20070926;10111500">
+  <meta name="CHANGED" content="20090331;16112600">
+<!-- Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+     with the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing,
+     software distributed under the License is distributed on an
+     "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+     specific language governing permissions and limitations
+     under the License.    
+-->
+  <style type="text/css">
+	<!--
+		H1 { color: #000000 }
+		P { color: #000000 }
+		H2 { color: #000000 }
+	-->
+	</style>
+</head>
+<body dir="ltr" lang="en-US" text="#000000">
+<h1 align="center">Olio/PHP <br>
+Install and Setup Guide from Tarball</h1>
+<h2>Overview</h2>
+<p>Olio is a macro-level toolkit consisting of the following
+components:</p>
+<ol>
+  <li>
+    <p style="margin-bottom: 0in;">The web application </p>
+  </li>
+  <li>
+    <p style="margin-bottom: 0in;">The main database </p>
+  </li>
+  <li>
+    <p style="margin-bottom: 0in;">Distributed storage servers (NFS or
+MogileFS)</p>
+  </li>
+  <li>
+    <p style="margin-bottom: 0in;">The caching server (memcached)</p>
+  </li>
+  <li>
+    <p style="margin-bottom: 0in;">Storage metadata database (for
+MogileFS only)</p>
+  </li>
+  <li>
+    <p style="margin-bottom: 0in;">Geocoder emulator </p>
+  </li>
+  <li>
+    <p>Workload driver </p>
+  </li>
+</ol>
+<p>If your primary interest is in setting up the application alone,
+you need items 1-5 above and they can all be setup on a single
+system. If on the other hand, you would like to drive load against
+the application, you will need at least 2 systems. At higher loads,
+you may need multiple systems. At a minimum, we need to separate the
+SUT (System Under Test) components and the non-SUT components to get
+valid results. The non-SUT components are the Geocoder emulator and
+the workload driver. It is best to connect the driver machine to the
+SUT machine on a local private network. This ensures that latencies
+measured do not include arbitrary delays.</p>
+<p>For a horizontally scaled workload, or to measure the performance
+of the individual components, you can deploy the SUT components on
+separate physical or virtual machines. Keep in mind though that the
+bulk of the CPU is consumed in the web application tier (apache/php).</p>
+<p style="margin-bottom: 0in;">In the following sections, we will go
+over the steps needed to configure each component :</p>
+<p><a href="#Contents">Extracting the Contents</a></p>
+<p><a href="#setupDriver"><u>Setting up the Driver</u></a></p>
+<p><a href="#installWebApp">Installing the Web Application</a></p>
+<p><a href="#setupDB">Setting up the Database</a></p>
+<p><a href="#loadDB">Loading the Database</a></p>
+<p><a href="#setupFileStore">Setting up the Filestore</a></p>
+<p><a href="#setupEmulator">Setting up the Geocoder Emulator</a><br>
+</p>
+<p><a href="#Setting_up_Memcached">Setting up Memcached</a><br>
+</p>
+<p><a href="#testWebApp">Testing the Web Application</a></p>
+<p><a href="#startRun">Starting a Performance Test</a></p>
+<h2><a name="Contents"></a>Extracting the Contents</h2>
+<p>The Olio/PHP kit is packaged as a gzipped tar file. The first task
+is to unzip the file and untar it to extract it's contents. Because
+of the long pathnames, please use GNU tar to extract. This is the
+default tar on Linux but on Solaris, use '/usr/sfw/bin/gtar'. This can
+be done
+as follows:</p>
+<p><font face="Courier New, monospace"><font style="font-size: 11pt;"
+ size="2">#
+tar -xvzf </font></font><font face="Courier New, monospace"><font
+ style="font-size: 11pt;" size="2"><i>olio-php-&lt;version&gt;</i>.tar.gz
+(on Linux)<br>
+# </font></font><font face="Courier New, monospace"><font
+ style="font-size: 11pt;" size="2">gzcat <i>olio-php-&lt;version&gt;</i>.tar.gz
+| /usr/sfw/bin/gtar xvf - (on Solaris)<br>
+</font></font></p>
+<p>This will cause a directory named olio-php-<i>&lt;version&gt; </i><span
+ style="font-style: normal;">to
+be created whose contents should look like:</span></p>
+<p style="margin-bottom: 0.04in; font-style: normal;"><small><code><font
+ face="Courier New, monospace"><font style="font-size: 11pt;" size="2"><small>#
+ls olio-php-0.2*</small></font></font></code></small></p>
+<p style="margin-bottom: 0.04in; font-style: normal;"><small><code><font
+ face="Courier New, monospace"><font style="font-size: 11pt;" size="2"><small>LICENSE
+OlioDriver.jar RELEASE-NOTES-php-0.2.txt geocoder.war
+php_setup_kit.html</small></font></font></code></small></p>
+<p style="margin-bottom: 0.04in; font-style: normal;"><small><code><font
+ face="Courier New, monospace"><font style="font-size: 11pt;" size="2"><small>NOTICE
+oliophp/ release</small></font></font></code></small></p>
+<p style="margin-bottom: 0.04in; font-style: normal;"><small><font
+ face="Courier New, monospace"><font style="font-size: 11pt;" size="2"><small><code>#</code>
+</small></font></font></small></p>
+<p>We will use $OLIO_HOME to designate the name of this directory. A
+description of the contents follows :</p>
+<ul>
+  <li>
+    <p>The <i>oliophp</i> directory contains the web application. This
+application will be deployed on the webserver.</p>
+  </li>
+  <li>
+    <p><i>OlioDriver.jar</i> contains the load generator/driver (which
+we typically refer to simply as <i>driver</i>). The driver is
+implemented using <a href="http://faban.sunsource.net/"><i>Faban</i></a>
+– an open source benchmarking toolkit.</p>
+  </li>
+  <li>
+    <p><i>geocoder.war</i> contains the simple servlet used to emulate
+the geocoder.</p>
+  </li>
+  <li>
+    <p><i>php_setup_kit.html</i> is this document.</p>
+  </li>
+  <li>
+    <p><i>release</i> contains the release name. LICENSE and NOTICE
+contain the licenses.</p>
+  </li>
+</ul>
+<h2><a name="setupDriver"></a>Setting up the Driver</h2>
+<p>Even if you don't plan to drive load against the application,
+steps 1 and 2 are required as the database and file loaders are part
+of the workload driver – feel free to install the driver on the
+same system as the web application.</p>
+<ol>
+  <li>
+    <p align="left">See <a
+ href="http://faban.sunsource.net/docs/guide/harness/install.html">http://faban.sunsource.net/docs/guide/harness/install.html</a>
+for Faban installation instructions. Note that faban needs to be
+installed on all the machines used for the test. Please also read the <i>Getting
+Started Guide</i> to get a high-level understanding of Faban
+terminology and how it works. From now on, we will refer to the faban
+install directory as $FABAN_HOME.</p>
+  </li>
+  <li>Install the required Faban services:</li>
+  <ul>
+    <li><code>cd $FABAN_HOME</code></li>
+    <li><code>cp
+samples/services/ApacheHttpdService/build/ApacheHttpdService.jar
+services</code></li>
+    <li><code>cp samples/services/MysqlService/build/MysqlService.jar
+services</code></li>
+    <li><code>cp
+samples/services/MemcachedService/build/MemcachedService.jar services</code><br>
+    </li>
+  </ul>
+</ol>
+<ol start="3">
+  <li>
+    <p align="left">Copy $OLIO_HOME/Olio<span style="">Driver</span><i><span
+ style="">.</span></i><span style="font-style: normal;"><span style="">jar</span></span>
+to the $FABAN_HOME/benchmarks directory. Also copy the OlioDriver.jar
+file to the $FABAN_HOME/benchmarks directory on the web server system.</p>
+  </li>
+  <li>
+    <p align="left">For the driver to work, you will need JDK 1.6. Set
+JAVA_HOME to the path of the JDK in the faban user's environment.</p>
+  </li>
+  <li>
+    <p align="left">Start the faban master on the master driver machine
+:</p>
+    <p align="left">$FABAN_HOME/master/bin/startup.sh</p>
+  </li>
+  <li>
+    <p align="left">Test that you can connect to the master by pointing
+your browser at http://<i>&lt;driver_machine&gt;</i>:9980. </p>
+  </li>
+</ol>
+<ol start="3">
+  <li>
+    <p align="left"><a
+ href="http://dev.mysql.com/downloads/connector/j/5.0.html">Download</a>
+MySQL Connector/J (JDBC Driver for MySQL) and install the jar in
+$FABAN_HOME/benchmarks/OlioDriver/lib.</p>
+  </li>
+</ol>
+<h2><a name="installWebApp"></a><font size="4">Installing the Web
+Application</font></h2>
+<p>The web application is a PHP application. It requires the
+following components:</p>
+<ol>
+  <li>
+    <p style="margin-bottom: 0in;">A web server such as Apache2 or
+Lighttpd</p>
+  </li>
+  <li>
+    <p style="margin-bottom: 0in;">PHP 5 with extensions: apc.so,
+curl.so, gd.so, pdo_mysql.so</p>
+  </li>
+  <li>
+    <p style="margin-bottom: 0in;">MySQL 5</p>
+  </li>
+  <li>
+    <p style="margin-bottom: 0in;">Memcached </p>
+  </li>
+</ol>
+<p>All of these applications are included in OpenSolaris. If you're
+running on any other operating system, please install the above
+applications.<br>
+<br>
+Once you have the application stack installed,
+follow the steps below to set up the application. </p>
+<ol>
+  <li>
+    <p>Decide where you want to install the web application. The
+default for apache is the htdocs sub-directory but a common location is
+/var/www. Create a sub-directory <i>oliophp</i> where the php
+application will reside and copy the contents of $OLIO_HOME/oliophp to
+this directory. We will use $APP_DIR to refer to this location. Ensure
+that all files in $APP_DIR are readable by the world.</p>
+  </li>
+  <li>
+    <p>Edit the httpd.conf used by your system's apache installation.
+Set the <b>Listen</b> parameter to the hostname or ip address and set
+the <b>DocumentRoot</b> to $APP_DIR/public_html. See the <i>httpd.conf
+    </i>file in $APP_DIR/etc for additional settings.</p>
+  </li>
+  <li>
+    <p style="margin-bottom: 0in;">See the php.ini provided in
+$APP_DIR/etc and copy the settings appropriately to the php.ini for
+your installation.</p>
+  </li>
+</ol>
+<br>
+<p style="margin-bottom: 0in;"><a name="setupDB"></a><font size="4"><b>Setting
+up the Database</b></font> </p>
+<p style="margin-bottom: 0in;"></p>
+<ol>
+  <li>
+    <p>If you plan to run MySQL on a separate machine, install MySQL on
+that system. We will refer to the MySQL installation directory as
+MYSQL_HOME.</p>
+  </li>
+  <li>
+    <p>Setup the mysql user/group and permissions for it's directories:
+    <br>
+    <font face="monospace"># groupadd mysql </font><br>
+    <font face="monospace"># useradd -d $MYSQL_HOME -g mysql -s
+/usr/bin/bash&nbsp;mysql<br>
+# chown -R mysql:mysql $MYSQL_HOME</font></p>
+  </li>
+  <li>
+    <p>Create the database:<br>
+    <font face="monospace"># su - mysql</font><br>
+    <font face="monospace">$ cd&nbsp;bin</font><br>
+    <font face="monospace">$ ./mysql_install_db</font></p>
+  </li>
+  <li>
+    <p style="margin-bottom: 0.1in;"><font face="Times New Roman, serif">A
+sample MySQL configuration file (my.cnf) is included in the
+$APP_DIR/etc. Please read the embedded comments and edit the file
+appropriately after copying it to /etc. </font> </p>
+  </li>
+  <li>
+    <p>Start the mysql server using the my.cnf file. Substitute your
+own password for <i>pwd </i><span style="font-style: normal;">(we
+typically use</span> <i>adminadmin</i><span style="font-style: normal;">)</span><br>
+    <font face="monospace">$&nbsp;./mysqld_safe
+–defaults-file=/etc/my.cnf &amp;</font><br>
+    <font face="monospace">$ ./mysqladmin -u root password </font><font
+ face="monospace"><i>pwd</i></font></p>
+  </li>
+  <li>
+    <p>Create the olio user and grant privileges:<br>
+    <font face="monospace">$ ./mysql -uroot -p</font><font
+ face="monospace"><i>pwd</i></font><br>
+    <font face="monospace">mysql&gt; create user 'olio'@'%' identified
+by 'olio';</font><br>
+    <font face="monospace">mysql&gt; grant all privileges on *.* to
+'olio'@'%' identified by 'olio' with grant option;<br>
+    </font><br>
+In some cases the wildcard '%' does not work reliably as a substitution
+for all hosts. You need to grant the privileges to
+'olio'@'&lt;hostname&gt;' individually, where hostname is localhost,
+the name of the database system and any other name that's used to
+access the database system. </p>
+  </li>
+  <li>
+    <p>Create database<br>
+    <font face="monospace">mysql&gt; create database olio;</font><br>
+    <font face="monospace">mysql&gt; use olio;</font><br>
+    </p>
+  </li>
+  <li>
+    <p>To create the database schema, you first need to copy the schema
+script from the driver system. It is located in
+$FABAN_HOME/benchmarks/OlioDriver/bin/schema.sql. Copy the script
+anywhere on the database server and create the schema:</p>
+  </li>
+</ol>
+<p style="margin-left: 0.55in;"><font face="Monospace">$ mysql -uroot
+-ppwd</font><br>
+<font face="monospace">mysql&gt; \.
+</font><font face="monospace"><i>&lt;location&gt;</i></font><font
+ face="monospace">/schema.sql<br>
+mysql&gt;
+exit</font><br>
+<font face="monospace">$</font><br>
+<br>
+Now, if you
+login as the user <i>olio</i>, you should be able to see the database
+created by the root user.</p>
+<h2><a name="loadDB"></a><font size="4">Loading the Database</font></h2>
+<p><font size="3">It is best to load the database manually the first
+time so that we can test the web application. However, while doing
+performance tests, the load driver can be configured to automatically
+re-load the database before the run.</font></p>
+<ol>
+  <li>
+    <p><font size="3">Login to the machine running the Faban master
+driver. Only this machine has the loader at this time.</font></p>
+  </li>
+  <li>
+    <p style="margin-bottom: 0in;"><font size="3">Go to the directory
+containing the loader script:<br>
+    </font><font face="monospace"><font size="3"># cd </font></font><font
+ face="monospace"><i>$FABAN_HOME</i></font><font face="monospace">/benchmarks/OlioDriver/bin</font></p>
+  </li>
+</ol>
+<ol start="3">
+  <li>
+    <p style="margin-bottom: 0in;">Ensure the script has execute
+permissions. Faban takes care of this for the runs, but since we have
+not yet started the first run, we will need to change that ourselves:<br>
+    <font face="monospace"># chmod +x dbloader.sh</font></p>
+  </li>
+</ol>
+<ol start="4">
+  <li>
+    <p>Run the loader script:<br>
+    <font face="monospace"># ./dbloader.sh </font><font
+ face="monospace"><i>&lt;dbserver&gt; &lt;load_scale&gt;</i></font><br>
+You can start small with a SCALE of 50 for initial testing. </p>
+  </li>
+  <li>
+    <p style="margin-bottom: 0.1in;">Edit the $APP_DIR/etc/config.php
+and set the database host name, replacing <i>localhost</i> in the
+dbTarget entry.</p>
+  </li>
+</ol>
+<p style="margin-left: 0.79in; margin-bottom: 0.04in;"><font
+ face="Courier New, monospace"><font style="font-size: 11pt;" size="2">$olioconfig['dbTarget']
+= 'mysql:host=localhost;dbname=olio'; // PDO target.</font></font></p>
+<h2><a name="setupFileStore"></a><font size="4">Setting up the Filestore</font></h2>
+<p><font size="3">Olio can be configured to use either a local
+filesystem or MogileFS for the object data. Our initial testing with
+MogileFS found some severe performance issues, so for now we advice
+using a local filesystem or network file system such as NFS. You will
+need about 50GB of space for the data, as the data does grow over
+runs. Using a single spindle does work but may create performance
+bottlenecks. We recommend striping the filesystem across at least 3
+spindles to avoid such bottlenecks. A local file system needs to be
+setup on the same machine as the web application. A network file
+system can reside on a separate server but needs to be exported and
+mounted on the system running the web application.</font></p>
+<ol>
+  <li>
+    <p><font size="3">Create a directory (or mount a filesystem)
+designated for storing the image and binary files. This directory is
+referred to as $FILESTORE. Any valid name for the OS should be fine.
+Ensure that everyone has read and write access to it:<br>
+    </font><font face="monospace"><font size="3"># mkdir -p </font></font><font
+ face="monospace"><font size="3"><span style="font-style: normal;">$FILESTORE</span></font></font><font
+ size="3"><br>
+    </font><font face="monospace"><font size="3"># chmod a+rwx </font></font><font
+ face="monospace"><font size="3"><span style="font-style: normal;">$FILESTORE</span></font></font></p>
+  </li>
+  <li>
+    <p><font size="3">Now load the filestore. You should have the
+$FABAN_HOME/benchmarks/OlioDriver.jar file on this system.<br>
+    </font><font face="monospace"><font size="3"><br>
+# JAVA_HOME</font></font><font face="mon"><font size="3"><i>=</i></font></font><font
+ face="monospace"><font size="3"><i>&lt;java_install_dir&gt;</i></font></font><font
+ face="monospace"><font size="3">; export $JAVA_HOME</font></font></p>
+  </li>
+</ol>
+<p style="text-indent: 0.5in; margin-bottom: 0.04in;"><font
+ face="monospace"><font size="3">#
+cd $FABAN_HOME/benchmarks; mkdir olio</font></font></p>
+<p style="margin-left: 0.52in;"><font face="monospace"><font size="3">#
+cd olio; jar xvf ../OlioDriver.jar; chmod a+x bin/*</font></font><font
+ size="3"><br>
+</font><font face="monospace"><font size="3">#
+$FABAN_HOME/benchmarks/olio/bin/fileloader.sh </font></font><font
+ face="monospace"><font size="3"><i>&lt;load_scale&gt;
+$FILESTORE</i></font></font> </p>
+<ol start="2">
+  <p><font size="3">This loads files for use for up to </font><font
+ face="monospace"><font size="3"><i>load_scale</i></font></font> <font
+ size="3">number of active users.</font></p>
+  <li>
+    <p><font size="3">Edit the $APP_DIR/etc/config.php parameter </font><i>localfsRoot</i>
+and set it to $FILESTORE. </p>
+  </li>
+</ol>
+<h2><a name="setupEmulator"></a><font size="4">Setting up the Geocoder
+Emulator</font></h2>
+<p>The Geocoder Emulator is a simple servlet deployed on Tomcat. It
+is typically run on a driver machine. The following steps describe
+how to install it :</p>
+<ol>
+  <li>
+    <p>Donwload and install Tomcat (from <a
+ href="http://tomcat.apache.org/">http://tomcat.apache.org</a>) on the
+driver machine. The install directory doesn't matter – we will refer to
+it as $TOMCAT_HOME. </p>
+  </li>
+  <li>
+    <p>Copy $OLIO_HOME/geocoder.war file to $TOMCAT_HOME/webapps.</p>
+  </li>
+  <li>
+    <p>Start Tomcat using $TOMCAT_HOME/bin/startup.sh.</p>
+  </li>
+  <li>
+    <p>Edit $APP_DIR/etc/config.php parameter geocoderURL and replace <i>GEOCODER_HOST:8080</i>
+with the host and port where Tomcat is running.</p>
+  </li>
+</ol>
+<h2><a name="Setting_up_Memcached"></a><font size="4">Setting up
+Memcached</font></h2>
+<p><font size="3">The Olio application uses memcached for caching the
+home page which dramatically reduces the load on the database. If you
+are running Olio to stress MySQL, you may not want to have the
+caching tier. In this case, set the <i>CacheSystem</i> to <i>NoCache</i>
+in $APP_DIR/etc/config.php. This will eliminate the use of memcached
+and all requests will directly go to the database. However, if you do
+want to use memcached (scaling will be very difficult without it),
+you need to setup an instance of memcached. This can typically run on
+the same system as the web server. </font>
+</p>
+<ol>
+  <li>
+    <p><font size="3">Download and install memcached on the system you
+plan to use.</font></p>
+  </li>
+  <li>
+    <p><font size="3">Start memcached : “memcached -u mysql &amp;”</font></p>
+  </li>
+  <li>
+    <p><font size="3">Edit $APP_DIR/etc/config.php and replace
+MEMCACHED_HOST with the host name where memcached is running. </font> </p>
+  </li>
+</ol>
+<h2><a name="testWebApp"></a><font size="4">Testing the Web Application</font></h2>
+<ol>
+  <li>
+    <p><font size="3">Start apache. This can be done by executing
+“$APACHE_HOME/bin/apachectl start”. Check that you can connect to it
+from your browser at the port apache is listening on (http://<i>host</i>:80).</font></p>
+  </li>
+  <li>
+    <p><font size="3">Check the home page (HomePage) . If there are no
+error messages and all images get loaded, that's a great start ! If
+instead, the server does not display anything or the images don't get
+loaded, check the apache error_log and double-check that the
+application's etc/config.php file has been edited correctly. Remember
+that you will need to re-start apache after any edits to this file for
+them to take effect.</font></p>
+  </li>
+  <li>
+    <p><font size="3">Click on an event (EventDetail). Make sure the
+whole page looks OK. </font> </p>
+  </li>
+  <li>
+    <p><font size="3">Click on an attendee (PersonDetail) to see a
+person's profile. </font> </p>
+  </li>
+  <li>
+    <p><font size="3">Go back to the home page and click on a tag in
+the tag cloud. Choose a big tag and check that we have good results and
+images get loaded OK. </font> </p>
+  </li>
+  <li>
+    <p><font size="3">Click on the sign up tab. Fill in the form and
+create a user. Make sure you find some jpeg images to upload. If not,
+take them from $FABAN_HOME/benchmarks/olio/resources. <br>
+Submit the form. Make sure the form goes through. This completes the
+AddPerson transaction. </font> </p>
+  </li>
+  <li>
+    <p><font size="3">Login using your new login name you just created.
+The top right of the screen should show that you're logged on. </font>
+    </p>
+  </li>
+  <li>
+    <p><font size="3">Select an event, go back to the EventDetail page
+but this time as a logged on user. <br>
+Add yourself as an attendee. This is the EventDetail transaction with
+attendee added (about 8-9% of all EventDetail views). </font> </p>
+  </li>
+  <li>
+    <p><font size="3">Click on the add event tab and add an event. Make
+sure to include an image and some literature. You can also use the
+files from <br>
+$FABAN_HOME/benchmarks/olio/resources. Fill in the form and submit.
+This is the AddEvent transaction. </font> </p>
+  </li>
+</ol>
+<h2><a name="startRun"></a><font size="4">Starting a Performance Test</font></h2>
+<p style="margin-bottom: 0in;">Now that we know that the web
+application is running and the faban harness is up, it is time to
+kick off a test. </p>
+<ol>
+  <li>
+    <p style="margin-bottom: 0in;">Shutdown apache and kill memcached.
+Memcached is always started by the driver before the run to ensure a
+clean cache and will cause port conflicts if it is already running. The
+apache server is also automatically started at the start of a run and
+shutdown at the end of a run.</p>
+  </li>
+</ol>
+<ol start="2">
+  <li>
+    <p>Point your browser at http://<i>&lt;driver_machine&gt;</i>:9980</p>
+  </li>
+  <li>
+    <p>Click on the <span style="font-style: normal;"><b>Schedule Run</b></span>
+link.</p>
+  </li>
+  <li>
+    <p>Under the JAVA tab, set the JAVA_HOME. You can accept the
+default value for JVM options. <b>DO NOT</b> click on the OK button
+yet!</p>
+  </li>
+  <li>
+    <p>Select the Driver tab. </p>
+    <p style="margin-bottom: 0in;">Enter a Description for the run (say
+'First test run' for this case). In general, the Description field is
+very useful to get a quick idea of what a particular run is testing. </p>
+    <p style="margin-bottom: 0in;">Enter the name of your driver(s)
+machine for Host (when using more than one machine, simply separate
+them by a space). </p>
+    <p style="margin-bottom: 0in;">Enter 10 for 'Concurrent Users' (we
+want to start small).</p>
+    <p style="margin-bottom: 0in;">Enter 'vmstat 10' for Tools. This
+indicates the measurement tools that will be run on the driver machine.
+It's a good idea to keep an eye on the driver cpu utilization.</p>
+    <p style="margin-bottom: 0in;">Now enter 30, 30, 30 for the Ramp
+up, Steady State and Ramp down times. This is a very short test run.
+For normal runs, you may need a ramp up of 200 seconds and a steady
+state of at least 600 seconds during which measurements are made.</p>
+    <p style="margin-bottom: 0in;">For current systems, the time
+between client startup of 200 milliseconds is good enough. Some web
+servers or slower systems may not be able to accept connections very
+frequently. In that case we may want to increase this value to 1000
+milliseconds.</p>
+  </li>
+</ol>
+<p style="margin-bottom: 0in;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+The number of
+Agents needs to be set based on the number of concurrent
+users - we start with 1 and add an agent for every 500 users.
+</p>
+<ol start="6">
+  <li>
+    <p>Select the Web Server tab.</p>
+  </li>
+</ol>
+<p style="text-indent: 0.5in; margin-bottom: 0in;">The Host:Port Pairs
+field takes the host port pairs where the web applications are
+running. The host and port is separated by a colon. </p>
+<p style="text-indent: 0.5in; margin-bottom: 0in;">Each pair is
+separated by space. </p>
+<p style="text-indent: 0.5in; margin-bottom: 0in;">For the Webserver
+type field, enter either "apache" or "lighttpd"
+depending on which web server you're using.</p>
+<p style="text-indent: 0.5in; margin-bottom: 0in;">Leave the field
+blank if you're using servers other than these two. Only these two
+servers are managed by faban. <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; For
+any other servers, you must manually start/stop the servers. </p>
+<p style="text-indent: 0.5in; margin-bottom: 0in;">Enter the
+webserver's bin, log, and config directories, and the directory
+containing the php.ini file in the respective fields. </p>
+<p style="text-indent: 0.5in; margin-bottom: 0in;">In the tools box,
+type the tools you want to run. Here are the tools we typically run :
+vmstat 10; mpstat 10; nicstat 10; iostat -x 10</p>
+<ol start="7">
+  <li>
+    <p style="margin-bottom: 0in;">Select the Data Servers tab.</p>
+  </li>
+</ol>
+<ol start="7">
+  <p style="margin-bottom: 0in;">For the database server, enter the
+Host name. (Olio also supports multiple hostnames if MySQL replication
+is being used). </p>
+</ol>
+<p style="text-indent: 0.49in; margin-bottom: 0in;">Edit the hostname
+part of the JDBC Connection URL. This is used by the loader program
+to reload the database before a run. </p>
+<p style="text-indent: 0.49in; margin-bottom: 0in;">Set the 'Load for
+Concurrent Users' to 25 (this is the minimum number of users we can
+load for and is good for up to 25 concurrent users). </p>
+<ol start="7">
+  <p style="margin-bottom: 0in;">Set the Data Storage server. For local
+storage this is the same host as the web server.</p>
+  <p style="margin-bottom: 0in;">Set the memcached server instances to
+the servers you've configured in config.php of the web application. </p>
+</ol>
+<p style="text-indent: 0.48in; margin-bottom: 0in;">The memcached
+server instances are given as host:port pairs, separated by space. If
+a port is not given, the default port of 11211 is assumed.</p>
+<p style="margin-bottom: 0in;"><br>
+</p>
+<ol start="8">
+  <li>
+    <p>That's it. Click OK and the run should be scheduled. You can
+click on the View Results link on the left to monitor the run.</p>
+  </li>
+</ol>
+</body>
+</html>

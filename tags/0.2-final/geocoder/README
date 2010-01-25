@@ -1,0 +1,8 @@
+. To  build the geocoder emulator, you will need an installation of tomcat or glassfish.
+. Copy build.properties.template to build.properties.
+. Edit build.properties and set servlet.lib.path to point to your 
+  tomcat or glassfish lib directory.
+. 'ant all' will create the emulator war file in the dist directory.
+. Copy the war file to your tomcat/glassfish 'webapps' directory on 
+  the system that will run the emulator. 
+  We typically run the emulator on the same system as the faban driver.

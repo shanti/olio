@@ -1,0 +1,25 @@
+Releases are built from this directory. 
+Copy the build.properties.template to build.properties.
+Ensure that the build.properties file has the correct <major>.<minor> numbers.
+Set the property 'build.release' to 'true' if you're generating a release without a time-stamp.
+Create release notes if required. Use the format RELEASE-NOTES-<type>-<version>.txt.
+All release notes should reside in the 'releasenotes' directory.
+The Java app needs to be built by going to 
+webapp/java/trunk/ws/apps/webapp and running ant in that directory.
+
+To build all releases, simply type 'ant'.
+The releases will be built in the 'nightly' directory.
+DO NOT check in the 'nightly' directory into the repository.
+However, it is appropriate to check-in new release notes added.
+
+To run RAT on a release, do the following:
+. Ensure you have the rat-<version>.jar and commons-lang-<version>.jar
+  in ~/.ant/lib.
+. Type:  ant php-rat >nightly/php-rat.out
+. Type:  ant rails-rat >nightly/rails-rat.out
+. Type:  ant java-rat >nightly/java-rat.out
+
+NOTES:
+. The running of RAT is not made part of the release generation as it 
+  takes a long time.
+. TODO: Automate creation of md5 and asc files.

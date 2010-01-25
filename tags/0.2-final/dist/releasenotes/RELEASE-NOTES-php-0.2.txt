@@ -1,0 +1,52 @@
+<!--
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+-->
+This is the 0.2 release of the PHP implementation of Olio.
+There are two tarballs for this release: 
+apache-olio-php-0.2.tar.gz is the binary kit.
+apache-olio-php-src-0.2.tar.gz is the source that corresponds to the binary kit.
+On Linux, use 'tar -xzf apache-olio-php-0.2.tar.gz' to extract.
+On Solaris, use 'gzcat apache-olio-php-0.2.tar.gz | /usr/sfw/bin/gtar -xvf -'
+
+The instructions for setting up Olio from the binary kit are contained in 
+php_setup_kit.html which is located in the top-level directory. 
+You can also browse the document at 
+  https://svn.apache.org/repos/asf/incubator/olio/docs/php_setup_kit.html
+
+The instructions for setting up Olio from the source kit are contained in
+php_setup.html which is located in the 'docs' directory.
+
+Issues fixed in this release
+============================
+OLIO-136: Timezone field in user/person table too small
+OLIO-129: "Average Images in Tag Search Results" statistic in summary report often fails
+OLIO-127: Home page image stats collection incorrect
+OLIO-119: Need to remove the tinymce traces in the code
+OLIO-117: to print out true value of $stream in classes/Geocoder.php(36)
+OLIO-113: Remove old service entries from benchmark class
+OLIO-112: Update driver to use HttpClient3.0.1 APIs
+OLIO-108: Application performance is dominated by gd library
+OLIO-90: Simulation of browser caches incorrect
+OLIO-87: Change static image/doc files 
+OLIO-84: Upgrade driver code to use httpclient 3.0.1
+OLIO-83: Delete extraneous index PERSON_USERNAME_IDX
+OLIO-81: Cycle time distribution too small for Add* operations
+OLIO-61: Grasp mysql error file
+OLIO-40: File loader is slow. Filestore architecture is problematic
+OLIO-18: Calendar widgit is broken when wrapping years
+
