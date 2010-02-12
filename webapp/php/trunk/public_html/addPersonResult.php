@@ -75,7 +75,7 @@ if(isset($_POST['addpersonsubmit'])) {
     }
 
 } else if (isset($_POST['addpersonsubmitupdate'])) {
-
+    $connection->beginTransaction();
  	if ($summary == "" ) {
 		$sumquery = "select summary from PERSON where username='$username' ";
 		$sumresult = $connection->query($sumquery);
