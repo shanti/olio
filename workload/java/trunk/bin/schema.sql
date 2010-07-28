@@ -231,6 +231,8 @@ CREATE TABLE `SOCIALEVENTTAG` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 SET character_set_client = @saved_cs_client;
 
+CREATE INDEX SOCIALEVENTTAG_TAG on SOCIALEVENTTAG (tag);
+
 --
 -- Table structure for table `SOCIALEVENTTAG_SOCIALEVENT`
 --
