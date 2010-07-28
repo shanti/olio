@@ -106,8 +106,8 @@ class EventsController < ApplicationController
         @address.save!
         @event.address = @address
         
-        @event.image = Image.make_from_upload(params[:event_image], @event.id) if new_image?
-        @event.document = Document.make_from_upload(params[:event_document], @event.id) if new_document?
+        @event.image = Image.make_from_upload(params[:event_image], @event.id, "events") if new_image?
+        @event.document = Document.make_from_upload(params[:event_document], @event.id, "eventLits") if new_document?
         
         @event.save! # must come after all other updates
         set_tags(@event)

@@ -35,7 +35,7 @@
 	<% if comment.author.id == session[:user_id] -%>
 	  <div id="comment_links">
 	    <%= link_to_function 'Edit', 
-        :href => edit_event_comment_path(@event, comment), 
+        :href => edit_event_comment_path(@event.id, comment), 
         :method => :get, :id => "edit_comment_#{comment.id}" do |page|
           page.insert_html :before, "edit_comment_#{comment.id}", 
             "<em class='edit_comment' id='editing_comment_#{comment.id}' style='color:#999;'>Editing...</em>"
@@ -50,7 +50,7 @@
         end
       %>
 		  or 
-		  <% link_to_remote 'Delete', 
+		  <%= link_to_remote 'Delete', 
 		     { :url => event_comment_path(comment.event, comment), :confirm => 'Are you sure?', :method => :delete },
 		     :href => delete_event_comment_path(comment.event, comment) %>
 		  your comment

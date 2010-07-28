@@ -38,9 +38,9 @@ module EventsHelper
   def edit_delete_links(event)
     links = ""
     if logged_in? and event.user_id == session[:user_id]
-      links += button_to 'Edit', edit_event_path(event), :method => :get
+      links += button_to 'Edit', edit_event_path(event.id), :method => :get
       links += " "
-      links += button_to 'Delete', event, :confirm => 'Are you sure?', :method => :delete
+      links += button_to 'Delete', event_path(event.id), :confirm => 'Are you sure?', :method => :delete
     end
     links += "\n"
   end

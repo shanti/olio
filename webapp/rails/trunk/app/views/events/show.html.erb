@@ -18,7 +18,6 @@
 -->
 <div id="event_header">
   <% cache({:controller => "events", :action => "show", :id => params[:id], :part => "main_event_details", :creator => (session[:user_id])}, {:expire => 30.seconds.to_i}) do -%>
-  end
     <div id="event_thumbnail"><%= thumbnail(@event.image) %></div>
     <div id="main_event_details">
       <h1 class="inline"><%=h @event.title %></h1> <%= edit_delete_links(@event) %>
@@ -85,7 +84,7 @@
 	<% if logged_in? -%>
   	<%= 
   	  link_to_function "Add a comment",
-  	    :href => new_event_comment_path(@event), 
+  	    :href => new_event_comment_path(@event.id), 
         :method => :get, :id => "comment_link" do |page|
     	    page[:comment_form].visual_effect :blind_down
     	    page[:comment_add_link].hide
