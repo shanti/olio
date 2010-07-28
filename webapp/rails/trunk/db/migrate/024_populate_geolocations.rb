@@ -20,7 +20,7 @@ class PopulateGeolocations < ActiveRecord::Migration
     r = Rails::Configuration.new
     y = YAML::load_file(r.database_configuration_file)    
     if y[RAILS_ENV.to_s]["adapter"] == "mysql"
-      system "mysql -u #{y[RAILS_ENV.to_s]["username"]} -D #{y[RAILS_ENV.to_s]["database"]} < ./db/migrate/geolocations.sql"
+      system "mysql -u #{y[RAILS_ENV.to_s]["username"]} -p#{y[RAILS_ENV.to_s]["password"]} -D #{y[RAILS_ENV.to_s]["database"]} < ./db/migrate/geolocations.sql"
     #elsif y[RAILS_ENV.to_s]["adapter"] == "sqlite2"
       # Handle SQLite2
     #elsif y[RAILS_ENV.to_s]["adapter"] == "sqlite3"
