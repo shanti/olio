@@ -1,0 +1,16 @@
+2011-January Olio Incubator status report
+
+Olio has been incubating since September 2008.
+
+Olio is a web 2.0 toolkit to help developers evaluate the suitability, 
+functionality and performance of various web technologies by implementing 
+a reasonably complex application in several different technologies.
+
+Things have been fairly quiet on both the user and developer list this quarter.
+
+Graduation From Incubation:
+
+The user base is not showing growth. Since this is a test application/workload, 
+it is being used as such for short-term projects.
+
+
